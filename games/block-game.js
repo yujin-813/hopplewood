@@ -101,6 +101,7 @@ function g5_start(){
   g5.level=(lastCfg.g5&&lastCfg.g5.level)||1;
   lastCfg.g5={mode:'solo',level:g5.level}; savePreferences();
   g5.puzzle=0; g5.hintsUsed=0; g5.cleanBuilds=0;
+  g5.stat={rotations:0,placements:0,misses:0,lifts:0};
   showScreen('g5Game');
   g5_nextPuzzle(true);
 }
@@ -202,6 +203,7 @@ function g5_rotateSelected(){
   if(g5.locked||g5.selected<0)return;
   const piece=g5.pieces[g5.selected];
   piece.shape=g5_rotate(piece.shape);
+  if(g5.stat)g5.stat.rotations++;
   hwSfx('tap');
   g5_renderTray();
   const btn=g5_el('g5Tray').querySelector('.g5-piece[data-on="1"]');
@@ -220,13 +222,14 @@ function g5_cellClick(r,c){
   let spot=null;
   for(const [pr,pc] of piece.shape){ const dr=r-pr, dc=c-pc; if(g5_fitsAt(piece.shape,dr,dc)){ spot=[dr,dc]; break; } }
   if(!spot){
-    g5.misses++; hwSfx('oops');
+    g5.misses++; if(g5.stat)g5.stat.misses++; hwSfx('oops');
     const cell=g5_el('g5Board').children[r*g5.cols+c]; if(cell){cell.classList.remove('nope');void cell.offsetWidth;cell.classList.add('nope');}
     g5_guide(G5_LEVELS[g5.level].rotate?'여기에는 안 들어가요. 조각을 돌려 보거나 다른 칸을 눌러 봐요.':'여기에는 안 들어가요. 다른 칸을 눌러 봐요.');
     if(g5.misses===1)hwSay('여기에는 안 들어가요.');
     if(g5.misses>=2){ const b=g5_el('g5HintBtn'); if(b)b.disabled=false; }
     return;
   }
+  if(g5.stat)g5.stat.placements++;
   g5_placePiece(g5.selected,spot[0],spot[1]);
 }
 function g5_placePiece(idx,dr,dc){
@@ -244,6 +247,7 @@ function g5_placePiece(idx,dr,dc){
 }
 function g5_liftPiece(id){
   const idx=g5.pieces.findIndex(p=>p.id===id), piece=g5.pieces[idx]; if(!piece||!piece.placed)return;
+  if(g5.stat)g5.stat.lifts++;
   const [dr,dc]=piece.placed;
   piece.shape.forEach(([r,c])=>{ g5.board[r+dr][c+dc]=null; });
   piece.placed=null; g5.selected=idx;
@@ -311,6 +315,8 @@ function g5_complete(){
     }else g5_nextPuzzle(false);
   },1600);
 }
+
+function g5_sessionSummary(){ const s=g5.stat; if(!s)return null; return {level:g5.level,puzzles:G5_LEVELS[g5.level].puzzles,clean:g5.cleanBuilds,hints:g5.hintsUsed,rotations:s.rotations,placements:s.placements,misses:s.misses,lifts:s.lifts}; }
 
 /* ---------- 공통 등록 ---------- */
 (function g5_register(){

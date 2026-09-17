@@ -90,3 +90,42 @@
   .pg-legend li{grid-template-columns:26px 1fr}
   .pg-legend li>span:last-child{grid-column:2}
 }
+
+/* 우리 아이 놀이 기록 */
+.pr-report{display:flex;flex-direction:column;gap:10px;margin:18px 0 6px}
+.pr-report h3{margin:0;font-family:'Jua',system-ui,sans-serif;font-weight:400;font-size:21px;color:#1d2925}
+.pr-cards{display:grid;gap:10px}
+.pr-card{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:18px;background:#fbfaf6;border:1px solid #eeebe3}
+.pr-card header{display:flex;align-items:center;gap:8px}
+.pr-card header b{font-size:15px;color:#1f2b27}
+.pr-card header small{margin-left:auto;font-size:11.5px;color:#7a8580;white-space:nowrap}
+.pr-card ul{margin:0;padding:0;list-style:none;display:grid;gap:5px}
+.pr-card li{position:relative;padding-left:14px;font-size:13.5px;line-height:1.5;color:#35423e}
+.pr-card li:before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:#8cc7a5}
+.pr-card li b{color:#1f6b47}
+#parentGuide .pr-tip{padding:9px 12px;border-radius:4px 14px 14px 14px;background:#e8f2ff;color:#284a73;font-size:13px;line-height:1.5}
+.pr-trend{align-self:flex-start;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:800}
+.pr-trend.up{background:#e2f5e9;color:#2f7a55}
+.pr-trend.same{background:#eef1f4;color:#55626a}
+.pr-trend.down{background:#fff1dc;color:#8a5a14}
+.pr-card.waiting{background:#fff;border-style:dashed}
+#parentGuide .pr-card.waiting p{font-size:13px;color:#65706c}
+.pr-bar{display:block;height:6px;border-radius:999px;background:#eceae3;overflow:hidden}
+.pr-bar span{display:block;height:100%;border-radius:inherit;background:#9fd1b5}
+#parentGuide .pr-note{font-size:12px;line-height:1.5;color:#7a8580}
+.pr-clear{align-self:flex-start;min-height:40px;padding:0 12px;border-radius:12px;background:#f5f1ea;color:#8a5a3b;font-size:13px;font-weight:800}
+.pr-clear[data-confirm="1"]{background:#fde3dc;color:#a2402c}
+
+/* 읽어주기 목소리 */
+.pv-voice{display:flex;flex-direction:column;gap:10px;margin:18px 0 6px}
+.pv-voice h3{margin:0;font-family:'Jua',system-ui,sans-serif;font-weight:400;font-size:21px;color:#1d2925}
+.pv-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pv-list li{display:flex;align-items:center;gap:6px;padding:4px;border-radius:14px;background:#faf9f5;border:1px solid #eeebe3}
+.pv-list li.on{background:#eef8f1;border-color:#9fd1b5}
+.pv-pick{flex:1;min-height:46px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:11px;background:transparent;text-align:left;font-size:14px;font-weight:800;color:#23302c}
+.pv-radio{width:20px;height:20px;flex:none;border-radius:50%;border:2px solid #b7c2bd;background:#fff}
+.pv-list li.on .pv-radio{border:6px solid #3f9a6b}
+.pv-listen{min-height:46px;display:flex;align-items:center;gap:5px;padding:0 12px;border-radius:11px;background:#fff;border:1px solid #e3e0d8;font-size:13px;font-weight:800;color:#2f6fb6;white-space:nowrap}
+.pv-listen .ui-icon{width:16px;height:16px}
+.pv-more summary{min-height:40px;display:flex;align-items:center;cursor:pointer;font-size:13px;font-weight:800;color:#6f7a76}
+.pv-more .pv-list{margin-top:6px}

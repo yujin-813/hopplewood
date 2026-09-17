@@ -427,13 +427,13 @@
   @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
   @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
 </style>
-<script src="games/characters.js?v=36"></script>
-<script src="games/platform.js?v=36"></script>
-<link rel="stylesheet" href="games/hopplewood.css?v=36">
-<link rel="stylesheet" href="games/parent-guide.css?v=36">
-<link rel="stylesheet" href="games/face-game.css?v=36">
-<link rel="stylesheet" href="games/number-game.css?v=36">
-<link rel="stylesheet" href="games/block-game.css?v=36">
+<script src="games/characters.js?v=41"></script>
+<script src="games/platform.js?v=41"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=41">
+<link rel="stylesheet" href="games/parent-guide.css?v=41">
+<link rel="stylesheet" href="games/face-game.css?v=41">
+<link rel="stylesheet" href="games/number-game.css?v=41">
+<link rel="stylesheet" href="games/block-game.css?v=41">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true">
@@ -884,7 +884,7 @@ document.addEventListener('keydown',e=>{
 function showParent(){ openOverlay('parentGateOverlay'); }
 function hideParentGate(){ cancelParentHold(); closeOverlay('parentGateOverlay'); }
 function startParentHold(e){ if(e)e.preventDefault(); cancelParentHold(); const b=document.getElementById('parentHoldBtn'); b.classList.add('holding');
-  parentHoldTimer=setTimeout(()=>{ const origin=overlayReturnFocus; parentHoldTimer=null; b.classList.remove('holding'); closeOverlay('parentGateOverlay',false); openOverlay('parentOverlay'); overlayReturnFocus=origin; },2000); }
+  parentHoldTimer=setTimeout(()=>{ const origin=overlayReturnFocus; parentHoldTimer=null; b.classList.remove('holding'); closeOverlay('parentGateOverlay',false); if(typeof pgOpen==='function')pgOpen(undefined); openOverlay('parentOverlay'); overlayReturnFocus=origin; },2000); }
 function startParentKey(e){ if((e.key==='Enter'||e.key===' ')&&!e.repeat)startParentHold(e); }
 function cancelParentHold(){ if(parentHoldTimer){clearTimeout(parentHoldTimer);parentHoldTimer=null;} const b=document.getElementById('parentHoldBtn'); if(b)b.classList.remove('holding'); }
 function hideParent(){ closeOverlay('parentOverlay'); }
@@ -900,7 +900,9 @@ function setLevel(g,lv,silent){ lv=Math.max(1,Math.min(3,Number(lv)||1)); lastCf
   if(!silent)hwSfx('tap');
   const actor=document.getElementById(g+'SetupEm'); if(actor&&!silent){actor.classList.remove('react');void actor.offsetWidth;actor.classList.add('react');setTimeout(()=>actor.classList.remove('react'),520);} }
 
-function showWin(winner, mode, emWin, opts={}){ recordCompletion(winner,mode);
+/* 혼자 하기로 끝난 판은 게임별 요약(gX_sessionSummary)을 놀이 기록에 남긴다. */
+function logSession(winner,mode){ if(mode!=='solo'||!curGame)return; const fn=window[curGame+'_sessionSummary']; if(typeof fn!=='function')return; try{ const data=fn(winner); if(data)hwLogSession(curGame,{win:winner==='A',...data}); }catch(e){} }
+function showWin(winner, mode, emWin, opts={}){ recordCompletion(winner,mode); logSession(winner,mode);
   const title=document.getElementById('winTitle'), sub=document.getElementById('winSub'), em=document.getElementById('winEm');
   if(winner===null){ em.innerHTML=emWin||icon('tie'); title.textContent=opts.title||'비겼어요!'; sub.textContent=opts.sub||'다시 한 판 어때요?'; hwSfx('good'); }
   else{ const isA=winner==='A'; const label=mode==='solo'?(isA?'내가':'컴퓨터가'):(isA?'파랑이':'빨강이');
@@ -972,7 +974,7 @@ function g1_teamRoutes(team){ return G1_ROUTE_SETS[g1.level].map(route=>{
   const cells=team==='A'?route:route.slice().reverse(); return cells.map(([r,c])=>[r,c]);
 }); }
 
-function g1Start(mode){ g1.runId++; g1.mode=mode; g1.level=lastCfg.g1.level; lastCfg.g1.mode=mode; savePreferences(); g1.win=g1.level===1?2:3;
+function g1Start(mode){ g1.runId++; g1.stat={moves:0,compared:0,captures:0,lost:0,turnCompared:false}; g1.mode=mode; g1.level=lastCfg.g1.level; lastCfg.g1.mode=mode; savePreferences(); g1.win=g1.level===1?2:3;
   g1.board=Array.from({length:5},()=>Array(5).fill(null)); g1.pieces={}; g1.pid=0; g1.score={A:0,B:0};
   g1.previewId=null; g1.compareId=null; g1.armed=null; g1.locked=false; g1.pass=0;
   g1_teamRoutes('A').forEach((rt,i)=>g1_add('A',i,rt)); g1_teamRoutes('B').forEach((rt,i)=>g1_add('B',i,rt)); g1.turn='A';
@@ -1005,7 +1007,7 @@ function g1_drawRoute(pc,isOwn){ for(let k=pc.idx+1;k<pc.cells.length;k++){ cons
   const mark=document.createElement('span'); mark.className='route-num '+pc.team; mark.textContent=ord; mark.setAttribute('aria-label',(pc.team===g1.turn?'내':'상대')+' 경로 '+ord+'번째 칸'); ce.querySelector('.num').appendChild(mark); } }
 function g1_preview(id){ const pc=g1.pieces[id], isCurrent=pc.team===g1.turn, canControl=isCurrent&&(g1.mode==='duo'||g1.turn==='A')&&!g1.locked;
   if(isCurrent){ g1.previewId=id; g1.compareId=null; g1.armed=(canControl&&g1_advanceable(pc))?id:null; }
-  else if(g1.previewId&&g1.pieces[g1.previewId]&&g1.pieces[g1.previewId].team===g1.turn){ g1.compareId=id; }
+  else if(g1.previewId&&g1.pieces[g1.previewId]&&g1.pieces[g1.previewId].team===g1.turn){ g1.compareId=id; if(g1.stat&&g1.mode==='solo'&&g1.turn==='A')g1.stat.turnCompared=true; }
   else { g1.previewId=id; g1.compareId=null; g1.armed=null; }
   document.querySelectorAll('#g1pieces .pc.sel,#g1pieces .pc.compare').forEach(e=>e.classList.remove('sel','compare'));
   if(g1.previewId&&g1.pieces[g1.previewId].team===g1.turn)g1_el(g1.previewId).classList.add('sel');
@@ -1025,6 +1027,7 @@ function g1_pointMessage(team,type,last=false){ if(g1.mode==='solo'){
   return type==='capture'?'내 말이 잡혔어요. 컴퓨터 +1':'컴퓨터가 집에 도착했어요. +1';
  } const who=team==='A'?'파랑':'빨강'; return who+(type==='capture'?(last?'이 잡고 도착했어요! +1':'이 상대 말을 잡았어요! +1'):'이 집에 도착했어요! +1'); }
 function g1_advance(id){ hwSfx('place'); g1_clear(); g1.locked=true; g1.pass=0; const pc=g1.pieces[id]; const ni=pc.idx+1; const [nr,nc]=pc.cells[ni]; const last=ni===pc.cells.length-1; const occ=g1.board[nr][nc];
+  if(g1.stat&&g1.mode==='solo'){ if(pc.team==='A'){ g1.stat.moves++; if(g1.stat.turnCompared)g1.stat.compared++; if(occ)g1.stat.captures++; } else if(occ)g1.stat.lost++; g1.stat.turnCompared=false; }
   g1.board[pc.r][pc.c]=null;
   if(occ){ const ce=g1_el(occ); ce.classList.add('gone'); setTimeout(()=>ce&&ce.remove(),380); delete g1.pieces[occ]; pc.r=nr;pc.c=nc;pc.idx=ni; g1_move(pc);
     if(last){ g1.board[nr][nc]=null; const me=g1_el(id); setTimeout(()=>me&&me.remove(),320); delete g1.pieces[id]; } else { g1.board[nr][nc]=pc.id; g1_el(id).classList.add('pop'); }
@@ -1077,7 +1080,7 @@ const g2={ mode:'solo', level:1, size:5, need:3, board:null, turn:'A', locked:fa
 function g2_later(callback,delay){ const runId=g2.runId; return setTimeout(()=>{if(g2.runId===runId&&curGame==='g2')callback();},delay); }
 function g2_cancel(){g2.runId++;g2.locked=true;}
 
-function g2Start(mode){ g2.runId++; g2.mode=mode; g2.level=lastCfg.g2.level; lastCfg.g2.mode=mode; savePreferences();
+function g2Start(mode){ g2.runId++; g2.stat={moves:0,threats:0,blocks:0,accidental:0}; g2.mode=mode; g2.level=lastCfg.g2.level; lastCfg.g2.mode=mode; savePreferences();
   g2.size=g2.level===1?5:(g2.level===2?6:7); g2.need=g2.level===1?3:4;
   g2.board=Array.from({length:g2.size},()=>Array(g2.size).fill(null)); g2.turn='A'; g2.locked=false; g2.moves=0; g2.sel=0;
   const arr=PATS[g2.level].slice(); g1_shuffle(arr); g2.patA=arr[0]; g2.patB=arr[1];
@@ -1097,13 +1100,17 @@ function g2_sel(i){ g2.sel=i; document.querySelectorAll('#g2picker .pick').forEa
 
 function g2_place(r,c,color){ g2.board[r][c]=color; const disc=document.createElement('div'); disc.className='disc k'+color; disc.innerHTML=chipMarkup(color);
   const cell=document.getElementById('g2c_'+r+'_'+c); cell.appendChild(disc); cell.setAttribute('aria-label',`${r+1}행 ${c+1}열, ${chipLabel(color)} 놓임`); cell.disabled=true; }
-function g2_click(r,c){ if(g2.locked||g2.board[r][c]!==null)return; if(g2.mode==='solo'&&g2.turn!=='A')return; g2_do(r,c,g2.sel,g2.turn); }
+function g2_click(r,c){ if(g2.locked||g2.board[r][c]!==null)return; if(g2.mode==='solo'&&g2.turn!=='A')return;
+  if(g2.mode==='solo'&&g2.stat){ const threat=g2_threatCells(g2.patB); g2.stat.moves++; if(threat.size){ g2.stat.threats++; if(threat.has(r+','+c))g2.stat.blocks++; } }
+  g2_do(r,c,g2.sel,g2.turn); }
+/* 상대가 다음 한 수로 목표 줄을 완성할 수 있는 빈 칸들 */
+function g2_threatCells(pat){ const out=new Set(); for(const [r,c] of g2_empty())for(const col of [0,1]){ g2.board[r][c]=col; if(g2_present(pat))out.add(r+','+c); g2.board[r][c]=null; } return out; }
 function g2_do(r,c,color,team){ g2.locked=true; g2_place(r,c,color); g2.moves++; hwSfx('place');
   const selfPat=team==='A'?g2.patA:g2.patB, otherTeam=team==='A'?'B':'A', otherPat=team==='A'?g2.patB:g2.patA;
   let line=g2_present(selfPat);
   if(line){ g2_mark(line); g2_later(()=>showWin(team,g2.mode),520); return; }
   line=g2_present(otherPat);
-  if(line){ g2_mark(line); g2_float('앗! 상대 줄을 만들었어요'); g2_later(()=>showWin(otherTeam,g2.mode),750); return; }
+  if(line){ if(team==='A'&&g2.mode==='solo'&&g2.stat)g2.stat.accidental=1; g2_mark(line); g2_float('앗! 상대 줄을 만들었어요'); g2_later(()=>showWin(otherTeam,g2.mode),750); return; }
   if(g2.moves>=g2.size*g2.size){ g2_later(()=>showWin(null,g2.mode),400); return; }
   g2.turn=g2.turn==='A'?'B':'A'; g2_turnMsg();
   if(g2.mode==='solo'&&g2.turn==='B') g2_later(g2_ai,650); else g2.locked=false; }
@@ -1144,6 +1151,10 @@ function g2_turnMsg(){ g2_patTurn(); const who=g2.turn==='A'?'<b class="blue">'+
   document.getElementById('g2turn').innerHTML=who+((g2.mode==='solo'&&g2.turn==='B')?' 생각 중…':' 놓을 차례!'); }
 function g2_float(t){ const f=document.getElementById('g2float'); f.textContent=t; f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); }
 
+/* 놀이 기록 요약 (혼자 하기 판) */
+function g1_sessionSummary(){ const s=g1.stat; if(!s)return null; return {level:g1.level,moves:s.moves,compared:s.compared,captures:s.captures,lost:s.lost}; }
+function g2_sessionSummary(){ const s=g2.stat; if(!s)return null; return {level:g2.level,moves:s.moves,threats:s.threats,blocks:s.blocks,accidental:s.accidental}; }
+
 /* ================= 시작 ================= */
 function initHub(){
   const e1=document.getElementById('g1SetupEm'); if(e1)e1.innerHTML=hwChar('squirrel','full')+hwChar('raccoon','full');
@@ -1151,10 +1162,10 @@ function initHub(){
   fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
 }
 </script>
-<script src="games/face-game.js?v=36"></script>
-<script src="games/number-game.js?v=36"></script>
-<script src="games/block-game.js?v=36"></script>
-<script src="games/parent-guide.js?v=36"></script>
+<script src="games/face-game.js?v=41"></script>
+<script src="games/number-game.js?v=41"></script>
+<script src="games/block-game.js?v=41"></script>
+<script src="games/parent-guide.js?v=41"></script>
 <script>
 initHub();
 pgInit();

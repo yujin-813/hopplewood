@@ -232,15 +232,20 @@
   /* AI 스타일 테스트(assets/art/style-test-v1)를 앱에서 확인하는 스위치.
      true: 호플이·개구리를 테스트 그림으로 보여준다. 기쁨·안내 포즈가 아직 없어 전신 그림으로 대신한다.
      false: 기존 납품 그림으로 되돌린다. */
-  const ART_TEST_ON=false;
+  const ART_TEST_ON=false; /* 2026-09-17: 전체 컷이 같은 스타일로 assets/art/char에 들어가 테스트 종료 */
   const ART_TEST_BASE='assets/art/char-test/';
   const ART_TEST_IDS=new Set(['hopple','frog']);
+  /* 테스트 그림 중 받은 포즈. 없는 포즈는 전신 그림으로 대신한다. */
+  const ART_TEST_POSES={hopple:['full','happy'],frog:['full']};
+  /* 같은 파일 이름으로 그림을 바꿔 넣으면 이 숫자를 올린다. 브라우저가 예전 그림을 기억하지 않게 한다. */
+  const ART_VER='40';
   function artMarkup(id,view){
     const test=ART_TEST_ON&&ART_TEST_IDS.has(id);
     const base=test?ART_TEST_BASE:ART_BASE;
-    if(view==='face')return `<span class="hw-char face hw-art hw-${id}" aria-hidden="true"><img src="${base}char_${id}_face.png" alt="" draggable="false" decoding="async"></span>`;
-    const file=test?'full':(view==='happy'?'happy':(view==='guide'&&id==='hopple'?'guide':'full'));
-    return `<span class="hw-char full hw-art hw-${id}" aria-hidden="true"><img src="${base}char_${id}_${file}.png" alt="" draggable="false" decoding="async"></span>`;
+    if(view==='face')return `<span class="hw-char face hw-art hw-${id}" aria-hidden="true"><img src="${base}char_${id}_face.png?v=${ART_VER}" alt="" draggable="false" decoding="async"></span>`;
+    let file=view==='happy'?'happy':(view==='guide'&&id==='hopple'?'guide':'full');
+    if(test&&!ART_TEST_POSES[id].includes(file))file='full';
+    return `<span class="hw-char full hw-art hw-${id}" aria-hidden="true"><img src="${base}char_${id}_${file}.png?v=${ART_VER}" alt="" draggable="false" decoding="async"></span>`;
   }
   function hwChar(id,view,opts){
     if(!CAST[id])id='hopple';

@@ -1,6 +1,6 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
-const CACHE = 'hopplewood-v36';
-const V = '?v=36';
+const CACHE = 'hopplewood-v41';
+const V = '?v=41';
 const CORE = [
   './',
   './index.html',

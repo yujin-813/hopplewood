@@ -98,6 +98,7 @@ function g3_start(mode){
   g3.mode=mode==='duo'?'duo':'solo';
   g3.level=(lastCfg.g3&&lastCfg.g3.level)||1;
   lastCfg.g3={mode:g3.mode,level:g3.level}; savePreferences();
+  g3.stat={rounds:0,first:0,wrongZones:{}};
   g3.round=0; g3.turn='A'; g3.score={A:0,B:0}; g3.sparkles={A:0,B:0}; g3.locked=false;
   showScreen('g3Game');
   g3_nextRound(true);
@@ -176,6 +177,7 @@ function g3_choose(index){
     g3.locked=true;
     const first=g3.tries===0, team=g3.mode==='duo'?g3.turn:'A';
     g3.score[team]+=first?2:1; if(first)g3.sparkles[team]++;
+    if(g3.stat&&g3.mode==='solo'){ g3.stat.rounds++; if(first)g3.stat.first++; }
     button.dataset.state='right';
     const stage=g3_el('g3Stage'), open=stage.querySelector('.g3-slot.open');
     if(open){ open.innerHTML=g3_faceSVG(g3.target,g3.side==='left'?'right':'left'); open.classList.add('filled'); }
@@ -190,6 +192,7 @@ function g3_choose(index){
     return;
   }
   g3.tries++;
+  if(g3.stat&&g3.mode==='solo'&&face.diff)g3.stat.wrongZones[face.diff]=(g3.stat.wrongZones[face.diff]||0)+1;
   button.dataset.state='wrong';
   hwSfx('oops');
   if(g3.tries===1){
@@ -221,6 +224,8 @@ function g3_finish(){
   const {A,B}=g3.score, winner=A===B?null:(A>B?'A':'B');
   showWin(winner,'duo',art,{sub:'파랑 '+A+'점 · 빨강 '+B+'점'});
 }
+
+function g3_sessionSummary(){ const s=g3.stat; if(!s)return null; return {level:g3.level,rounds:s.rounds,first:s.first,wrongZones:s.wrongZones}; }
 
 /* ---------- 공통 등록 ---------- */
 (function g3_register(){

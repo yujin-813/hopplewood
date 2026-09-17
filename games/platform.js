@@ -45,25 +45,45 @@
   };
   function hwSfx(kind){ if(settings.sound&&SFX[kind])try{SFX[kind]();}catch(e){} }
 
+  /* 한국어 목소리 고르기: 아이에게 친근한 여성·밝은 목소리를 먼저, 남성·어르신 목소리는 자동 선택에서 뺀다.
+     기기마다 이름이 달라서(유나/Yuna, Google 한국의, Microsoft SunHi…) 이름 조각으로 점수를 매긴다.
+     부모님이 고른 목소리(settings.voiceName)가 있으면 그것을 쓴다. */
+  const VOICE_PREFER=[[/유나|yuna/i,100],[/sunhi|선희/i,95],[/google.*(한국|korean)/i,90],[/heami|혜미/i,88],[/sora|소라/i,86],[/jihun|지훈/i,-50],[/injoon|인준|minsu|민수/i,-60],[/flo/i,80],[/sandy/i,75],[/shelley/i,72],[/grandma/i,40],[/female|여성|woman/i,70],[/eddy|reed|rocko|grandpa|male|남성/i,-100]];
+  const VOICE_NICK=[[/유나|yuna/i,'유나 (또렷한 누나)'],[/flo/i,'플로 (밝은 목소리)'],[/sandy/i,'샌디 (다정한 목소리)'],[/shelley/i,'셸리 (차분한 목소리)'],[/grandma/i,'할머니'],[/grandpa/i,'할아버지'],[/eddy/i,'에디 (남성)'],[/reed/i,'리드 (남성)'],[/rocko/i,'로코 (남성)'],[/google/i,'구글 한국어'],[/sunhi|선희/i,'선희'],[/heami|혜미/i,'혜미']];
   let koVoice=null;
+  function koVoices(){ return ('speechSynthesis' in window)?speechSynthesis.getVoices().filter(v=>/^ko/i.test(v.lang)):[]; }
+  function voiceScore(v){ let score=0; VOICE_PREFER.forEach(([re,n])=>{ if(re.test(v.name))score+=n; }); if(v.localService)score+=2; return score; }
+  function voiceNick(v){ const hit=VOICE_NICK.find(([re])=>re.test(v.name)); return hit?hit[1]:v.name.replace(/\s*\(.*\)\s*/,''); }
   function pickVoice(){
-    if(!('speechSynthesis' in window))return;
-    const voices=speechSynthesis.getVoices();
-    koVoice=voices.find(v=>/^ko/i.test(v.lang)&&/yuna|female|여/i.test(v.name))||voices.find(v=>/^ko/i.test(v.lang))||null;
+    const list=koVoices(); if(!list.length){ koVoice=null; return; }
+    const chosen=settings.voiceName&&list.find(v=>v.name===settings.voiceName);
+    koVoice=chosen||list.slice().sort((a,b)=>voiceScore(b)-voiceScore(a))[0];
   }
   if('speechSynthesis' in window){ pickVoice(); speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',pickVoice); }
   function plain(text){ const box=document.createElement('div'); box.innerHTML=String(text); return box.textContent.replace(/\s+/g,' ').trim(); }
+  function speakWith(voice,words){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(words);
+    u.lang='ko-KR'; u.rate=.98; u.pitch=1.15; if(voice)u.voice=voice;
+    speechSynthesis.speak(u);
+  }
   function hwSay(text,force){
     if(!('speechSynthesis' in window))return false;
     if(!settings.voice&&!force)return false;
     const words=plain(text); if(!words)return false;
-    try{
-      speechSynthesis.cancel();
-      const u=new SpeechSynthesisUtterance(words);
-      u.lang='ko-KR'; u.rate=.95; u.pitch=1.08; if(koVoice)u.voice=koVoice;
-      speechSynthesis.speak(u); return true;
-    }catch(e){ return false; }
+    if(!koVoice)pickVoice();
+    try{ speakWith(koVoice,words); return true; }catch(e){ return false; }
   }
+  /* 부모님 화면용: 고를 수 있는 목소리 목록(추천 순), 미리 듣기, 선택 저장 */
+  function hwVoiceOptions(){
+    return koVoices().map(v=>({name:v.name,nick:voiceNick(v),score:voiceScore(v),current:koVoice&&koVoice.name===v.name}))
+      .sort((a,b)=>b.score-a.score);
+  }
+  function hwPreviewVoice(name){
+    const v=koVoices().find(x=>x.name===name); if(!v)return;
+    try{ speakWith(v,'안녕! 나는 호플이야. 오늘도 같이 재미있게 놀자!'); }catch(e){}
+  }
+  function hwSetVoice(name){ settings.voiceName=name||''; saveSettings(); pickVoice(); }
   function hwHush(){ try{ if('speechSynthesis' in window)speechSynthesis.cancel(); }catch(e){} }
   function hwCanSpeak(){ return 'speechSynthesis' in window; }
 
@@ -162,7 +182,22 @@
   function hwCoachNext(){ if(!coachState)return; coachState.index++; if(coachState.index>=coachState.steps.length)hwCoachDone(); else showCoachStep(); }
   function hwCoachDone(){ if(coachState)storageSet(coachState.key,'1'); coachState=null; const layer=document.getElementById('hwCoach'); if(layer)layer.classList.remove('on'); hwHush(); }
 
+  /* 놀이 기록: 혼자 하기로 끝까지 한 판만, 이 기기에만 저장한다. 서버로 보내지 않는다. */
+  const LOG_KEY='hw_playlog_v1', LOG_KEEP=40;
+  function hwLogAll(){ const log=readJSON(LOG_KEY,null); return log&&Array.isArray(log.sessions)?log:{v:1,sessions:[]}; }
+  function hwLogSession(game,data){
+    if(!game||!data)return;
+    const log=hwLogAll();
+    log.sessions.push({g:game,t:Date.now(),...data});
+    const kept=[], count={};
+    for(let i=log.sessions.length-1;i>=0;i--){ const s=log.sessions[i]; count[s.g]=(count[s.g]||0)+1; if(count[s.g]<=LOG_KEEP)kept.unshift(s); }
+    log.sessions=kept;
+    storageSet(LOG_KEY,JSON.stringify(log));
+  }
+  function hwLogSessions(game){ return hwLogAll().sessions.filter(s=>!game||s.g===game); }
+  function hwLogClear(){ try{ localStorage.removeItem(LOG_KEY); }catch(e){} }
+
   window.HW_SETTINGS=settings;
-  Object.assign(window,{hwSfx,hwSay,hwHush,hwCanSpeak,hwJosa,hwToggleSetting,hwReadJSON:readJSON,hwStore:storageSet,hwSyncSettings:syncSettingButtons,hwIcon,hwSetupMarkup,hwCoach,hwCoachNext,hwCoachDone});
+  Object.assign(window,{hwSfx,hwSay,hwHush,hwCanSpeak,hwJosa,hwToggleSetting,hwReadJSON:readJSON,hwStore:storageSet,hwSyncSettings:syncSettingButtons,hwIcon,hwSetupMarkup,hwCoach,hwCoachNext,hwCoachDone,hwLogSession,hwLogSessions,hwLogClear,hwVoiceOptions,hwPreviewVoice,hwSetVoice});
   document.addEventListener('DOMContentLoaded',syncSettingButtons);
 })();

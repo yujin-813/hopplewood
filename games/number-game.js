@@ -60,6 +60,7 @@ function g4_start(mode){
   g4.size=lv.size; g4.turn='A'; g4.locked=false; g4.rolled=false; g4.dice=[0,0];
   g4.values=g4_makeValues(g4.size,lv.die); g4.owners=Array(g4.size*g4.size).fill(null);
   g4.last=-1; g4.passes=0; g4.wrong=0; g4.helpOpen=false; g4.rowHint=-1;
+  g4.stat={turns:0,clean:0,helpTurns:0,rowHints:0,wrong:0,passWrong:0,sum:0,diff:0}; g4.turnHelp=false; g4.turnWrong=false;
   g4_renderShell();
   g4_buildBoard();
   g4_resetConsole();
@@ -162,6 +163,7 @@ function g4_rollPair(){
 function g4_roll(){
   if(g4.locked||g4.rolled)return;
   if(g4.mode==='solo'&&g4.turn==='B')return;
+  g4.turnHelp=false; g4.turnWrong=false;
   g4_doRoll();
   g4_setHint('두 식의 답을 구하고, 그 수가 적힌 빈 '+g4_themeCfg().cellName+'을 찾아 눌러요.');
   hwSay(g4.dice[0]+' 더하기 '+g4.dice[1]+', 그리고 '+g4_big()+' 빼기 '+g4_small()+'. 답이 적힌 칸을 찾아봐요.');
@@ -196,6 +198,7 @@ function g4_revealEquations(){
 function g4_toggleHelp(){
   if(!g4.rolled)return;
   g4.helpOpen=!g4.helpOpen;
+  if(g4.helpOpen&&g4.stat&&g4.mode==='solo'&&g4.turn==='A'&&!g4.turnHelp){ g4.stat.helpTurns++; g4.turnHelp=true; }
   const box=g4_el('g4Dots'), btn=g4_el('g4HelpBtn');
   if(btn)btn.dataset.on=g4.helpOpen?'1':'0';
   if(!box)return;
@@ -218,6 +221,7 @@ function g4_cellClick(idx){
   const value=g4.values[idx];
   if(value===g4_sum()||value===g4_diff()){ g4_place(idx,g4.turn); return; }
   g4.wrong++;
+  if(g4.stat&&g4.mode==='solo'){ g4.stat.wrong++; g4.turnWrong=true; }
   hwSfx('oops');
   const cell=g4_el('g4Cell'+idx); if(cell){cell.classList.remove('nope');void cell.offsetWidth;cell.classList.add('nope');}
   g4_afterMiss('그 칸의 '+hwJosa(String(value),'은/는')+' 두 식의 답이 아니에요. 다시 계산해 봐요.');
@@ -241,6 +245,7 @@ function g4_claimPass(){
   if(g4.mode==='solo'&&g4.turn==='B')return;
   if(g4_allAvailable().length){
     g4.wrong++;
+    if(g4.stat&&g4.mode==='solo'){ g4.stat.passWrong++; g4.turnWrong=true; }
     hwSfx('oops');
     g4_afterMiss('아직 놓을 수 있는 칸이 있어요. 두 답을 다시 찾아봐요.');
     return;
@@ -260,6 +265,7 @@ function g4_place(idx,team){
   g4.locked=true; g4.passes=0;
   clearTimeout(g4.helpTimer);
   const value=g4.values[idx], usedSum=value===g4_sum();
+  if(g4.stat&&g4.mode==='solo'&&team==='A'){ g4.stat.turns++; if(usedSum)g4.stat.sum++; else g4.stat.diff++; if(!g4.turnWrong&&!g4.turnHelp)g4.stat.clean++; }
   const eqText=usedSum?(g4.dice[0]+' + '+g4.dice[1]+' = '+value):(g4_big()+' − '+g4_small()+' = '+value);
   g4_revealEquations(); g4_clearMarks();
   const eq=g4_el(usedSum?'g4SumEq':'g4DiffEq'); if(eq)eq.classList.add('used');
@@ -369,6 +375,7 @@ function g4_connectionCost(team){
 
 /* ---------- 표시 도우미 ---------- */
 function g4_markRow(row){
+  if(g4.stat&&g4.mode==='solo'&&g4.turn==='A'){ g4.stat.rowHints++; g4.turnHelp=true; }
   g4_clearMarks();
   for(let c=0;c<g4.size;c++){ const cell=g4_el('g4Cell'+(row*g4.size+c)); if(cell)cell.classList.add('row-hint'); }
 }
@@ -383,6 +390,8 @@ function g4_setTheme(theme,silent){
   if(art){ art.innerHTML=hwChar(t.A,'full')+hwChar(t.B,'full'); if(!silent){ art.classList.remove('react'); void art.offsetWidth; art.classList.add('react'); } }
   if(!silent)hwSfx('tap');
 }
+
+function g4_sessionSummary(){ const s=g4.stat; if(!s)return null; return {level:g4.level,theme:g4.theme,turns:s.turns,clean:s.clean,helpTurns:s.helpTurns,rowHints:s.rowHints,wrong:s.wrong,passWrong:s.passWrong,sum:s.sum,diff:s.diff}; }
 
 /* ---------- 공통 등록 ---------- */
 (function g4_register(){
