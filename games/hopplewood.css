@@ -60,6 +60,13 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .hw-coach-actions button{min-height:46px;padding:0 16px;border-radius:14px;font-size:15px;font-weight:800}
 .hw-coach-skip{background:#f1f2ee;color:#66706c}
 .hw-coach-next{background:#3f9ff1;color:#fff}
+.hw-coach[data-tap="1"]{background:transparent;pointer-events:none}
+.hw-coach[data-tap="1"] .hw-coach-bubble{pointer-events:auto}
+.hw-coach-finger{position:fixed;z-index:2;width:58px;height:58px;pointer-events:none;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3));animation:hwFingerTap 1.1s ease-in-out infinite;transition:left .3s ease,top .3s ease}
+.hw-coach-finger svg{width:100%;height:100%;display:block}
+.hw-coach-finger::before{content:'';position:absolute;left:12px;top:-4px;width:26px;height:26px;border-radius:50%;border:3px solid #ffd84a;opacity:0;animation:hwFingerRipple 1.1s ease-out infinite}
+@keyframes hwFingerTap{0%,100%{transform:translate(8px,14px)}45%{transform:translate(0,0) scale(.94)}60%{transform:translate(0,0) scale(.94)}}
+@keyframes hwFingerRipple{0%,40%{opacity:0;transform:scale(.4)}55%{opacity:1}100%{opacity:0;transform:scale(1.6)}}
 @keyframes hwRing{50%{box-shadow:0 0 0 7px #ffd84a,0 0 0 9999px rgba(18,32,28,.28)}}
 
 /* 아이 화면 글자 크기 보정: 너무 작은 설명 글씨를 키운다 */
@@ -72,4 +79,55 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .world-hero p{font-size:13px}.hero-kicker,.hero-meta span{font-size:10px}
 .bottom-nav button{font-size:12px}
 
-@media (prefers-reduced-motion:reduce){.hw-coach-ring,.setup .big-em>.hw-char.full{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.hw-coach-ring,.hw-coach-finger,.hw-coach-finger::before,.setup .big-em>.hw-char.full{animation:none!important}}
+
+/* 무료판 잠금 (아이 화면: 가격 없이 자물쇠만) */
+.experience-card.locked .experience-cover>*:not(.status-badge){filter:grayscale(.55) opacity(.7)}
+.experience-card.locked strong,.experience-card.locked p{color:#8b938f}
+.status-badge.lock{display:grid;place-items:center;width:30px;height:30px;padding:0;background:rgba(255,255,255,.92);color:#7a817d}
+.status-badge.lock .ui-icon{width:16px;height:16px}
+#gameMap button.locked{opacity:.55}
+.seg button[data-locked="1"]{position:relative;opacity:.55}
+.seg button[data-locked="1"]::after{content:'';position:absolute;right:6px;top:6px;width:14px;height:14px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat}
+.hw-lock-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);padding:12px 16px;border-radius:18px;background:rgba(35,44,40,.92);color:#fff;font-size:15px;font-weight:800;line-height:1.4;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.hw-lock-toast.on{opacity:1;transform:translate(-50%,0)}
+.hw-lock-toast .ui-icon{flex:none;width:18px;height:18px}
+
+/* 보호자 질문 */
+.gate-q{margin:4px 0 10px;font-family:'Jua',system-ui,sans-serif;font-size:26px;color:#1d2925}
+.gate-answer{display:flex;justify-content:center;gap:8px;margin-bottom:6px}
+.gate-answer i{display:grid;place-items:center;width:52px;height:58px;border-radius:14px;background:#f4f5f1;border:2px solid #dfe3dd;font-style:normal;font-size:28px;font-weight:900;color:#23302c}
+.gate-card .gate-msg{min-height:20px;margin:0 0 6px;color:#b0450f;font-weight:700}
+.gate-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 auto 4px;max-width:280px}
+.gate-pad button{min-height:52px;border-radius:14px;background:#fff;border:2px solid #e5e8e2;font-size:22px;font-weight:800;color:#23302c}
+.gate-pad button:active{background:#eef6ef}
+.gate-pad .gate-del{color:#747d79}
+.gate-pad .gate-ok{background:#3f9ff1;border-color:#3f9ff1;color:#fff;font-size:17px}
+
+/* 부모 메뉴: 기본 놀이팩 */
+.pk-card{display:flex;flex-direction:column;gap:10px;margin:18px 0;padding:16px;border-radius:22px;background:linear-gradient(160deg,#fffaf0,#f3fbef);border:2px solid #efe0bd}
+.pk-card.owned{background:#f1faf3;border-color:#bfe2c9}
+.pk-card.beta{background:linear-gradient(160deg,#eef9ff,#f4fbef);border-color:#b9decc}
+.pk-head{display:flex;flex-direction:column;gap:4px}
+.pk-head h3{margin:0;font-family:'Jua',system-ui,sans-serif;font-weight:400;font-size:22px;color:#1d2925}
+.pk-badge{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:#2f8f5f;color:#fff;font-size:12px;font-weight:900}
+.pk-badge.free{background:#f1e2c2;color:#7a5a1c}
+.pk-badge.beta{background:#377e68;color:#fff}
+.pk-badge .ui-icon{width:13px;height:13px;fill:currentColor}
+.pk-card .pg-lead{margin:0}
+.pk-items{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.pk-items li{display:grid;grid-template-columns:34px 1fr;column-gap:10px;align-items:center}
+.pk-items li span{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fff;color:#3f8f6c}
+.pk-items li span .ui-icon{width:18px;height:18px}
+.pk-items b{font-size:14px;color:#23302c}
+.pk-items small{font-size:12px;color:#6b7571}
+.pk-buy{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:6px;border-top:1px dashed #e6d7b5}
+.pk-buy b{display:block;font-size:24px;color:#1d2925}
+.pk-buy small{font-size:12px;color:#6b7571}
+.pk-buy>div{flex:1;min-width:0;white-space:nowrap}
+.pk-buy .btn{flex:none;width:auto;min-width:140px;margin:0;padding:0 22px}
+.pk-msg{margin:0;padding:8px 10px;border-radius:12px;background:#fff;font-size:13px;font-weight:700;color:#5b4a36}
+.pk-msg.mock{background:#eef2ff;color:#3b4aa0}
+.pk-restore{align-self:center;min-height:40px;padding:0 12px;background:transparent;border:0;box-shadow:none;color:#5f6b67;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.parent-privacy-link{display:inline-flex;align-items:center;min-height:40px;margin-top:8px;color:#356d4c;font-size:13px;font-weight:900;text-underline-offset:3px}
+.pr-card.locked{opacity:.7}

@@ -20,6 +20,77 @@
 .fw-help-btn .ui-icon{width:18px;height:18px;fill:currentColor;stroke-width:1.2}
 .fw-request.fw-bump{animation:fwBump .5s ease}
 
+/* 퀘스트 카드 */
+.fw-request[data-kind="quest"],.fw-request[data-kind="coop"]{display:block;padding:0;border:0;background:none;box-shadow:none}
+.fw-quest-open{position:relative;width:100%;display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;padding:12px 14px;border-radius:22px;background:#fffdf6;border:3px solid #f1c96a;box-shadow:0 6px 0 #d9a642;text-align:left;color:inherit;font:inherit}
+.fw-quest-open:active{transform:translateY(3px);box-shadow:0 3px 0 #d9a642}
+.fw-request[data-kind="coop"] .fw-quest-open{border-color:#f0a3b8;box-shadow:0 6px 0 #d67890;background:#fff7f9}
+.fw-quest-open .fw-req-art{display:block}
+.fw-quest-open .fw-req-body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fw-quest-title{font-family:'Jua',system-ui,sans-serif;font-weight:400;font-size:22px;line-height:1.2;color:#2b2521}
+.fw-quest-meta{display:flex;flex-wrap:wrap;gap:5px}
+.fw-quest-meta i{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:#eef6ec;color:#3b6e4f;font-style:normal;font-size:12px;font-weight:800}
+.fw-quest-meta i.coop{background:#ffe3ea;color:#b24a66}
+.fw-quest-meta .ui-icon{width:14px;height:14px}
+.fw-quest-go{align-self:flex-start;display:inline-flex;align-items:center;gap:5px;margin-top:2px;min-height:40px;padding:0 14px;border-radius:14px;background:#2f8f5f;color:#fff;font-size:15px;font-weight:900;box-shadow:0 4px 0 #1f6a45}
+.fw-quest-go .ui-icon{width:15px;height:15px;fill:currentColor}
+
+/* 퀘스트 길 */
+.fw-trail{display:flex;align-items:center;justify-content:space-between;gap:0;margin:0;padding:4px 6px;list-style:none;position:relative}
+.fw-trail::before{content:'';position:absolute;left:22px;right:22px;top:50%;border-top:3px dashed #cdb98f;z-index:0}
+.fw-trail li{position:relative;z-index:1;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#efe8da;border:3px solid #fff;color:#a39479;overflow:hidden;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.fw-trail li .ui-icon{width:14px;height:14px}
+.fw-trail li .hw-char{width:100%;height:100%}
+.fw-trail li[data-state="done"]{background:#dff1d3;border-color:#7cc07a}
+.fw-trail li[data-state="now"]{width:40px;height:40px;background:#ffd84a;border-color:#fff;color:#6a3f00;font-family:'Jua',system-ui,sans-serif;font-size:22px;animation:fwBeat 1.4s ease-in-out infinite}
+.fw-trail li[data-coop="1"]{border-color:#f0a3b8}
+
+/* 지도 느낌표 */
+.fw-marker{position:absolute;z-index:7;width:13%;aspect-ratio:1;margin:-13% 0 0 -6.5%;padding:0;border:0;background:none;pointer-events:auto;animation:fwFloat 1.6s ease-in-out infinite}
+.fw-marker-face{position:absolute;inset:0;border-radius:50% 50% 50% 8%;transform:rotate(-45deg);background:#fff;border:3px solid #f1b52a;box-shadow:0 5px 0 rgba(90,60,10,.25);overflow:hidden}
+.fw-marker-face .hw-char{width:100%;height:100%;transform:rotate(45deg)}
+.fw-marker b{position:absolute;right:-12%;top:-14%;width:46%;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;background:#ff7a3d;color:#fff;border:2px solid #fff;font-family:'Jua',system-ui,sans-serif;font-size:clamp(14px,4vw,20px);font-weight:400}
+.fw-marker.coop .fw-marker-face{border-color:#e97c9a}
+.fw-marker.coop b{background:#e2557c}
+.fw-marker.fw-pop{animation:fwPop .55s cubic-bezier(.2,1.5,.45,1),fwFloat 1.6s ease-in-out .55s infinite}
+
+/* 퀘스트 창 */
+.fw-quest-ribbon{display:inline-block;margin:-4px auto 6px;padding:5px 16px;border-radius:999px;background:#ffd84a;color:#5d3a00;font-size:14px;font-weight:900}
+.fw-quest-ribbon.coop{background:#ffd0dc;color:#9c3050}
+.fw-quest-ask{margin:0 0 10px;font-size:16px;line-height:1.5;color:#3a332d}
+.fw-quest-info{display:flex;justify-content:center;gap:8px;margin-bottom:10px}
+.fw-quest-info span{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;background:#f1f4ef;font-size:13px;font-weight:800;color:#4b5a55}
+.fw-quest-info .ui-icon{width:15px;height:15px}
+.fw-quest-reward{margin:0 0 12px;padding:10px;border-radius:18px;background:#fff8e6;border:2px dashed #edcf92}
+.fw-quest-reward b{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:#8a5a12}
+.fw-quest-reward b .ui-icon{width:15px;height:15px;fill:#ffc53d;color:#e0a100}
+.fw-quest-reward small{display:block;margin:2px 0 6px;font-size:13px;font-weight:800;color:#5b4a36}
+.fw-quest-gifts{display:flex;justify-content:center;gap:8px}
+.fw-quest-gifts span{width:48px;height:48px}
+.fw-quest-gifts img{width:100%;height:100%;object-fit:contain}
+.fw-talk{display:flex;gap:6px;align-items:flex-start;margin:-4px 0 12px;padding:10px 12px;border-radius:14px;background:#fff1f5;color:#8b3a55;font-size:14px;font-weight:700;line-height:1.45;text-align:left}
+.fw-talk .ui-icon{flex:none;width:18px;height:18px;margin-top:1px}
+
+/* 부모님과 함께 */
+.fw-coop-pair{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0}
+.fw-coop-pair span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.fw-coop-pair span>.hw-char,.fw-coop-pair span>.ui-icon{width:64px;height:64px;border-radius:50%;background:#e3f6ea}
+.fw-coop-pair .adult>.ui-icon{padding:12px;background:#ffe3ea;color:#b24a66}
+.fw-coop-pair b{font-size:13px}
+.fw-coop-pair i{font-style:normal;font-size:24px;font-weight:900;color:#c9b99a}
+.fw-coop-steps{margin:0 0 12px;padding:0 0 0 22px;text-align:left;font-size:15px;line-height:1.5;color:#3a332d}
+.fw-coop-steps li+li{margin-top:6px}
+.fw-coop{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));z-index:35;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:999px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.fw-coop span{display:flex;align-items:center;gap:6px;padding:4px 14px 4px 4px;border-radius:999px;color:#9aa19d;transition:background .2s,color .2s}
+.fw-coop span>.hw-char,.fw-coop span>.ui-icon{width:36px;height:36px;border-radius:50%;background:#eef1ec;opacity:.55}
+.fw-coop span.adult>.ui-icon{padding:7px}
+.fw-coop span b{font-size:15px;font-weight:900;white-space:nowrap}
+.fw-coop span[data-on="1"]{background:#2f8f5f;color:#fff}
+.fw-coop span.adult[data-on="1"]{background:#d9587c}
+.fw-coop span[data-on="1"]>.hw-char,.fw-coop span[data-on="1"]>.ui-icon{opacity:1;background:#fff;color:#d9587c}
+.fw-coop.fw-bump{animation:fwCoopBump .5s ease}
+body.fw-coop-on .screen.on{padding-bottom:84px}
+
 /* 숲 지도 (1080×1920 비율) */
 .fw-map{position:relative;width:100%;aspect-ratio:1080/1920;border-radius:26px;overflow:hidden;border:3px solid #fff;box-shadow:0 8px 0 rgba(60,100,60,.14);touch-action:manipulation;background:#8cc46a}
 .fw-mapimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
@@ -70,7 +141,10 @@
 .fw-card h2{font-size:22px;line-height:1.35;margin:4px 0 12px}
 
 @keyframes fwSwing{0%,100%{transform:rotate(var(--swing,4deg))}50%{transform:rotate(calc(var(--swing,4deg) * -1))}}
+@keyframes fwFloat{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes fwBeat{50%{transform:scale(1.12)}}
+@keyframes fwCoopBump{30%{transform:translateX(-50%) scale(1.08)}}
 @keyframes fwBump{30%{transform:translateY(-6px)}60%{transform:translateY(2px)}}
 @keyframes fwPop{0%{transform:scale(.2);opacity:0}100%{transform:none;opacity:1}}
 @keyframes fwReveal{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none}}
-@media (prefers-reduced-motion:reduce){.fw-stage.after.fw-reveal,.fw-pop,.fw-request.fw-bump,.fw-bubble,.fw-mask{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.fw-stage.after.fw-reveal,.fw-pop,.fw-marker,.fw-trail li,.fw-coop,.fw-request.fw-bump,.fw-bubble,.fw-mask{animation:none!important}}

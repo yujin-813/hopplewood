@@ -156,8 +156,9 @@ function g5_nextPuzzle(first){
   if(first){
     hwSay('통나무 조각으로 집터를 빈틈 없이 꽉 채워요.');
     if(typeof hwCoach==='function')g5_later(()=>hwCoach('g5',[
-      {el:'#g5Tray',text:'아래에서 통나무 조각 하나를 골라요. 한 번 더 누르면 빙글 돌아가요.'},
-      {el:'#g5Board',text:'모래색 집터 칸을 누르면 그 칸에 맞춰 조각이 놓여요. 빈틈 없이 채워요!'}
+      {el:'#g5Tray .g5-piece',text:'이 통나무 조각을 눌러 골라 봐요.',tap:true},
+      {el:'#g5Board',text:'이제 모래색 집터 칸을 눌러요. 그 칸에 맞춰 조각이 놓여요!',tap:true},
+      {el:'#g5Tray',text:'잘했어요! 남은 조각도 골라서 빈틈 없이 채워요.'+(G5_LEVELS[g5.level].rotate?' 모양이 안 맞으면 조각을 한 번 더 눌러 돌려요.':'')}
     ]),350);
   }
 }

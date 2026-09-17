@@ -427,14 +427,16 @@
   @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
   @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
 </style>
-<script src="games/characters.js?v=46"></script>
-<script src="games/platform.js?v=46"></script>
-<link rel="stylesheet" href="games/hopplewood.css?v=46">
-<link rel="stylesheet" href="games/parent-guide.css?v=46">
-<link rel="stylesheet" href="games/face-game.css?v=46">
-<link rel="stylesheet" href="games/number-game.css?v=46">
-<link rel="stylesheet" href="games/block-game.css?v=46">
-<link rel="stylesheet" href="games/forest.css?v=46">
+<script src="games/characters.js?v=53"></script>
+<script src="games/platform.js?v=53"></script>
+<script src="games/pack.js?v=53"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=53">
+<link rel="stylesheet" href="games/parent-guide.css?v=53">
+<link rel="stylesheet" href="games/face-game.css?v=53">
+<link rel="stylesheet" href="games/number-game.css?v=53">
+<link rel="stylesheet" href="games/block-game.css?v=53">
+<link rel="stylesheet" href="games/forest.css?v=53">
+<link rel="stylesheet" href="games/mom-voice.css?v=53">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true">
@@ -726,18 +728,19 @@
     <h2 id="parentTitle">부모님 게임 리포트</h2>
     <p>호플우드는 교구에서 쓰던 규칙 놀이를 짧은 게임으로 옮겼어요. 아이 화면에는 재미와 도전만 보이고, 게임 속에서 쓰는 생각 과정은 이곳에서만 설명해요.</p>
     <div class="parent-progress">
-      <div><span>무료 게임</span><b>5 / 5</b></div><i aria-hidden="true"></i>
+      <div><span>지금 이용</span><b id="parentPlanStatus">무료 베타</b></div><i aria-hidden="true"></i>
     </div>
     <div id="parentGuide"></div>
     <section class="parent-platform" aria-labelledby="platformPlanTitle">
       <h3 id="platformPlanTitle">호플우드 운영 원칙</h3>
       <div class="parent-platform-grid">
-        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span><b>무료 게임 5개</b><p>다섯 게임은 세 난이도까지 모두 무료로 완결해 제공합니다.</p></article>
+        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span><b>현재 전체 무료 베타</b><p>게임 5개와 난이도 3단계, 숲 퀘스트를 모두 열어 두었어요.</p></article>
         <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-sparkles"></use></svg></span><b>틀려도 괜찮아요</b><p>하트·감점·게임오버가 없고, 힌트는 정답 대신 비교할 곳을 알려 줍니다.</p></article>
         <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-speak"></use></svg></span><b>읽어주기</b><p>글을 아직 못 읽어도 규칙과 안내를 소리로 들을 수 있어요. 홈 위쪽에서 끌 수 있습니다.</p></article>
-        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-house"></use></svg></span><b>이 기기에만 저장</b><p>계정·광고·추적 없이 별과 기록을 이 기기에만 저장합니다.</p></article>
+        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-house"></use></svg></span><b>이 기기에만 저장</b><p>계정·광고·추적 없이 별·놀이 기록·가족 목소리를 이 기기에만 저장합니다.</p></article>
       </div>
-      <p class="parent-platform-note">현재는 결제·계정·광고가 없는 프로토타입입니다. 출시판에서 구매·기록 삭제를 넣을 때는 보호자 확인(PIN 또는 기기 인증)과 만 14세 미만 개인정보 처리 동의 절차를 함께 설계해야 합니다.</p>
+      <p class="parent-platform-note">지금은 사용 반응을 보기 위한 공개 베타예요. 정식 출시에서는 일부 새 놀이가 유료로 제공될 수 있지만, 구독·광고·계정은 두지 않을 계획이에요.</p>
+      <a class="parent-privacy-link" href="privacy.html" target="_blank" rel="noopener">개인정보와 기기 저장 안내</a>
     </section>
     <div class="evidence-card">
       <strong>연구를 어떻게 반영했나요?</strong>
@@ -793,13 +796,14 @@ function coverMarkup(g){
 function renderCatalog(){
   const grid=document.getElementById('catalogGrid'); if(!grid)return;
   grid.innerHTML=GAME_IDS.map(g=>{ const c=GAME_CATALOG[g];
-    return `<button class="experience-card live" data-age="${c.ages.join(' ')}" onclick="openSetup('${g}')">
-      <span class="experience-cover ${c.cover}"><span class="status-badge">무료</span>${coverMarkup(g)}</span>
+    const open=hwGameOpen(g);
+    return `<button class="experience-card live${open?'':' locked'}" data-age="${c.ages.join(' ')}" onclick="openSetup('${g}')"${open?'':' aria-label="'+c.title+', 잠김"'}>
+      <span class="experience-cover ${c.cover}">${open?'':`<span class="status-badge lock">${icon('lock')}</span>`}${coverMarkup(g)}</span>
       <span class="experience-body"><span class="game-tags"><span>${c.category}</span><span>${c.age}</span></span><strong>${c.title}</strong><p>${c.card}</p><span class="experience-meta"><span>${icon('users')}${c.players}</span><span>${icon('clock')}${c.time}</span></span></span>
     </button>`; }).join('');
   const map=document.getElementById('gameMap');
   if(map)map.innerHTML=GAME_IDS.map(g=>{ const c=GAME_CATALOG[g], art=c.cast[0]?hwChar(c.cast[0],'face'):hwChar('hopple','face');
-    return `<button onclick="openSetup('${g}')"><span class="game-map-face" aria-hidden="true">${art}</span><span><b>${c.title}</b><small id="${g}Record">아직 안 해봄</small></span></button>`; }).join('');
+    return `<button onclick="openSetup('${g}')"${hwGameOpen(g)?'':' class="locked"'}><span class="game-map-face" aria-hidden="true">${art}</span><span><b>${c.title}</b><small id="${g}Record">아직 안 해봄</small></span></button>`; }).join('');
 }
 
 function updateProgressUI(){
@@ -815,9 +819,10 @@ function updateProgressUI(){
   updateHeroRecommendation();
 }
 function updateHeroRecommendation(){
-  const untried=GAME_IDS.find(g=>(progress[g+'Plays']||0)===0);
-  heroGameId=untried||progress.lastGame||'g1';
-  if(!GAME_CATALOG[heroGameId])heroGameId='g1';
+  const openIds=GAME_IDS.filter(g=>hwGameOpen(g));
+  const untried=openIds.find(g=>(progress[g+'Plays']||0)===0);
+  heroGameId=untried||progress.lastGame||openIds[0];
+  if(!GAME_CATALOG[heroGameId]||!hwGameOpen(heroGameId))heroGameId=openIds[0];
   const game=GAME_CATALOG[heroGameId],newGame=Boolean(untried);
   const setText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
   setText('heroKicker',newGame?(progress.plays?'새로운 놀이 · '+game.category:'이번 추천 · '+game.category):'최근 게임 · 다시 한 판');
@@ -844,7 +849,7 @@ function showScreen(id){ const next=document.getElementById(id); if(!next)return
 function cancelAllGames(){ ['g1_cancel','g2_cancel','g3_cancel','g4_cancel','g5_cancel'].forEach(fn=>{ if(typeof window[fn]==='function')window[fn](); }); }
 function backHub(){
   cancelAllGames();
-  if(typeof hwCoachDone==='function'&&document.querySelector('#hwCoach.on'))hwCoachDone();
+  if(typeof hwCoachDone==='function'&&document.querySelector('#hwCoach.on'))hwCoachDone(false);
   hwHush();
   closeOverlay('winOverlay',false); closeOverlay('rulesOverlay',false);
   if(window.hwForest&&hwForest.isQuestActive())hwForest.abortQuest();
@@ -889,21 +894,21 @@ document.addEventListener('keydown',e=>{
     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
   }
 });
-function showParent(){ openOverlay('parentGateOverlay'); }
+function showParent(){ hwParentGate(()=>{ if(typeof pgOpen==='function')pgOpen(undefined); openOverlay('parentOverlay'); }); }
 function hideParentGate(){ cancelParentHold(); closeOverlay('parentGateOverlay'); }
 function startParentHold(e){ if(e)e.preventDefault(); cancelParentHold(); const b=document.getElementById('parentHoldBtn'); b.classList.add('holding');
   parentHoldTimer=setTimeout(()=>{ const origin=overlayReturnFocus; parentHoldTimer=null; b.classList.remove('holding'); closeOverlay('parentGateOverlay',false); if(typeof pgOpen==='function')pgOpen(undefined); openOverlay('parentOverlay'); overlayReturnFocus=origin; },2000); }
 function startParentKey(e){ if((e.key==='Enter'||e.key===' ')&&!e.repeat)startParentHold(e); }
 function cancelParentHold(){ if(parentHoldTimer){clearTimeout(parentHoldTimer);parentHoldTimer=null;} const b=document.getElementById('parentHoldBtn'); if(b)b.classList.remove('holding'); }
-function hideParent(){ closeOverlay('parentOverlay'); }
-function openSetup(g){ if(!GAME_CATALOG[g])return; cancelAllGames(); hwHush(); curGame=g; showScreen(g+'Setup'); setLevel(g,lastCfg[g].level,true); if(g==='g4'&&typeof g4_setTheme==='function')g4_setTheme(lastCfg.g4.theme||'pond',true); }
+function hideParent(){ if(window.hwMomVoice)hwMomVoice.release(); closeOverlay('parentOverlay'); }
+function openSetup(g){ if(!GAME_CATALOG[g])return; if(!hwGameOpen(g)){ hwLockedNotice('game'); return; } if(!hwLevelOpen(g,lastCfg[g].level))lastCfg[g].level=HW_PACK.FREE.maxLevel; cancelAllGames(); hwHush(); curGame=g; showScreen(g+'Setup'); setLevel(g,lastCfg[g].level,true); if(g==='g4'&&typeof g4_setTheme==='function')g4_setTheme(lastCfg.g4.theme||'pond',true); }
 function toggleThinking(g){ const panel=document.getElementById(g+'Thinking'), btn=document.getElementById(g+'TitleBtn'); if(!panel||!btn)return; const open=panel.hidden; panel.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); }
 const LEVEL_INFO={
   g1:{1:'곧은 길, 2점 먼저. 상대 바로 앞 칸에 들어가지 않으면 이길 수 있어요.',2:'길이 네 번 겹쳐요. 컴퓨터가 종종 실수해요.',3:'길이 다섯 번 겹치고 첫 수부터 중요해요. 컴퓨터가 실수하지 않아요.'},
   g2:{1:'5×5 판에서 3칸 줄을 만들어요. 컴퓨터가 막기를 자주 놓쳐요.',2:'6×6 판에서 4칸 줄. 컴퓨터가 막기를 가끔 놓쳐요.',3:'7×7 큰 판에서 4칸 줄. 컴퓨터가 빠짐없이 막고 함정을 자주 노려요.'}
 };
-function setLevel(g,lv,silent){ lv=Math.max(1,Math.min(3,Number(lv)||1)); lastCfg[g].level=lv; savePreferences(); const seg=document.getElementById(g+'LevelSeg'); if(!seg)return;
-  seg.querySelectorAll('button').forEach(b=>{ const on=+b.dataset.lv===lv; b.dataset.on=on?'1':'0'; b.setAttribute('aria-pressed',on?'true':'false'); });
+function setLevel(g,lv,silent){ lv=Math.max(1,Math.min(3,Number(lv)||1)); if(!hwLevelOpen(g,lv)){ if(!silent){ hwLockedNotice('level'); return; } lv=HW_PACK.FREE.maxLevel; } lastCfg[g].level=lv; savePreferences(); const seg=document.getElementById(g+'LevelSeg'); if(!seg)return;
+  seg.querySelectorAll('button').forEach(b=>{ const on=+b.dataset.lv===lv; b.dataset.on=on?'1':'0'; b.setAttribute('aria-pressed',on?'true':'false'); b.dataset.locked=hwLevelOpen(g,+b.dataset.lv)?'0':'1'; });
   const fill=document.getElementById(g+'LevelFill'), count=document.getElementById(g+'LevelCount'), note=document.getElementById(g+'LevelNote'); if(fill)fill.style.width=(lv*100/3)+'%'; if(count)count.textContent=lv+' / 3'; if(note)note.textContent=(LEVEL_INFO[g]||{})[lv]||'';
   if(!silent)hwSfx('tap');
   const actor=document.getElementById(g+'SetupEm'); if(actor&&!silent){actor.classList.remove('react');void actor.offsetWidth;actor.classList.add('react');setTimeout(()=>actor.classList.remove('react'),520);} }
@@ -991,7 +996,12 @@ function g1Start(mode){ g1.runId++; g1_memo=new Map(); g1.stat={moves:0,compared
   g1_teamRoutes('A').forEach((rt,i)=>g1_add('A',i,rt)); g1_teamRoutes('B').forEach((rt,i)=>g1_add('B',i,rt)); g1.turn='A';
   document.getElementById('g1nameA').textContent=mode==='solo'?'나':'파랑'; document.getElementById('g1nameB').textContent=mode==='solo'?'컴퓨터':'빨강';
   document.getElementById('g1faceA').innerHTML=icon('pawn'); document.getElementById('g1faceB').innerHTML=icon('pawn');
-  g1_dots(); g1_buildBoard(); g1_renderPieces(); g1_arrows(); g1_score(); g1_turnMsg(); showScreen('g1Game'); }
+  g1_dots(); g1_buildBoard(); g1_renderPieces(); g1_arrows(); g1_score(); g1_turnMsg(); showScreen('g1Game');
+  if(typeof hwCoach==='function')g1_later(()=>hwCoach('g1',[
+    {el:'#g1pieces .pc.A',text:'파란 테두리 친구가 내 친구예요. 눌러 보면 갈 길에 숫자가 나와요.',tap:true},
+    {el:'#g1pieces .pc.B',text:'이번엔 빨간 친구를 눌러요. 두 길이 어디서 만나는지 볼 수 있어요.',tap:true},
+    {el:'#g1cells .cell.hl',text:'반짝이는 1번 칸을 누르면 한 칸 가요! 상대를 잡거나 집에 먼저 가면 점수!',tap:true}
+  ]),400); }
 function g1_add(team,char,cells){ const id='a'+(g1.pid++); const [r,c]=cells[0]; g1.pieces[id]={id,team,char,cells,idx:0,r,c}; g1.board[r][c]=id; }
 function g1_dots(){ ['A','B'].forEach(tm=>{ const d=document.getElementById('g1dots'+tm); d.innerHTML=''; for(let i=0;i<g1.win;i++){const s=document.createElement('i');s.className='dot';d.appendChild(s);} }); }
 function g1_buildBoard(){ const cells=document.getElementById('g1cells'); cells.style.gridTemplateColumns='repeat(5,1fr)'; cells.style.gridTemplateRows='repeat(5,1fr)'; cells.innerHTML='';
@@ -1123,7 +1133,12 @@ function g2Start(mode){ g2.runId++; g2.stat={moves:0,threats:0,blocks:0,accident
   g2.size=g2.level===1?5:(g2.level===2?6:7); g2.need=g2.level===1?3:4;
   g2.board=Array.from({length:g2.size},()=>Array(g2.size).fill(null)); g2.turn='A'; g2.locked=false; g2.moves=0; g2.sel=0;
   const arr=PATS[g2.level].slice(); g1_shuffle(arr); g2.patA=arr[0]; g2.patB=arr[1];
-  g2_renderPats(); g2_renderPicker(); g2_build(); g2_turnMsg(); showScreen('g2Game'); }
+  g2_renderPats(); g2_renderPicker(); g2_build(); g2_turnMsg(); showScreen('g2Game');
+  if(typeof hwCoach==='function')g2_later(()=>hwCoach('g2',[
+    {el:'#g2patA',text:'이게 내 목표 모양이에요. 친구들을 이 순서대로 한 줄로 놓으면 이겨요.'},
+    {el:'#g2picker .pick[data-i="'+g2.patA[0]+'"]',text:'목표 모양의 첫 친구를 눌러 골라요.',tap:true},
+    {el:'#g2grid',text:'이제 빈 칸을 눌러 놓아요. 가로, 세로, 비스듬히 모두 돼요!',tap:true}
+  ]),400); }
 
 function g2_build(){ const grid=document.getElementById('g2grid'); grid.style.gridTemplateColumns='repeat('+g2.size+',1fr)'; grid.style.gridTemplateRows='repeat('+g2.size+',1fr)'; grid.innerHTML='';
   for(let r=0;r<g2.size;r++)for(let c=0;c<g2.size;c++){ const cell=document.createElement('button'); cell.type='button'; cell.className='c2'; cell.id='g2c_'+r+'_'+c;
@@ -1212,18 +1227,22 @@ function initHub(){
   fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
 }
 </script>
-<script src="games/face-game.js?v=46"></script>
-<script src="games/number-game.js?v=46"></script>
-<script src="games/block-game.js?v=46"></script>
-<script src="games/parent-guide.js?v=46"></script>
-<script src="games/forest.js?v=46"></script>
+<script src="games/face-game.js?v=53"></script>
+<script src="games/number-game.js?v=53"></script>
+<script src="games/block-game.js?v=53"></script>
+<script src="games/parent-guide.js?v=53"></script>
+<script src="games/forest.js?v=53"></script>
+<script src="games/mom-voice.js?v=53"></script>
 <script>
 initHub();
 pgInit();
+hwOnPackChange(()=>{ renderCatalog(); updateProgressUI(); if(window.hwForest&&hwForest.refresh)hwForest.refresh(); });
 if(window.hwForest)hwForest.mount();
 /* PWA: 서비스워커 등록(오프라인) + 설치 버튼 */
 /* 개발 중 확인은 주소 끝에 ?nosw 를 붙이면 캐시 없이 최신 파일을 본다. */
-if('serviceWorker' in navigator&&!/[?&]nosw/.test(location.search)){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+/* 앱(Capacitor) 안에서는 파일이 앱에 들어 있어서 서비스워커를 쓰지 않는다 */
+const HW_NATIVE=Boolean(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+if(!HW_NATIVE&&'serviceWorker' in navigator&&!/[?&]nosw/.test(location.search)){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e;
   const b=document.getElementById('installBtn'); if(b)b.style.display='block'; });

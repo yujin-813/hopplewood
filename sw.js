@@ -1,12 +1,14 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
-const CACHE = 'hopplewood-v46';
-const V = '?v=46';
+const CACHE = 'hopplewood-v53';
+const V = '?v=53';
 const CORE = [
   './',
   './index.html',
+  './privacy.html',
   './manifest.webmanifest',
   './games/characters.js' + V,
   './games/platform.js' + V,
+  './games/pack.js' + V,
   './games/hopplewood.css' + V,
   './games/face-game.css' + V,
   './games/face-game.js' + V,
@@ -18,6 +20,8 @@ const CORE = [
   './games/forest.js' + V,
   './games/parent-guide.css' + V,
   './games/parent-guide.js' + V,
+  './games/mom-voice.css' + V,
+  './games/mom-voice.js' + V,
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-512-maskable.png',

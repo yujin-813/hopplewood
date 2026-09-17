@@ -129,6 +129,7 @@
   function reportCard(g){
     const list=hwLogSessions(g.id);
     const head=`<header><span class="pg-mini-art" aria-hidden="true">${art(g)}</span><b>${g.title}</b>`;
+    if(typeof hwGameOpen==='function'&&!hwGameOpen(g.id))return `<article class="pr-card waiting locked">${head}<small>${hwIcon('lock')}</small></header><p>기본 놀이팩에서 볼 수 있어요.</p></article>`;
     if(list.length<MIN_SESSIONS){
       const left=MIN_SESSIONS-list.length;
       return `<article class="pr-card waiting">${head}<small>${list.length}판 기록</small></header><p>혼자 하기로 <b>${left}판</b> 더 하면 보여 드려요.</p><i class="pr-bar" aria-hidden="true"><span style="width:${list.length/MIN_SESSIONS*100}%"></span></i></article>`;
@@ -237,8 +238,12 @@
 
   function pgOpen(id){
     const root=document.getElementById('parentGuide'); if(!root)return;
-    const g=GUIDE.find(x=>x.id===id);
-    root.innerHTML=g?detailMarkup(g):reportMarkup()+overviewMarkup()+voiceMarkup();
+    const g=GUIDE.find(x=>x.id===id), mv=window.hwMomVoice;
+    if(mv&&id!=='familyVoice')mv.release();
+    if(id==='familyVoice'&&mv&&typeof hwFeatureOpen==='function'&&!hwFeatureOpen('voice'))id=undefined;
+    if(id==='familyVoice'&&mv){ root.innerHTML=mv.panelMarkup(); const sheet=root.closest('.parent-sheet'); if(sheet)sheet.scrollTop=root.offsetTop-8; const b=root.querySelector('.pg-back'); if(b)b.focus({preventScroll:true}); return; }
+    root.innerHTML=g?detailMarkup(g):(typeof hwPackMarkup==='function'?hwPackMarkup():'')+reportMarkup()+overviewMarkup()+(mv?mv.entryMarkup():'')+voiceMarkup();
+    const plan=document.getElementById('parentPlanStatus'); if(plan&&typeof hwPlanLabel==='function')plan.textContent=hwPlanLabel();
     const sheet=root.closest('.parent-sheet');
     if(sheet){
       if(g){ sheet.scrollTop=root.offsetTop-8; }

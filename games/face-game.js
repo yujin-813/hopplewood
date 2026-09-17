@@ -135,7 +135,7 @@ function g3_nextRound(first){
     hwSay('큰 카드의 반쪽 얼굴을 잘 보고, 꼭 맞는 '+other+' 반쪽을 찾아요.');
     if(typeof hwCoach==='function')g3_later(()=>hwCoach('g3',[
       {el:'#g3Stage',text:'큰 카드에 얼굴 반쪽이 있어요. 머리, 귀, 눈, 코, 입을 잘 봐요.'},
-      {el:'#g3Choices',text:'아래 반쪽들은 딱 한 곳씩 달라요. 똑같은 짝을 찾아 눌러요.'}
+      {el:'#g3Choices',text:'아래 반쪽들은 딱 한 곳씩 달라요. 똑같은 짝을 찾아 눌러요.',tap:true}
     ]),350);
   }else if(g3.mode==='duo')hwSay(who);
 }

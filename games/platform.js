@@ -67,13 +67,48 @@
     u.lang='ko-KR'; u.rate=.98; u.pitch=1.15; if(voice)u.voice=voice;
     speechSynthesis.speak(u);
   }
+  /* 가족 목소리: mom-voice.js가 hwMomVoicePlan(문장)을 주면, 녹음된 문장은 녹음으로, 나머지는 기계 목소리로 이어 읽는다 */
+  let sayRun=0, clipAudio=null;
+  function stopClip(){ if(clipAudio){ try{ clipAudio.pause(); }catch(e){} clipAudio.onended=clipAudio.onerror=null; } }
+  function speakTTS(words,onend){
+    if(!('speechSynthesis' in window)){ if(onend)onend(); return; }
+    if(!koVoice)pickVoice();
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(words);
+    u.lang='ko-KR'; u.rate=.98; u.pitch=1.15; if(koVoice)u.voice=koVoice;
+    if(onend){ u.onend=onend; u.onerror=onend; }
+    speechSynthesis.speak(u);
+  }
+  function playPlan(plan){
+    const run=++sayRun; let i=0;
+    const next=()=>{
+      if(run!==sayRun||i>=plan.length)return;
+      const item=plan[i++];
+      if(item.url){
+        if(!clipAudio)clipAudio=new Audio();
+        stopClip();
+        clipAudio.src=item.url;
+        clipAudio.onended=next;
+        clipAudio.onerror=()=>{ if(run===sayRun)speakTTS(item.text,next); };
+        const p=clipAudio.play(); if(p&&p.catch)p.catch(()=>{ if(run===sayRun)speakTTS(item.text,next); });
+      }else speakTTS(item.text,next);
+    };
+    next();
+  }
   function hwSay(text,force){
-    if(!('speechSynthesis' in window))return false;
     if(!settings.voice&&!force)return false;
     const words=plain(text); if(!words)return false;
+    sayRun++; stopClip();
+    try{
+      const plan=typeof window.hwMomVoicePlan==='function'?window.hwMomVoicePlan(words):null;
+      if(plan){ if('speechSynthesis' in window)speechSynthesis.cancel(); playPlan(plan); return true; }
+    }catch(e){}
+    if(!('speechSynthesis' in window))return false;
     if(!koVoice)pickVoice();
     try{ speakWith(koVoice,words); return true; }catch(e){ return false; }
   }
+  /* 녹음 화면의 "예시 듣기": 녹음 대신 늘 기계 목소리로 */
+  function hwSayTTS(text){ sayRun++; stopClip(); const words=plain(text); if(!words)return; try{ speakTTS(words); }catch(e){} }
   /* 부모님 화면용: 고를 수 있는 목소리 목록(추천 순), 미리 듣기, 선택 저장 */
   function hwVoiceOptions(){
     return koVoices().map(v=>({name:v.name,nick:voiceNick(v),score:voiceScore(v),current:koVoice&&koVoice.name===v.name}))
@@ -84,7 +119,7 @@
     try{ speakWith(v,'안녕! 나는 호플이야. 오늘도 같이 재미있게 놀자!'); }catch(e){}
   }
   function hwSetVoice(name){ settings.voiceName=name||''; saveSettings(); pickVoice(); }
-  function hwHush(){ try{ if('speechSynthesis' in window)speechSynthesis.cancel(); }catch(e){} }
+  function hwHush(){ sayRun++; stopClip(); try{ if('speechSynthesis' in window)speechSynthesis.cancel(); }catch(e){} }
   function hwCanSpeak(){ return 'speechSynthesis' in window; }
 
   function hasBatchim(word){
@@ -146,41 +181,76 @@
     </div>`;
   }
 
-  /* 첫 판에만 보여주는 짧은 손가락 안내. 한 화면에 한 문장, 읽어주기와 함께 쓴다. */
+  /* 첫 판 손가락 안내: 호플이가 말로 알려 주고, 손가락이 눌러야 할 곳을 톡톡 두드린다.
+     step={el, text, tap}. tap 단계는 아이가 그 자리를 직접 눌러야 다음으로 넘어간다 (진짜 첫 수를 같이 둔다).
+     el은 단계가 시작될 때 찾으므로 게임 화면이 바뀐 뒤의 요소(반짝이는 칸 등)도 가리킬 수 있다. */
+  const COACH_VER='hw_guide2_';
   let coachState=null;
   function hwCoach(gameId,steps){
-    const key='hw_coach_'+gameId;
+    const key=COACH_VER+gameId;
     if(storageGet(key)||!steps||!steps.length)return;
-    coachState={key,steps,index:0};
+    if(coachState)hwCoachDone(false);
+    coachState={key,steps,index:0,timer:0};
     let layer=document.getElementById('hwCoach');
     if(!layer){
       layer=document.createElement('div');
       layer.id='hwCoach'; layer.className='hw-coach'; layer.setAttribute('role','dialog'); layer.setAttribute('aria-modal','false');
-      layer.innerHTML='<div class="hw-coach-ring" aria-hidden="true"></div><div class="hw-coach-bubble"><span class="hw-coach-art" aria-hidden="true"></span><p id="hwCoachText"></p><div class="hw-coach-actions"><button type="button" class="hw-coach-skip" onclick="hwCoachDone()">건너뛰기</button><button type="button" class="hw-coach-next" onclick="hwCoachNext()">다음</button></div></div>';
+      layer.innerHTML='<div class="hw-coach-ring" aria-hidden="true"></div><div class="hw-coach-finger" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M26 6c3.3 0 6 2.7 6 6v17.5l14.2 3.1c4.3.9 7.1 5.1 6.4 9.4l-2.1 12.6A10 10 0 0 1 40.6 63H30.1a10 10 0 0 1-8-4L9.6 42.3a5.2 5.2 0 0 1 7.5-7.1L20 38V12c0-3.3 2.7-6 6-6z" fill="#fff" stroke="#2b2521" stroke-width="3" stroke-linejoin="round"/></svg></div><div class="hw-coach-bubble"><span class="hw-coach-art" aria-hidden="true"></span><p id="hwCoachText"></p><div class="hw-coach-actions"><button type="button" class="hw-coach-skip" onclick="hwCoachDone()">건너뛰기</button><button type="button" class="hw-coach-next" onclick="hwCoachNext()">다음</button></div></div>';
       document.body.appendChild(layer);
+      document.addEventListener('click',coachTap,true);
+      window.addEventListener('resize',placeCoach); window.addEventListener('scroll',placeCoach,true);
     }
     layer.querySelector('.hw-coach-art').innerHTML=typeof hwChar==='function'?hwChar('hopple','guide'):'';
     showCoachStep();
   }
+  function coachTarget(){ if(!coachState)return null; const step=coachState.steps[coachState.index]; return step?document.querySelector(step.el):null; }
+  function placeCoach(){
+    const layer=document.getElementById('hwCoach'); if(!layer||!coachState)return;
+    const step=coachState.steps[coachState.index], target=coachTarget();
+    const ring=layer.querySelector('.hw-coach-ring'), bubble=layer.querySelector('.hw-coach-bubble'), finger=layer.querySelector('.hw-coach-finger');
+    if(!target){ ring.style.display='none'; finger.style.display='none'; bubble.style.top='30%'; return; }
+    const r=target.getBoundingClientRect();
+    Object.assign(ring.style,{display:'block',left:(r.left-6)+'px',top:(r.top-6)+'px',width:(r.width+12)+'px',height:(r.height+12)+'px'});
+    finger.style.display=step.tap?'block':'none';
+    finger.style.left=(r.left+r.width/2-14)+'px'; finger.style.top=(r.top+Math.min(r.height/2,70)-6)+'px';
+    const bh=bubble.offsetHeight||150;
+    if(step.tap){
+      /* 직접 누르는 단계: 판을 가리지 않게 화면 아래(또는 위) 가장자리에 둔다 */
+      const bottomTop=window.innerHeight-bh-16;
+      bubble.style.top=(r.bottom+60<bottomTop||r.top<bh+40?bottomTop:12)+'px';
+    }else{
+      const below=r.bottom+bh+20<window.innerHeight;
+      bubble.style.top=(below?r.bottom+14:Math.max(12,r.top-bh-14))+'px';
+    }
+  }
   function showCoachStep(){
     const layer=document.getElementById('hwCoach'); if(!layer||!coachState)return;
     const step=coachState.steps[coachState.index], target=document.querySelector(step.el);
-    layer.classList.add('on');
+    if(!target&&step.tap){ hwCoachNext(); return; }
+    layer.classList.add('on'); layer.dataset.tap=step.tap?'1':'0';
     layer.querySelector('#hwCoachText').textContent=step.text;
-    layer.querySelector('.hw-coach-next').textContent=coachState.index===coachState.steps.length-1?'해볼게요!':'다음';
-    const ring=layer.querySelector('.hw-coach-ring'), bubble=layer.querySelector('.hw-coach-bubble');
-    if(target){
-      target.scrollIntoView({block:'center',behavior:'instant'});
-      const r=target.getBoundingClientRect();
-      Object.assign(ring.style,{display:'block',left:(r.left-6)+'px',top:(r.top-6)+'px',width:(r.width+12)+'px',height:(r.height+12)+'px'});
-      const below=r.bottom+170<window.innerHeight;
-      bubble.style.top=(below?r.bottom+14:Math.max(12,r.top-160))+'px';
-    }else{ ring.style.display='none'; bubble.style.top='30%'; }
+    const next=layer.querySelector('.hw-coach-next');
+    next.hidden=Boolean(step.tap);
+    next.textContent=coachState.index===coachState.steps.length-1?'해볼게요!':'다음';
+    if(target){ const r=target.getBoundingClientRect(); if(r.top<0||r.bottom>window.innerHeight)target.scrollIntoView({block:'center',behavior:'instant'}); }
+    placeCoach();
     hwSay(step.text);
-    requestAnimationFrame(()=>layer.querySelector('.hw-coach-next').focus());
+    if(!step.tap)requestAnimationFrame(()=>next.focus());
+  }
+  /* tap 단계: 손가락이 가리키는 자리 안을 누르면 게임이 그 누름을 처리한 뒤 다음 단계로 */
+  function coachTap(ev){
+    if(!coachState)return;
+    const step=coachState.steps[coachState.index]; if(!step||!step.tap)return;
+    if(ev.target.closest&&ev.target.closest('.hw-coach-bubble'))return;
+    const target=coachTarget(); if(!target)return;
+    const r=target.getBoundingClientRect();
+    if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)return;
+    clearTimeout(coachState.timer);
+    const state=coachState;
+    state.timer=setTimeout(()=>{ if(coachState===state)hwCoachNext(); },step.wait||250);
   }
   function hwCoachNext(){ if(!coachState)return; coachState.index++; if(coachState.index>=coachState.steps.length)hwCoachDone(); else showCoachStep(); }
-  function hwCoachDone(){ if(coachState)storageSet(coachState.key,'1'); coachState=null; const layer=document.getElementById('hwCoach'); if(layer)layer.classList.remove('on'); hwHush(); }
+  function hwCoachDone(finished=true){ if(coachState){ clearTimeout(coachState.timer); if(finished)storageSet(coachState.key,'1'); } coachState=null; const layer=document.getElementById('hwCoach'); if(layer)layer.classList.remove('on'); hwHush(); }
 
   /* 놀이 기록: 혼자 하기로 끝까지 한 판만, 이 기기에만 저장한다. 서버로 보내지 않는다. */
   const LOG_KEY='hw_playlog_v1', LOG_KEEP=40;
@@ -198,6 +268,6 @@
   function hwLogClear(){ try{ localStorage.removeItem(LOG_KEY); }catch(e){} }
 
   window.HW_SETTINGS=settings;
-  Object.assign(window,{hwSfx,hwSay,hwHush,hwCanSpeak,hwJosa,hwToggleSetting,hwReadJSON:readJSON,hwStore:storageSet,hwSyncSettings:syncSettingButtons,hwIcon,hwSetupMarkup,hwCoach,hwCoachNext,hwCoachDone,hwLogSession,hwLogSessions,hwLogClear,hwVoiceOptions,hwPreviewVoice,hwSetVoice});
+  Object.assign(window,{hwSfx,hwSay,hwSayTTS,hwPlainText:plain,hwSaveSettings:saveSettings,hwHush,hwCanSpeak,hwJosa,hwToggleSetting,hwReadJSON:readJSON,hwStore:storageSet,hwSyncSettings:syncSettingButtons,hwIcon,hwSetupMarkup,hwCoach,hwCoachNext,hwCoachDone,hwLogSession,hwLogSessions,hwLogClear,hwVoiceOptions,hwPreviewVoice,hwSetVoice});
   document.addEventListener('DOMContentLoaded',syncSettingButtons);
 })();

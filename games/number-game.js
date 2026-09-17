@@ -68,9 +68,9 @@ function g4_start(mode){
   showScreen('g4Game');
   hwSay(hwJosa(hwCharName(g4_charOf('A')),'은/는')+' 왼쪽과 오른쪽을, '+hwJosa(hwCharName(g4_charOf('B')),'은/는')+' 위와 아래를 이어요. 주사위를 굴려 볼까요?');
   if(typeof hwCoach==='function')g4_later(()=>hwCoach('g4',[
-    {el:'#g4RollBtn',text:'주사위를 굴리면 두 수가 나와요.'},
+    {el:'#g4RollBtn',text:'주사위 단추를 눌러 굴려 봐요!',tap:true,wait:900},
     {el:'#g4Equations',text:'두 수를 더한 답, 큰 수에서 작은 수를 뺀 답을 스스로 구해요.'},
-    {el:'#g4Board',text:'두 답 중 하나가 적힌 빈 칸을 찾아 눌러요. 내 친구로 양쪽 끝을 먼저 이으면 이겨요!'}
+    {el:'#g4Board',text:'두 답 중 하나가 적힌 빈 칸을 찾아 눌러요. 내 친구로 양쪽 끝을 먼저 이으면 이겨요!',tap:true}
   ]),400);
 }
 
