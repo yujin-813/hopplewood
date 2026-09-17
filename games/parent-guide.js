@@ -155,8 +155,8 @@
         ${all.length?`<button type="button" class="pr-clear" id="prClearBtn" onclick="pgClearLog()">놀이 기록 지우기</button>`:''}
       </section>`;
   }
-  /* ---------- 설치·체험·이용권 흐름 (이 기기 안에서만) ---------- */
-  const FUNNEL_LABEL={landing_view:'소개 페이지 열기',install_click:'설치 버튼 누름',install_complete:'설치 완료',app_open:'게임 열기',game_open:'게임 시작',game_complete:'게임 완료',paywall_view:'잠긴 콘텐츠 확인',checkout_guide_click:'구매 안내 열기',checkout_click:'결제 버튼 누름',voucher_result:'이용권 코드 확인',pack_unlock:'놀이팩 열림'};
+  /* ---------- 설치·체험·스토어 구매 흐름 (이 기기 안에서만) ---------- */
+  const FUNNEL_LABEL={landing_view:'소개 페이지 열기',install_click:'설치 버튼 누름',install_complete:'설치 완료',app_open:'게임 열기',game_open:'게임 시작',game_complete:'게임 완료',paywall_view:'잠긴 콘텐츠 확인',checkout_guide_click:'구매 안내 열기',store_purchase_info_view:'앱 구매 방식 확인',purchase_start:'스토어 결제 시작',purchase_result:'스토어 결제 결과',restore_result:'구매 복원 결과',pack_unlock:'놀이팩 열림'};
   function funnelMarkup(){
     if(typeof hwFunnelSummary!=='function')return '';
     const data=hwFunnelSummary(),counts=data.counts||{},events=data.events||[];

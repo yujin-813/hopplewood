@@ -1,6 +1,6 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
-const CACHE = 'hopplewood-v60';
-const V = '?v=60';
+const CACHE = 'hopplewood-v61';
+const V = '?v=61';
 const CORE = [
   './',
   './index.html',
@@ -12,7 +12,6 @@ const CORE = [
   './assets/fonts/Jua-Regular.ttf',
   './games/characters.js' + V,
   './games/funnel.js' + V,
-  './games/sales.js' + V,
   './games/platform.js' + V,
   './games/pack.js' + V,
   './games/music.js' + V,

@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#78b85f">
+  <meta name="description" content="호플우드 기본 놀이팩은 정식 앱에서 Apple·Google 스토어 계정으로 한 번 구매하고, 같은 계정에서 복원할 수 있습니다.">
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://yujin-813.github.io/hopplewood/buy.html">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon-32.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
-  <title>호플우드 기본 놀이팩 이용하기</title>
+  <title>호플우드 앱 구매 방식 안내</title>
   <style>
     @font-face{font-family:'Jua';src:url('assets/fonts/Jua-Regular.ttf') format('truetype');font-display:swap;font-weight:400;font-style:normal}
     :root{--ink:#213432;--muted:#65746d;--deep:#246747;--leaf:#7fc06d;--paper:#fffdf8;--line:#d4e3ce;--cream:#fff8e7}
@@ -22,32 +23,22 @@
   <main>
     <section class="hero">
       <div class="wrap hero-grid">
-        <div><span class="tag">부모님용 이용 안내</span><h1>기본 놀이팩을<br>한 번 구매하고 계속</h1><p class="lead">무료 게임 2개를 먼저 해 본 뒤 결정하세요. 구독이 아니라 1회 이용권이며, 잠긴 게임 3개와 전체 난이도·부모 리포트가 열려요.</p><div class="price">6,600원 <small>1회 · 구독 아님</small></div><button class="button" id="checkoutBtn" type="button" onclick="startCheckout()">결제하고 이용권 받기</button><p class="status" id="checkoutStatus" role="status"></p></div>
+        <div><span class="tag">부모님용 구매 안내</span><h1>별도 가입 없이<br>앱스토어에서 한 번</h1><p class="lead">무료 게임 2개를 먼저 해 본 뒤 결정하세요. 정식 앱의 부모님 메뉴에서 Apple·Google 스토어 계정으로 구매하면 잠긴 게임 3개와 전체 난이도·부모 리포트가 열려요.</p><div class="price">6,600원 <small>1회 · 구독 아님</small></div><button class="button" type="button" disabled>App Store · Google Play 출시 준비 중</button><p class="status" role="status">웹 결제나 이용권 코드는 사용하지 않아요.</p></div>
         <img class="art" src="assets/art/forest/stage_house_after.png" alt="완성된 비버의 숲속 집">
       </div>
     </section>
     <section class="wrap section">
       <div class="steps">
-        <article class="step"><span>1</span><h2>무료 게임 먼저</h2><p>얼굴 짝꿍과 비버 집짓기를 가입 없이 바로 해 보세요.</p></article>
-        <article class="step"><span>2</span><h2>부모님이 결제</h2><p>결제 링크에서 기본 놀이팩 1회 이용권을 구매해요.</p></article>
-        <article class="step"><span>3</span><h2>코드로 열기</h2><p>호플우드의 부모님 메뉴에서 받은 코드를 입력하면 바로 열려요.</p></article>
+        <article class="step"><span>1</span><h2>정식 앱 설치</h2><p>App Store 또는 Google Play에서 호플우드를 설치해요.</p></article>
+        <article class="step"><span>2</span><h2>부모님이 결제</h2><p>부모님 메뉴의 확인 문제를 푼 뒤 기본 놀이팩을 한 번 구매해요.</p></article>
+        <article class="step"><span>3</span><h2>같은 계정에서 복원</h2><p>기기를 바꾸거나 다시 설치해도 같은 스토어 계정의 구매 복원으로 열어요.</p></article>
       </div>
       <div class="included"><h2>기본 놀이팩에 포함돼요</h2><ul><li>잠긴 게임 3개와 다섯 게임의 모든 난이도</li><li>숲 퀘스트 전체와 부모 리포트 전체</li><li>우리 가족 목소리 녹음 기능</li></ul></div>
-      <div class="code-box"><h2>이미 이용권 코드가 있나요?</h2><p>앱을 열고 부모님 메뉴에서 코드를 입력하면 돼요.</p><a class="button secondary" href="./?redeem=1&from=buy" onclick="hwFunnel('redeem_open_click',{channel:'web'})">코드 입력하러 가기</a><p class="note">코드는 이 기기에서 확인하고, 코드 원문은 저장하지 않아요. 기기를 바꾸면 같은 코드를 다시 입력할 수 있어요.</p></div>
+      <div class="code-box"><h2>호플우드 계정을 따로 만들지 않는 이유</h2><p>부모님의 이메일·비밀번호를 또 받지 않고, 결제와 구매 확인은 Apple·Google 스토어가 맡습니다. 구매는 스토어 계정에 연결되므로 다른 사람에게 전달할 코드가 생기지 않아요.</p><a class="button secondary" href="./?from=buy">무료 게임 해보기</a><p class="note">Apple의 가족 공유는 상품 등록 때 켜지 않고, Google Play의 인앱 구매는 가족 라이브러리 공유 대상이 아닙니다. 같은 스토어 계정으로 사용하는 본인 기기에서는 구매를 복원할 수 있어요.</p></div>
     </section>
   </main>
   <footer><div class="wrap">© 2026 Hopplewood · <a href="privacy.html">개인정보와 기기 저장 안내</a></div></footer>
-  <script src="games/funnel.js?v=60"></script>
-  <script src="games/sales.js?v=60"></script>
-  <script>
-    hwFunnel('checkout_view',{channel:'web'});
-    function startCheckout(){
-      const status=document.getElementById('checkoutStatus'),url=window.HW_SALES&&HW_SALES.checkoutUrl;
-      hwFunnel('checkout_click',{channel:'web',result:url?'ready':'not_ready'});
-      if(url){ location.href=url; return; }
-      status.textContent='현재 결제 링크를 연결하는 중이에요. 무료 게임을 먼저 이용해 주세요.';
-    }
-    if(!(window.HW_SALES&&HW_SALES.checkoutUrl))document.getElementById('checkoutBtn').textContent='결제 링크 준비 중';
-  </script>
+  <script src="games/funnel.js?v=61"></script>
+  <script>hwFunnel('store_purchase_info_view',{channel:'web'});</script>
 </body>
 </html>
