@@ -246,6 +246,7 @@
           <label for="pkCode">구매 후 받은 이용권 코드</label>
           <div><input id="pkCode" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="HOPP-XXXXX-XXXXX-XXXXX" onkeydown="hwVoucherKey(event)"><button type="button" class="btn blue" onclick="hwVoucherRedeem()" ${purchase.busy?'disabled':''}>${purchase.busy?'확인 중…':'코드 열기'}</button></div>
         </div>
+        <p class="pk-msg">초기 공개 기간에는 소수 테스트 가정에 이용권 코드를 직접 전달하고 있어요. 정식 결제 링크는 준비 중이에요.</p>
         <p class="pk-code-help">코드는 이 기기에 저장돼요. 브라우저 데이터를 지우거나 기기를 바꾸면 같은 코드를 다시 입력하세요.</p>
         ${packMsg?`<p class="pk-msg" role="status">${packMsg}</p>`:''}
       </section>`;
