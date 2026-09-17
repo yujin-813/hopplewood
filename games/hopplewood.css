@@ -126,8 +126,18 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .pk-buy small{font-size:12px;color:#6b7571}
 .pk-buy>div{flex:1;min-width:0;white-space:nowrap}
 .pk-buy .btn{flex:none;width:auto;min-width:140px;margin:0;padding:0 22px}
+.pk-price{display:flex;align-items:baseline;gap:8px;padding-top:8px;border-top:1px dashed #e6d7b5}
+.pk-price b{font-size:24px;color:#1d2925}.pk-price small{font-size:12px;color:#6b7571}
+.pk-code-box{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:16px;background:#fff}
+.pk-code-box label{font-size:13px;font-weight:900;color:#394842}
+.pk-code-box>div{display:flex;gap:8px}
+.pk-code-box input{min-width:0;flex:1;height:48px;padding:0 12px;border:2px solid #d9e1dc;border-radius:13px;background:#fbfdfb;color:#26332e;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+.pk-code-box input:focus{outline:3px solid rgba(63,159,241,.2);border-color:#3f9ff1}
+.pk-code-box .btn{flex:none;width:auto;min-width:96px;height:48px;margin:0;padding:0 14px}
+.pk-code-help{margin:0;color:#66736e;font-size:12px;line-height:1.5}
 .pk-msg{margin:0;padding:8px 10px;border-radius:12px;background:#fff;font-size:13px;font-weight:700;color:#5b4a36}
 .pk-msg.mock{background:#eef2ff;color:#3b4aa0}
 .pk-restore{align-self:center;min-height:40px;padding:0 12px;background:transparent;border:0;box-shadow:none;color:#5f6b67;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
 .parent-privacy-link{display:inline-flex;align-items:center;min-height:40px;margin-top:8px;color:#356d4c;font-size:13px;font-weight:900;text-underline-offset:3px}
 .pr-card.locked{opacity:.7}
+@media(max-width:420px){.pk-code-box>div{flex-direction:column}.pk-code-box .btn{width:100%}}
