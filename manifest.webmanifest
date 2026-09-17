@@ -1,7 +1,7 @@
 {
   "name": "호플우드",
   "short_name": "호플우드",
-  "description": "교구 놀이를 게임으로. 심심할 때 꺼내 노는 숲속 친구들의 생각 놀이터",
+  "description": "5–7세가 관찰·수·공간·전략을 쓰는 광고 없는 숲속 사고력 게임",
   "lang": "ko",
   "dir": "ltr",
   "start_url": "./index.html?utm_source=home_screen&utm_medium=pwa",
