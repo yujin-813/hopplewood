@@ -395,6 +395,7 @@
       <header class="platform-header">
         <div class="platform-brand" aria-label="호플우드"><span class="brand-mascot" aria-hidden="true">${hwChar('hopple','face')}</span><span><small>HOPPLEWOOD</small><b>호플우드 숲</b></span></div>
         <div class="platform-actions">
+          <button class="square-btn setting-btn" data-setting="music" onclick="hwToggleSetting('music')" aria-label="배경음악 켜고 끄기">${hwIcon('music')}<span class="sr-only" data-setting-label>배경음악</span></button>
           <button class="square-btn setting-btn" data-setting="voice" onclick="hwToggleSetting('voice')" aria-label="읽어주기 켜고 끄기">${hwIcon('speak')}<span class="sr-only" data-setting-label>읽어주기</span></button>
           <button class="square-btn setting-btn" data-setting="sound" onclick="hwToggleSetting('sound')" aria-label="효과음 켜고 끄기">${hwIcon('sound')}<span class="sr-only" data-setting-label>효과음</span></button>
         </div>

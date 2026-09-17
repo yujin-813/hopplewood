@@ -4,7 +4,7 @@
  */
 (function(){
   const SETTINGS_KEY='hw_settings_v1';
-  const settings={sound:true,voice:true};
+  const settings={sound:true,voice:true,music:true};
 
   function storageGet(key){ try{ return localStorage.getItem(key); }catch(e){ return null; } }
   function storageSet(key,value){ try{ localStorage.setItem(key,value); return true; }catch(e){ return false; } }
@@ -98,6 +98,7 @@
   function hwSay(text,force){
     if(!settings.voice&&!force)return false;
     const words=plain(text); if(!words)return false;
+    if(window.hwMusic)hwMusic.duck(Math.min(9000,1200+words.length*90));
     sayRun++; stopClip();
     try{
       const plan=typeof window.hwMomVoicePlan==='function'?window.hwMomVoicePlan(words):null;
@@ -137,11 +138,13 @@
       btn.setAttribute('aria-pressed',on?'true':'false');
       btn.dataset.on=on?'1':'0';
       const label=btn.querySelector('[data-setting-label]');
-      if(label)label.textContent=key==='sound'?(on?'효과음 켜짐':'효과음 꺼짐'):(on?'읽어주기 켜짐':'읽어주기 꺼짐');
+      const NAME={sound:'효과음',voice:'읽어주기',music:'배경음악'};
+      if(label)label.textContent=(NAME[key]||key)+(on?' 켜짐':' 꺼짐');
     });
   }
   function hwToggleSetting(key){
     settings[key]=!settings[key];
+    if(key==='music'&&window.hwMusic)hwMusic.refresh();
     if(key==='voice'&&!settings.voice)hwHush();
     saveSettings();
     if(key==='sound'&&settings.sound)hwSfx('tap');

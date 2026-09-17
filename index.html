@@ -427,16 +427,17 @@
   @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
   @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
 </style>
-<script src="games/characters.js?v=55"></script>
-<script src="games/platform.js?v=55"></script>
-<script src="games/pack.js?v=55"></script>
-<link rel="stylesheet" href="games/hopplewood.css?v=55">
-<link rel="stylesheet" href="games/parent-guide.css?v=55">
-<link rel="stylesheet" href="games/face-game.css?v=55">
-<link rel="stylesheet" href="games/number-game.css?v=55">
-<link rel="stylesheet" href="games/block-game.css?v=55">
-<link rel="stylesheet" href="games/forest.css?v=55">
-<link rel="stylesheet" href="games/mom-voice.css?v=55">
+<script src="games/characters.js?v=57"></script>
+<script src="games/platform.js?v=57"></script>
+<script src="games/pack.js?v=57"></script>
+<script src="games/music.js?v=57"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=57">
+<link rel="stylesheet" href="games/parent-guide.css?v=57">
+<link rel="stylesheet" href="games/face-game.css?v=57">
+<link rel="stylesheet" href="games/number-game.css?v=57">
+<link rel="stylesheet" href="games/block-game.css?v=57">
+<link rel="stylesheet" href="games/forest.css?v=57">
+<link rel="stylesheet" href="games/mom-voice.css?v=57">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true">
@@ -475,6 +476,7 @@
     <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 3 22 20H2L12 3Z"/><path d="M12 9v5M12 17h.01"/></symbol>
     <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4V9Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
     <symbol id="i-speak" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="17.5" cy="16" r="2.6"/></symbol>
     <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></symbol>
     <symbol id="i-shapes" viewBox="0 0 24 24"><circle cx="6" cy="7" r="3"/><rect x="13" y="4" width="6" height="6" rx="1"/><path d="m7 20 4-7 4 7H7Z"/></symbol>
   </defs>
@@ -492,6 +494,7 @@
         <span><small>HOPPLEWOOD</small><b>호플우드</b></span>
       </div>
       <div class="platform-actions">
+        <button class="square-btn setting-btn" data-setting="music" onclick="hwToggleSetting('music')" aria-label="배경음악 켜고 끄기"><svg class="ui-icon" aria-hidden="true"><use href="#i-music"></use></svg><span class="sr-only" data-setting-label>배경음악</span></button>
         <button class="square-btn setting-btn" data-setting="voice" onclick="hwToggleSetting('voice')" aria-label="읽어주기 켜고 끄기"><svg class="ui-icon" aria-hidden="true"><use href="#i-speak"></use></svg><span class="sr-only" data-setting-label>읽어주기</span></button>
         <button class="square-btn setting-btn" data-setting="sound" onclick="hwToggleSetting('sound')" aria-label="효과음 켜고 끄기"><svg class="ui-icon" aria-hidden="true"><use href="#i-sound"></use></svg><span class="sr-only" data-setting-label>효과음</span></button>
         <span class="platform-star" aria-label="모은 별"><svg class="ui-icon" aria-hidden="true"><use href="#i-star"></use></svg><b id="starCount">0</b></span>
@@ -845,8 +848,10 @@ function recordCompletion(winner,mode){ if(!curGame||!GAME_CATALOG[curGame])retu
   progress.plays++; progress.stars++; progress[curGame+'Plays']=(progress[curGame+'Plays']||0)+1; if(mode==='solo'&&winner==='A')progress.wins++; progress.lastGame=curGame;
   saveProgress(); updateProgressUI(); }
 
+const MUSIC_FOR={forestScreen:'forest',hubScreen:'forest',progressScreen:'quiet'};
 function showScreen(id){ const next=document.getElementById(id); if(!next)return; document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-  next.classList.add('on'); window.scrollTo(0,0); }
+  next.classList.add('on'); window.scrollTo(0,0);
+  if(window.hwMusic)hwMusic.set(MUSIC_FOR[id]||(/Game$/.test(id)?'play':'quiet')); }
 function cancelAllGames(){ ['g1_cancel','g2_cancel','g3_cancel','g4_cancel','g5_cancel'].forEach(fn=>{ if(typeof window[fn]==='function')window[fn](); }); }
 function backHub(){
   cancelAllGames();
@@ -1228,12 +1233,12 @@ function initHub(){
   fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
 }
 </script>
-<script src="games/face-game.js?v=55"></script>
-<script src="games/number-game.js?v=55"></script>
-<script src="games/block-game.js?v=55"></script>
-<script src="games/parent-guide.js?v=55"></script>
-<script src="games/forest.js?v=55"></script>
-<script src="games/mom-voice.js?v=55"></script>
+<script src="games/face-game.js?v=57"></script>
+<script src="games/number-game.js?v=57"></script>
+<script src="games/block-game.js?v=57"></script>
+<script src="games/parent-guide.js?v=57"></script>
+<script src="games/forest.js?v=57"></script>
+<script src="games/mom-voice.js?v=57"></script>
 <script>
 initHub();
 pgInit();
