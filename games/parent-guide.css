@@ -123,6 +123,8 @@
 .pv-list li{display:flex;align-items:center;gap:6px;padding:4px;border-radius:14px;background:#faf9f5;border:1px solid #eeebe3}
 .pv-list li.on{background:#eef8f1;border-color:#9fd1b5}
 .pv-pick{flex:1;min-height:46px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:11px;background:transparent;text-align:left;font-size:14px;font-weight:800;color:#23302c}
+.pv-pick>span:last-child{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pv-rec{padding:3px 6px;border-radius:999px;background:#dff2e4;color:#33744e;font-size:9px;font-weight:900;white-space:nowrap}
 .pv-radio{width:20px;height:20px;flex:none;border-radius:50%;border:2px solid #b7c2bd;background:#fff}
 .pv-list li.on .pv-radio{border:6px solid #3f9a6b}
 .pv-listen{min-height:46px;display:flex;align-items:center;gap:5px;padding:0 12px;border-radius:11px;background:#fff;border:1px solid #e3e0d8;font-size:13px;font-weight:800;color:#2f6fb6;white-space:nowrap}

@@ -427,17 +427,17 @@
   @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
   @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
 </style>
-<script src="games/characters.js?v=57"></script>
-<script src="games/platform.js?v=57"></script>
-<script src="games/pack.js?v=57"></script>
-<script src="games/music.js?v=57"></script>
-<link rel="stylesheet" href="games/hopplewood.css?v=57">
-<link rel="stylesheet" href="games/parent-guide.css?v=57">
-<link rel="stylesheet" href="games/face-game.css?v=57">
-<link rel="stylesheet" href="games/number-game.css?v=57">
-<link rel="stylesheet" href="games/block-game.css?v=57">
-<link rel="stylesheet" href="games/forest.css?v=57">
-<link rel="stylesheet" href="games/mom-voice.css?v=57">
+<script src="games/characters.js?v=58"></script>
+<script src="games/platform.js?v=58"></script>
+<script src="games/pack.js?v=58"></script>
+<script src="games/music.js?v=58"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=58">
+<link rel="stylesheet" href="games/parent-guide.css?v=58">
+<link rel="stylesheet" href="games/face-game.css?v=58">
+<link rel="stylesheet" href="games/number-game.css?v=58">
+<link rel="stylesheet" href="games/block-game.css?v=58">
+<link rel="stylesheet" href="games/forest.css?v=58">
+<link rel="stylesheet" href="games/mom-voice.css?v=58">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true">
@@ -848,10 +848,15 @@ function recordCompletion(winner,mode){ if(!curGame||!GAME_CATALOG[curGame])retu
   progress.plays++; progress.stars++; progress[curGame+'Plays']=(progress[curGame+'Plays']||0)+1; if(mode==='solo'&&winner==='A')progress.wins++; progress.lastGame=curGame;
   saveProgress(); updateProgressUI(); }
 
-const MUSIC_FOR={forestScreen:'forest',hubScreen:'forest',progressScreen:'quiet'};
+const MUSIC_FOR={
+  forestScreen:'forest',hubScreen:'hub',progressScreen:'quiet',
+  g1Setup:'route',g1Game:'route',g2Setup:'pattern',g2Game:'pattern',
+  g3Setup:'face',g3Game:'face',g4Setup:'number',g4Game:'number',
+  g5Setup:'beaver',g5Game:'beaver'
+};
 function showScreen(id){ const next=document.getElementById(id); if(!next)return; document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   next.classList.add('on'); window.scrollTo(0,0);
-  if(window.hwMusic)hwMusic.set(MUSIC_FOR[id]||(/Game$/.test(id)?'play':'quiet')); }
+  if(window.hwMusic)hwMusic.set(MUSIC_FOR[id]||(/Game$/.test(id)?'hub':'quiet')); }
 function cancelAllGames(){ ['g1_cancel','g2_cancel','g3_cancel','g4_cancel','g5_cancel'].forEach(fn=>{ if(typeof window[fn]==='function')window[fn](); }); }
 function backHub(){
   cancelAllGames();
@@ -1233,12 +1238,12 @@ function initHub(){
   fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
 }
 </script>
-<script src="games/face-game.js?v=57"></script>
-<script src="games/number-game.js?v=57"></script>
-<script src="games/block-game.js?v=57"></script>
-<script src="games/parent-guide.js?v=57"></script>
-<script src="games/forest.js?v=57"></script>
-<script src="games/mom-voice.js?v=57"></script>
+<script src="games/face-game.js?v=58"></script>
+<script src="games/number-game.js?v=58"></script>
+<script src="games/block-game.js?v=58"></script>
+<script src="games/parent-guide.js?v=58"></script>
+<script src="games/forest.js?v=58"></script>
+<script src="games/mom-voice.js?v=58"></script>
 <script>
 initHub();
 pgInit();

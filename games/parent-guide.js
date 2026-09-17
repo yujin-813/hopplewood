@@ -161,10 +161,10 @@
     const opts=hwVoiceOptions();
     if(!opts.length)return `<section class="pv-voice"><h3>읽어주기 목소리</h3><p class="pg-lead">이 기기에는 한국어 읽어주기 목소리가 없어요. 기기 설정의 ‘음성 콘텐츠’에서 한국어 목소리를 내려받으면 쓸 수 있어요.</p></section>`;
     const rec=opts.filter(o=>o.score>0), rest=opts.filter(o=>o.score<=0);
-    const row=o=>`<li class="${o.current?'on':''}"><button type="button" class="pv-pick" aria-pressed="${o.current?'true':'false'}" onclick="pgPickVoice(${JSON.stringify(o.name).replace(/"/g,'&quot;')})"><span class="pv-radio" aria-hidden="true"></span>${o.nick}</button><button type="button" class="pv-listen" onclick="hwPreviewVoice(${JSON.stringify(o.name).replace(/"/g,'&quot;')})" aria-label="${o.nick} 들어보기">${hwIcon('sound')} 들어보기</button></li>`;
+    const row=o=>`<li class="${o.current?'on':''}"><button type="button" class="pv-pick" aria-pressed="${o.current?'true':'false'}" onclick="pgPickVoice(${JSON.stringify(o.name).replace(/"/g,'&quot;')})"><span class="pv-radio" aria-hidden="true"></span><span>${o.nick}${o.recommended?'<small class="pv-rec">자동 추천</small>':''}</span></button><button type="button" class="pv-listen" onclick="hwPreviewVoice(${JSON.stringify(o.name).replace(/"/g,'&quot;')})" aria-label="${o.nick} 들어보기">${hwIcon('sound')} 들어보기</button></li>`;
     return `<section class="pv-voice" aria-labelledby="pvTitle">
       <h3 id="pvTitle">읽어주기 목소리</h3>
-      <p class="pg-lead">아이가 듣기 편한 목소리를 골라 주세요. 기기마다 들어 있는 목소리가 달라요.</p>
+      <p class="pg-lead">또렷하고 자연스러운 한국어 음성을 자동으로 골랐어요. 재생 파일을 앱에 넣지 않고, 이 기기에 있는 목소리만 사용해요.</p>
       <ul class="pv-list">${rec.map(row).join('')}</ul>
       ${rest.length?`<details class="pv-more"><summary>다른 목소리 ${rest.length}개</summary><ul class="pv-list">${rest.map(row).join('')}</ul></details>`:''}
     </section>`;
