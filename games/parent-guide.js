@@ -155,6 +155,22 @@
         ${all.length?`<button type="button" class="pr-clear" id="prClearBtn" onclick="pgClearLog()">놀이 기록 지우기</button>`:''}
       </section>`;
   }
+  /* ---------- 설치·체험·이용권 흐름 (이 기기 안에서만) ---------- */
+  const FUNNEL_LABEL={landing_view:'소개 페이지 열기',install_click:'설치 버튼 누름',install_complete:'설치 완료',app_open:'게임 열기',game_open:'게임 시작',game_complete:'게임 완료',paywall_view:'잠긴 콘텐츠 확인',checkout_guide_click:'구매 안내 열기',checkout_click:'결제 버튼 누름',voucher_result:'이용권 코드 확인',pack_unlock:'놀이팩 열림'};
+  function funnelMarkup(){
+    if(typeof hwFunnelSummary!=='function')return '';
+    const data=hwFunnelSummary(),counts=data.counts||{},events=data.events||[];
+    const items=Object.entries(FUNNEL_LABEL).filter(([key])=>counts[key]).map(([key,label])=>`<li><span>${label}</span><b>${counts[key]}회</b></li>`).join('');
+    const a=data.attribution&&data.attribution.last;
+    const source=a?[a.utm_source,a.utm_campaign,a.ref,a.from].filter(Boolean).join(' · '):'';
+    return `<section class="pf-data" aria-labelledby="pfTitle">
+      <h3 id="pfTitle">이 기기의 설치·이용 흐름</h3>
+      <p class="pg-lead">개인정보나 아이 식별값 없이 이 기기에서 일어난 단계만 저장해요. 운영자 서버로 자동 전송하지 않아요.</p>
+      ${source?`<p class="pf-source">처음 들어온 경로: <b>${source}</b></p>`:''}
+      ${items?`<ul class="pf-counts">${items}</ul>`:'<p class="pf-empty">아직 기록된 공개 흐름이 없어요.</p>'}
+      <div class="pf-actions">${events.length?'<button type="button" onclick="hwFunnelExport()">CSV로 내보내기</button><button type="button" class="danger" id="pfClearBtn" onclick="pgClearFunnel()">이 흐름 기록 지우기</button>':''}</div>
+    </section>`;
+  }
   /* ---------- 읽어주기 목소리 고르기 ---------- */
   function voiceMarkup(){
     if(typeof hwVoiceOptions!=='function')return '';
@@ -182,6 +198,11 @@
     const btn=document.getElementById('prClearBtn'); if(!btn)return;
     if(btn.dataset.confirm!=='1'){ btn.dataset.confirm='1'; btn.textContent='정말 지울까요? 한 번 더 누르면 지워져요'; return; }
     hwLogClear(); pgOpen(undefined);
+  }
+  function pgClearFunnel(){
+    const btn=document.getElementById('pfClearBtn'); if(!btn)return;
+    if(btn.dataset.confirm!=='1'){ btn.dataset.confirm='1'; btn.textContent='한 번 더 누르면 지워져요'; return; }
+    hwFunnelClear(); pgOpen(undefined);
   }
 
   function overviewMarkup(){
@@ -242,7 +263,7 @@
     if(mv&&id!=='familyVoice')mv.release();
     if(id==='familyVoice'&&mv&&typeof hwFeatureOpen==='function'&&!hwFeatureOpen('voice'))id=undefined;
     if(id==='familyVoice'&&mv){ root.innerHTML=mv.panelMarkup(); const sheet=root.closest('.parent-sheet'); if(sheet)sheet.scrollTop=root.offsetTop-8; const b=root.querySelector('.pg-back'); if(b)b.focus({preventScroll:true}); return; }
-    root.innerHTML=g?detailMarkup(g):(typeof hwPackMarkup==='function'?hwPackMarkup():'')+reportMarkup()+overviewMarkup()+(mv?mv.entryMarkup():'')+voiceMarkup();
+    root.innerHTML=g?detailMarkup(g):(typeof hwPackMarkup==='function'?hwPackMarkup():'')+reportMarkup()+funnelMarkup()+overviewMarkup()+(mv?mv.entryMarkup():'')+voiceMarkup();
     const plan=document.getElementById('parentPlanStatus'); if(plan&&typeof hwPlanLabel==='function')plan.textContent=hwPlanLabel();
     const sheet=root.closest('.parent-sheet');
     if(sheet){
@@ -259,5 +280,5 @@
 
   window.PARENT_GUIDE=GUIDE;
   window.PARENT_AREAS=AREAS;
-  Object.assign(window,{pgOpen,pgPlay,pgInit,pgClearLog,pgPickVoice});
+  Object.assign(window,{pgOpen,pgPlay,pgInit,pgClearLog,pgClearFunnel,pgPickVoice});
 })();

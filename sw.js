@@ -1,13 +1,17 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
-const CACHE = 'hopplewood-v58';
-const V = '?v=58';
+const CACHE = 'hopplewood-v59';
+const V = '?v=59';
 const CORE = [
   './',
   './index.html',
   './start.html',
+  './buy.html',
   './privacy.html',
   './manifest.webmanifest',
+  './assets/fonts/Jua-Regular.ttf',
   './games/characters.js' + V,
+  './games/funnel.js' + V,
+  './games/sales.js' + V,
   './games/platform.js' + V,
   './games/pack.js' + V,
   './games/music.js' + V,
@@ -57,10 +61,10 @@ self.addEventListener('fetch', (e) => {
       fetch(req).then(res => {
         if (res.ok && url.origin === self.location.origin) {
           const copy = res.clone();
-          caches.open(CACHE).then(c => c.put('./index.html', copy)).catch(() => {});
+          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
         }
         return res;
-      }).catch(() => caches.match('./index.html').then(hit => hit || caches.match('./')))
+      }).catch(() => caches.match(req).then(hit => hit || caches.match('./index.html')).then(hit => hit || caches.match('./')))
     );
     return;
   }

@@ -115,6 +115,7 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .pk-badge.beta{background:#377e68;color:#fff}
 .pk-badge .ui-icon{width:13px;height:13px;fill:currentColor}
 .pk-card .pg-lead{margin:0}
+.pk-card>a.btn{text-decoration:none;text-align:center}
 .pk-items{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
 .pk-items li{display:grid;grid-template-columns:34px 1fr;column-gap:10px;align-items:center}
 .pk-items li span{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fff;color:#3f8f6c}

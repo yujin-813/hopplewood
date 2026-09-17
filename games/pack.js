@@ -1,7 +1,7 @@
 /*
  * 호플우드 무료판 / 기본 놀이팩(이용권 코드 또는 앱스토어 1회 구매)
- * - 현재 RELEASE_MODE은 voucher: 웹에서 이용권 코드를 입력하면 기본 놀이팩을 연다.
- * - App Store / Google Play로 전환할 때 RELEASE_MODE만 freemium으로 바꾸면 기존 결제 구조를 쓴다.
+ * - 웹은 voucher: 이용권 코드를 입력하면 기본 놀이팩을 연다.
+ * - Capacitor 앱은 freemium: App Store / Google Play 비소모성 상품을 사용한다.
  * - 무료: 얼굴 짝꿍·비버 집짓기(쉬움·보통), 숲 퀘스트 첫 2개, 두 게임 리포트
  * - 기본 놀이팩: 나머지 게임 3개, 모든 난이도, 숲 퀘스트 전체와 반복 퀘스트, 전체 부모 리포트, 가족 목소리
  * - 아이 화면에는 가격·구매 버튼을 보여 주지 않는다. 구매·복원은 부모 메뉴 안에서, 보호자 질문을 통과한 뒤에만.
@@ -11,13 +11,15 @@
  *   web    : 웹 브라우저. 구매 불가 → 앱에서 구매하도록 안내
  */
 (function(){
-  const RELEASE_MODE='voucher';
+  const IS_NATIVE=Boolean(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+  const RELEASE_MODE=IS_NATIVE?'freemium':'voucher';
   const BETA_OPEN=RELEASE_MODE==='beta';
   const VOUCHER_MODE=RELEASE_MODE==='voucher';
   const PRODUCT_ID='hopplewood_basic_pack';
   const OWN_KEY='hw_pack_v1', MOCK_OWNED_KEY='hw_store_mock_owned';
   const FREE={games:['g3','g5'],maxLevel:2,quests:['beaver','festival']};
   const PACK_PRICE='6,600원';
+  function track(name,data){ if(typeof window.hwFunnel==='function')window.hwFunnel(name,data); }
   /* 실제 코드는 private/voucher-codes.csv에만 보관한다. 공개 파일에는 단방향 해시만 싣는다. */
   const VOUCHER_HASHES=new Set([
     '027e871c0923809189e88574303923ab28f171896b9a841b1f9798b2cd30c494','59de4b967d6409f693601a072acc9690a8ea94f1c43a0437367fbafbd0747eec',
@@ -46,6 +48,7 @@
     if(own.owned)return;
     Object.assign(own,{owned:true,source,t:Date.now()});
     hwStore(OWN_KEY,JSON.stringify(own));
+    track('pack_unlock',{channel:source||'unknown'});
     listeners.forEach(fn=>{ try{ fn(); }catch(e){} });
   }
   function onPackChange(fn){ listeners.push(fn); }
@@ -63,6 +66,7 @@
     t.innerHTML=`${hwIcon('lock')}<span>${text}</span>`;
     t.classList.remove('on'); void t.offsetWidth; t.classList.add('on');
     clearTimeout(t._timer); t._timer=setTimeout(()=>t.classList.remove('on'),2600);
+    track('paywall_view',{detail:kind||'game'});
     hwSfx('tap'); hwSay(text);
   }
 
@@ -162,6 +166,7 @@
     if(BETA_OPEN)return 'beta';
     if(hwPackOwned())return 'ok';
     if(purchase.channel==='web')return 'unavailable';
+    track('purchase_start',{channel:purchase.channel});
     if(purchase.channel==='mock'){
       await wait(700);
       if(purchase.mode==='mock-cancel')return 'cancel';
@@ -202,13 +207,14 @@
   }
   async function redeemVoucher(value){
     const normalized=normalizeVoucher(value);
-    if(!/^HOPP[A-Z2-9]{15}$/.test(normalized))return 'invalid';
+    if(!/^HOPP[A-Z2-9]{15}$/.test(normalized)){ track('voucher_result',{result:'invalid'}); return 'invalid'; }
     try{
       const hash=await voucherDigest(normalized);
-      if(!VOUCHER_HASHES.has(hash))return 'invalid';
+      if(!VOUCHER_HASHES.has(hash)){ track('voucher_result',{result:'invalid'}); return 'invalid'; }
       setOwned('voucher');
+      track('voucher_result',{result:'ok'});
       return 'ok';
-    }catch(e){ return 'code-error'; }
+    }catch(e){ track('voucher_result',{result:'code-error'}); return 'code-error'; }
   }
 
   /* ---------- 부모 메뉴: 기본 놀이팩 ---------- */
@@ -242,6 +248,7 @@
         <p class="pg-lead">얼굴 짝꿍·비버 집짓기는 무료예요. 기본 놀이팩 이용권을 구매하면 나머지 게임 3개와 전체 콘텐츠가 열려요.</p>
         <ul class="pk-items">${PACK_ITEMS.map(([ic,t,d])=>`<li><span>${hwIcon(ic)}</span><b>${t}</b><small>${d}</small></li>`).join('')}</ul>
         <div class="pk-price"><b>${PACK_PRICE}</b><small>1회 이용권 · 구독 아님</small></div>
+        <a class="btn blue big" href="buy.html?from=parent" onclick="if(typeof hwFunnel==='function')hwFunnel('checkout_guide_click',{channel:'web'})">이용권 구매 방법 보기</a>
         <div class="pk-code-box">
           <label for="pkCode">구매 후 받은 이용권 코드</label>
           <div><input id="pkCode" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="HOPP-XXXXX-XXXXX-XXXXX" onkeydown="hwVoucherKey(event)"><button type="button" class="btn blue" onclick="hwVoucherRedeem()" ${purchase.busy?'disabled':''}>${purchase.busy?'확인 중…':'코드 열기'}</button></div>
@@ -288,6 +295,7 @@
       openOverlay('parentOverlay'); refreshParent();
       purchase.busy=true; packMsg=''; refreshParent();
       const r=await buy();
+      track('purchase_result',{channel:purchase.channel,result:r});
       purchase.busy=false; packMsg=RESULT_TEXT[r]||''; refreshParent();
       if(r==='ok'&&typeof pgOpen==='function'){ pgOpen(undefined); scrollToPack(); }
     },'구매하려면');
@@ -296,6 +304,7 @@
     if(purchase.busy)return;
     purchase.busy=true; packMsg='구매 기록을 확인하고 있어요…'; refreshParent();
     const r=await restore();
+    track('restore_result',{channel:purchase.channel,result:r});
     purchase.busy=false; packMsg=RESULT_TEXT[r]||''; refreshParent();
     if(r==='ok'&&typeof pgOpen==='function'){ pgOpen(undefined); scrollToPack(); }
   }

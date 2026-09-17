@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#78b85f">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://yujin-813.github.io/hopplewood/buy.html">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+  <title>호플우드 기본 놀이팩 이용하기</title>
+  <style>
+    @font-face{font-family:'Jua';src:url('assets/fonts/Jua-Regular.ttf') format('truetype');font-display:swap;font-weight:400;font-style:normal}
+    :root{--ink:#213432;--muted:#65746d;--deep:#246747;--leaf:#7fc06d;--paper:#fffdf8;--line:#d4e3ce;--cream:#fff8e7}
+    *{box-sizing:border-box}body{margin:0;background:#eff6ea;color:var(--ink);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.55;word-break:keep-all}.wrap{width:min(100% - 28px,820px);margin:auto}a{color:inherit}.top{display:flex;align-items:center;justify-content:space-between;min-height:70px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:'Jua',system-ui,sans-serif;font-size:22px}.brand img{width:44px;height:44px;object-fit:contain;background:#e2f1d9;border-radius:14px}.back{padding:9px 13px;border:1px solid #cbdcc5;border-radius:999px;background:#fff;text-decoration:none;font-size:12px;font-weight:900}.hero{padding:46px 0 64px;background:linear-gradient(145deg,#fbf4d8,#d9edca);border-block:1px solid #d2e3ca}.hero-grid{display:grid;grid-template-columns:1fr 220px;gap:28px;align-items:center}.tag{display:inline-block;padding:6px 10px;border-radius:999px;background:#fff;border:1px solid #d6e5cf;color:#397452;font-size:11px;font-weight:900}h1,h2,h3,.price,.button{font-family:'Jua',system-ui,sans-serif;font-weight:400;line-height:1.18}h1{margin:15px 0 10px;font-size:clamp(34px,7vw,54px)}.lead{margin:0;color:#566a60}.art{width:100%;filter:drop-shadow(0 12px 8px rgba(40,73,47,.16))}.price{margin:24px 0 4px;font-size:38px;color:#1e563b}.price small{font-family:system-ui,sans-serif;font-size:13px;font-weight:800;color:#66746d}.button{width:100%;min-height:56px;display:flex;align-items:center;justify-content:center;margin-top:17px;border:0;border-radius:17px;background:var(--deep);color:#fff;box-shadow:0 7px 0 #174c34;font-size:18px;text-decoration:none;cursor:pointer}.button:disabled{background:#809187;box-shadow:0 7px 0 #68776f;cursor:not-allowed}.button.secondary{background:#fff;color:#2f6548;border:2px solid #c6dbc0;box-shadow:0 6px 0 #ccdec7}.status{min-height:24px;margin:13px 0 0;color:#5a6e63;font-size:13px;font-weight:800}.section{padding:58px 0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.step{min-height:205px;padding:20px;border:2px solid var(--line);border-radius:23px;background:var(--paper);box-shadow:0 7px 0 #dbe8d7}.step span{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#e0f0d7;color:#2f754e;font-size:19px;font-weight:950}.step h2{font-size:19px}.step p{margin:0;color:var(--muted);font-size:13px}.included{margin-top:18px;padding:22px;border:2px solid #e1d6a9;border-radius:24px;background:var(--cream)}.included h2{margin-top:0}.included ul{display:grid;gap:8px;margin-bottom:0;padding-left:20px}.code-box{margin-top:22px;padding:22px;border:2px solid #cadfc3;border-radius:24px;background:#fff}.code-box h2{margin-top:0}.note{font-size:12px;color:#68766f}footer{padding:26px 0;border-top:1px solid #d8e5d4;color:#68766f;font-size:12px}
+    @media(max-width:620px){.hero-grid{grid-template-columns:1fr}.art{width:170px;margin:auto}.steps{grid-template-columns:1fr}.step{min-height:0}.hero{padding-top:30px}}
+  </style>
+</head>
+<body>
+  <header class="wrap top"><a class="brand" href="start.html"><img src="assets/art/char/char_hopple_face.png" alt="">호플우드</a><a class="back" href="./?from=buy">무료판 열기</a></header>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div><span class="tag">부모님용 이용 안내</span><h1>기본 놀이팩을<br>한 번 구매하고 계속</h1><p class="lead">무료 게임 2개를 먼저 해 본 뒤 결정하세요. 구독이 아니라 1회 이용권이며, 잠긴 게임 3개와 전체 난이도·부모 리포트가 열려요.</p><div class="price">6,600원 <small>1회 · 구독 아님</small></div><button class="button" id="checkoutBtn" type="button" onclick="startCheckout()">결제하고 이용권 받기</button><p class="status" id="checkoutStatus" role="status"></p></div>
+        <img class="art" src="assets/art/forest/stage_house_after.png" alt="완성된 비버의 숲속 집">
+      </div>
+    </section>
+    <section class="wrap section">
+      <div class="steps">
+        <article class="step"><span>1</span><h2>무료 게임 먼저</h2><p>얼굴 짝꿍과 비버 집짓기를 가입 없이 바로 해 보세요.</p></article>
+        <article class="step"><span>2</span><h2>부모님이 결제</h2><p>결제 링크에서 기본 놀이팩 1회 이용권을 구매해요.</p></article>
+        <article class="step"><span>3</span><h2>코드로 열기</h2><p>호플우드의 부모님 메뉴에서 받은 코드를 입력하면 바로 열려요.</p></article>
+      </div>
+      <div class="included"><h2>기본 놀이팩에 포함돼요</h2><ul><li>잠긴 게임 3개와 다섯 게임의 모든 난이도</li><li>숲 퀘스트 전체와 부모 리포트 전체</li><li>우리 가족 목소리 녹음 기능</li></ul></div>
+      <div class="code-box"><h2>이미 이용권 코드가 있나요?</h2><p>앱을 열고 부모님 메뉴에서 코드를 입력하면 돼요.</p><a class="button secondary" href="./?redeem=1&from=buy" onclick="hwFunnel('redeem_open_click',{channel:'web'})">코드 입력하러 가기</a><p class="note">코드는 이 기기에서 확인하고, 코드 원문은 저장하지 않아요. 기기를 바꾸면 같은 코드를 다시 입력할 수 있어요.</p></div>
+    </section>
+  </main>
+  <footer><div class="wrap">© 2026 Hopplewood · <a href="privacy.html">개인정보와 기기 저장 안내</a></div></footer>
+  <script src="games/funnel.js?v=59"></script>
+  <script src="games/sales.js?v=59"></script>
+  <script>
+    hwFunnel('checkout_view',{channel:'web'});
+    function startCheckout(){
+      const status=document.getElementById('checkoutStatus'),url=window.HW_SALES&&HW_SALES.checkoutUrl;
+      hwFunnel('checkout_click',{channel:'web',result:url?'ready':'not_ready'});
+      if(url){ location.href=url; return; }
+      status.textContent='현재 결제 링크를 연결하는 중이에요. 무료 게임을 먼저 이용해 주세요.';
+    }
+    if(!(window.HW_SALES&&HW_SALES.checkoutUrl))document.getElementById('checkoutBtn').textContent='결제 링크 준비 중';
+  </script>
+</body>
+</html>

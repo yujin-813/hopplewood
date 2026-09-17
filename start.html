@@ -16,11 +16,13 @@
   <meta property="og:image" content="https://yujin-813.github.io/hopplewood/assets/share-card.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="1200">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"호플우드","applicationCategory":"GameApplication","operatingSystem":"Web, iOS, Android","description":"5–7세 아이가 관찰·수·공간·전략을 놀이 속에서 써 보는 숲속 게임. 가입과 광고 없이 무료 게임 2개부터 시작합니다.","url":"https://yujin-813.github.io/hopplewood/start.html","image":"https://yujin-813.github.io/hopplewood/assets/share-card.png","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW","description":"무료 게임 2개"},"audience":{"@type":"PeopleAudience","suggestedMinAge":5,"suggestedMaxAge":7}}</script>
   <title>호플우드 — 생각을 쓰는 숲속 놀이</title>
   <style>
+    @font-face{font-family:'Jua';src:url('assets/fonts/Jua-Regular.ttf') format('truetype');font-display:swap;font-weight:400;font-style:normal}
     :root{--ink:#213432;--muted:#60706c;--deep:#2f7654;--deep-2:#20533c;--leaf:#7dc06a;--leaf-2:#a7d58b;--leaf-soft:#e7f4df;--mint:#d8efcd;--cream:#fff9ea;--paper:#fffdf8;--line:#cfe0c8;--blue:#3f9ff1;--shadow:0 8px 0 rgba(49,84,57,.12)}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f1f7ec;color:var(--ink);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.58;word-break:keep-all}h1,h2,h3,.brand-name,.btn,.price{font-family:'Jua',system-ui,sans-serif;font-weight:400}a{color:inherit}.wrap{width:min(100% - 32px,1080px);margin:auto}
     .top{display:flex;align-items:center;justify-content:space-between;min-height:72px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none}.brand-mark{width:46px;height:46px;display:grid;place-items:center;border-radius:15px;background:var(--leaf-soft);box-shadow:0 4px 0 #c5dfba;overflow:hidden}.brand-mark img{width:90%;height:90%;object-fit:contain}.brand-name{font-size:23px;line-height:1}.brand small{display:block;margin-bottom:3px;color:#5b8a68;font-family:system-ui,sans-serif;font-size:8px;font-weight:900;letter-spacing:.14em}.top-link{padding:10px 15px;border:2px solid #c7dcc1;border-radius:999px;background:var(--paper);color:#376348;font-size:13px;font-weight:900;text-decoration:none}
@@ -31,7 +33,9 @@
     .principles{position:relative;overflow:hidden;background:linear-gradient(180deg,#eef7e8,#e3f1dc);border-block:1px solid #d0e2ca}.principles:after{content:"";position:absolute;right:-90px;bottom:-110px;width:310px;height:310px;border-radius:50%;background:#bdddae;opacity:.5}.principle-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.principle{min-height:220px;padding:18px;border:2px solid #d6e6d0;border-radius:23px;background:var(--paper);box-shadow:0 7px 0 #caddc3}.principle-art{width:76px;height:76px;display:grid;place-items:center;margin-bottom:12px;border-radius:24px;background:var(--leaf-soft);overflow:hidden}.principle-art img{width:92%;height:92%;object-fit:contain}.principle:nth-child(2) .principle-art{background:#e4f0fb}.principle:nth-child(3) .principle-art{background:#f5ead3}.principle:nth-child(4) .principle-art{background:#eee8d8}.principle h3{margin:0 0 6px;font-size:20px}.principle p{margin:0;color:#647269;font-size:13px}
     .pack{position:relative;overflow:hidden;display:grid;grid-template-columns:1.08fr .92fr;gap:26px;align-items:center;padding:34px;border:3px solid #d6c995;border-radius:30px;background:linear-gradient(145deg,#fff9e9,#e9f4dd);box-shadow:0 9px 0 #d5d2a9}.pack:before{content:"";position:absolute;left:-55px;top:-60px;width:180px;height:140px;border-radius:60% 40%;background:#b9dca7;opacity:.35;transform:rotate(-25deg)}.pack-copy,.pack-side{position:relative;z-index:1}.pack h2{margin:7px 0 4px;font-size:37px}.price{font-size:38px;color:#214f38}.price small{font-family:system-ui,sans-serif;font-size:13px;font-weight:800;color:#69756f}.pack ul{display:grid;gap:6px;margin:18px 0 0;padding:0;list-style:none;color:#506159}.pack li{position:relative;padding-left:18px}.pack li:before{content:"";position:absolute;left:0;top:.46em;width:9px;height:13px;border-radius:8px 2px 8px 2px;background:var(--leaf);transform:rotate(-28deg)}.pack-side{display:grid;grid-template-columns:1fr 160px;gap:14px;align-items:end;padding:20px;border:2px solid #dbe7d5;border-radius:22px;background:#fffdf9}.pack-side strong{display:block;margin-bottom:7px;font-family:'Jua',system-ui,sans-serif;font-size:20px;font-weight:400}.pack-side p{margin:0 0 15px;color:#66736d;font-size:13px}.pack-art{align-self:stretch;display:grid;place-items:end center;overflow:hidden;border-radius:17px;background:linear-gradient(180deg,#e9f4de,#f8efcf)}.pack-art img{width:145px;max-height:160px;object-fit:contain;filter:drop-shadow(0 7px 4px rgba(44,62,43,.16))}.soon{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#f1e5b9;color:#6e5a22;font-size:11px;font-weight:900}.soon:before{content:"";width:9px;height:13px;border-radius:8px 2px 8px 2px;background:#89ad54;transform:rotate(-25deg)}
     .faq{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.faq article{position:relative;padding:24px 20px 20px;border:2px solid var(--line);border-radius:21px;background:var(--paper);box-shadow:0 6px 0 #dae6d5}.faq-index{display:block;margin-bottom:12px;color:#7eaa72;font-family:'Jua',system-ui,sans-serif;font-size:22px}.faq h3{margin:0 0 7px;font-size:19px}.faq p{margin:0;color:#65736b;font-size:13px}.closing{position:relative;text-align:left;padding:30px 260px 84px 0}.closing h2{margin-bottom:8px;font-size:38px}.closing p{color:var(--muted)}.closing-art{position:absolute;right:25px;bottom:34px;width:205px;filter:drop-shadow(0 9px 6px rgba(44,62,43,.15))}footer{padding:28px 0;border-top:1px solid #d9e6d6;color:#64736b;font-size:12px}.footer-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-row a{font-weight:800}
-    @media(max-width:860px){.hero{padding-top:32px}.hero-grid,.pack{grid-template-columns:1fr}.hero-art{min-height:365px}.game-grid{grid-template-columns:repeat(2,1fr)}.game,.game:nth-child(4),.game:nth-child(5){grid-column:auto}.principle-grid,.faq{grid-template-columns:repeat(2,1fr)}.pack-side{grid-template-columns:1fr 180px}}
+    .install-flow{padding-top:64px!important}.install-panel{position:relative;overflow:hidden;padding:31px;border:3px solid #bfd9b5;border-radius:31px;background:linear-gradient(145deg,#edf8e8,#fff8df);box-shadow:0 9px 0 #ccdfc5}.install-panel h2{margin:0 0 8px;font-size:37px}.install-panel>p{max-width:690px;margin:0;color:var(--muted)}.install-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:24px 0}.install-step{min-height:174px;padding:17px;border:2px solid #d6e5d1;border-radius:22px;background:#fffdf9}.install-step img{width:62px;height:62px;object-fit:contain;float:right}.install-step b{display:block;margin-bottom:7px;font-family:'Jua',system-ui,sans-serif;font-size:20px;font-weight:400}.install-step p{margin:0;color:#69766f;font-size:12px}.install-note{font-size:12px!important}.install-actions{display:flex;gap:11px;flex-wrap:wrap}.install-actions .btn{min-width:210px}
+    .install-modal{position:fixed;z-index:50;inset:0;display:none;place-items:center;padding:20px;background:rgba(24,50,38,.62)}.install-modal.on{display:grid}.install-card{width:min(100%,480px);max-height:min(720px,92vh);overflow:auto;padding:25px;border:3px solid #d4e6cd;border-radius:28px;background:#fffdf8;box-shadow:0 18px 70px rgba(13,35,24,.3)}.install-card-head{display:flex;align-items:center;gap:13px}.install-card-head img{width:72px;height:72px;object-fit:contain;background:#e7f4df;border-radius:22px}.install-card h2{margin:0;font-size:29px}.install-copy{margin:18px 0;color:#596a61}.browser-steps{display:grid;gap:10px;margin:18px 0}.browser-steps div{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:start;padding:12px;border:1px solid #dae7d5;border-radius:15px;background:#f7fbf4}.browser-steps div>b{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:#dff0d7;color:#2d6f4a}.browser-steps p{margin:3px 0 0;font-size:13px}.modal-close{width:100%;min-height:45px;border:0;background:transparent;color:#5c6c64;font-weight:900;cursor:pointer}.installed-state{padding:14px;border-radius:15px;background:#e7f4df;color:#2c6d49;font-weight:900}
+    @media(max-width:860px){.hero{padding-top:32px}.hero-grid,.pack{grid-template-columns:1fr}.hero-art{min-height:365px}.game-grid{grid-template-columns:repeat(2,1fr)}.game,.game:nth-child(4),.game:nth-child(5){grid-column:auto}.principle-grid,.faq{grid-template-columns:repeat(2,1fr)}.pack-side{grid-template-columns:1fr 180px}.install-steps{grid-template-columns:1fr}.install-step{min-height:0}}
     @media(max-width:560px){.wrap{width:min(100% - 22px,1080px)}.top{min-height:64px}.brand-mark{width:40px;height:40px}.brand-name{font-size:21px}.top-link{padding:9px 11px;font-size:11px}.hero h1{font-size:42px}.hero-art{min-height:315px}.actions{flex-direction:column}.btn{width:100%}.game-grid,.principle-grid,.faq{grid-template-columns:1fr}.game{min-height:305px}.game-visual{height:158px}.principle{min-height:0}.pack{padding:22px}.pack-side{grid-template-columns:1fr}.pack-art{height:165px;order:-1}.closing{padding:25px 0 245px;text-align:center}.closing-art{right:50%;bottom:28px;width:190px;transform:translateX(50%)}.hero-art{border-radius:27px}.hero-art:after{border-radius:21px}}
   </style>
 </head>
@@ -41,7 +45,7 @@
       <span class="brand-mark"><img src="assets/art/char/char_hopple_face.png" alt=""></span>
       <span><small>HOPPLEWOOD</small><span class="brand-name">호플우드</span></span>
     </a>
-    <a class="top-link" href="#parents">부모님 먼저 보기</a>
+    <a class="top-link" href="#install">무료로 설치하기</a>
   </header>
   <section class="hero">
     <div class="wrap hero-grid">
@@ -49,7 +53,7 @@
         <span class="eyebrow">5–7세 · 가입 없음 · 광고 없음</span>
         <h1>아이가 게임할 거라면,<br><em>생각을 쓰는 놀이</em>로.</h1>
         <p class="lead">호플우드는 교구에서 하던 규칙 놀이를 짧은 숲속 게임으로 옮겼어요. 아이는 즐겁게 놀고, 부모님은 어떤 생각 과정을 썼는지 확인할 수 있어요.</p>
-        <div class="actions"><a class="btn primary" href="./?from=start">무료 게임 2개 시작하기</a><button class="btn secondary" type="button" id="shareBtn">가족에게 공유하기</button></div>
+        <div class="actions"><button class="btn primary" type="button" id="installHero" onclick="openInstall('hero')">무료로 앱 설치하기</button><a class="btn secondary" data-app-link href="./?from=start">설치 없이 체험하기</a><button class="btn secondary" type="button" id="shareBtn">가족에게 공유하기</button></div>
         <p class="share-status" id="shareStatus" role="status"></p>
         <div class="chips"><span>설치 없이 바로</span><span>3–10분 짧은 놀이</span><span>하트·감점 없음</span><span>기기 안에만 저장</span></div>
       </div>
@@ -58,6 +62,19 @@
   </section>
 
   <main>
+    <section class="wrap install-flow" id="install">
+      <div class="install-panel">
+        <h2>홈 화면에 두고, 필요할 때 바로</h2>
+        <p>스토어를 기다리지 않아도 지금 설치할 수 있어요. 설치 후에는 전체 화면으로 열리고, 한 번 불러온 놀이는 인터넷이 끊겨도 다시 할 수 있어요.</p>
+        <div class="install-steps">
+          <article class="install-step"><img src="assets/art/char/char_hopple_guide.png" alt=""><b>1. 무료로 설치</b><p>아래 버튼을 누르고 휴대폰 홈 화면에 호플우드를 추가해요.</p></article>
+          <article class="install-step"><img src="assets/art/face/face_panda_base.png" alt=""><b>2. 두 게임 체험</b><p>얼굴 짝꿍과 비버 집짓기를 가입이나 광고 없이 해 봐요.</p></article>
+          <article class="install-step"><img src="assets/art/char/char_beaver_happy.png" alt=""><b>3. 마음에 들면 확장</b><p>부모님 메뉴에서 기본 놀이팩 이용권으로 나머지 게임을 열어요.</p></article>
+        </div>
+        <div class="install-actions"><button class="btn primary" type="button" onclick="openInstall('section')">내 휴대폰에 설치하기</button><a class="btn secondary" data-app-link href="./?from=install-section">먼저 무료로 해보기</a></div>
+        <p class="install-note">설치는 무료예요. 결제는 기본 놀이팩을 원할 때 부모님 메뉴에서만 진행합니다.</p>
+      </div>
+    </section>
     <section class="wrap" id="games">
       <div class="section-head"><small>FIVE SHORT GAMES</small><h2>다섯 가지 생각을, 다섯 가지 놀이로</h2><p>‘두뇌 발달’을 보장하는 앱이 아니라, 관찰·수·공간·전략·조절을 실제 규칙 안에서 써 보는 놀이예요.</p></div>
       <div class="game-grid">
@@ -104,7 +121,7 @@
       <div class="pack">
         <div class="pack-copy"><span class="soon">초기 공개 중</span><h2>호플우드 기본 놀이팩</h2><div class="price">6,600원 <small>1회 · 구독 아님</small></div><ul><li>잠긴 게임 3개와 다섯 게임의 모든 난이도</li><li>숲 퀘스트 전체와 부모 리포트 전체</li><li>우리 가족 목소리 녹음 기능</li></ul></div>
         <div class="pack-side">
-          <div><strong>지금은 이렇게 이용해요</strong><p>초기 공개 기간에는 소수 테스트 가정에 이용권 코드를 직접 전달하고 있어요. 정식 결제 링크는 준비되는 대로 이 페이지에 연결합니다.</p><a class="btn primary" href="./?from=pack">무료 놀이부터 해보기</a></div>
+          <div><strong>무료로 해 본 뒤 결정하세요</strong><p>무료 게임 2개를 먼저 이용하고, 기본 놀이팩이 필요하면 구매 안내에서 결제·코드 입력 순서를 확인할 수 있어요.</p><a class="btn primary" data-buy-link href="buy.html?from=start-pack">이용권 구매 방법 보기</a></div>
           <div class="pack-art"><img src="assets/art/forest/stage_house_after.png" alt="완성된 비버의 숲속 집"></div>
         </div>
       </div>
@@ -119,16 +136,61 @@
       </div>
     </section>
 
-    <section class="wrap closing"><h2>호플이와 첫 놀이를 시작해 볼까요?</h2><p>얼굴 짝꿍과 비버 집짓기는 무료로 바로 열려 있어요.</p><a class="btn primary" href="./?from=bottom">무료로 시작하기</a><img class="closing-art" src="assets/art/char/char_hopple_happy.png" alt="기뻐하는 호플이"></section>
+    <section class="wrap closing"><h2>호플이와 첫 놀이를 시작해 볼까요?</h2><p>얼굴 짝꿍과 비버 집짓기는 무료로 바로 열려 있어요.</p><a class="btn primary" data-app-link href="./?from=bottom">무료로 시작하기</a><img class="closing-art" src="assets/art/char/char_hopple_happy.png" alt="기뻐하는 호플이"></section>
   </main>
   <footer><div class="wrap footer-row"><span>© 2026 Hopplewood · 1인 개발 프로젝트</span><span><a href="privacy.html">개인정보와 기기 저장 안내</a> · <a href="./">게임 열기</a></span></div></footer>
+  <div class="install-modal" id="installModal" role="dialog" aria-modal="true" aria-labelledby="installTitle" onclick="if(event.target===this)closeInstall()">
+    <div class="install-card">
+      <div class="install-card-head"><img src="assets/art/char/char_hopple_face.png" alt=""><div><span class="eyebrow">무료 설치</span><h2 id="installTitle">호플우드를 홈 화면에</h2></div></div>
+      <div id="installInstructions"></div>
+      <button class="modal-close" type="button" onclick="closeInstall()">나중에 할게요</button>
+    </div>
+  </div>
+  <script src="games/funnel.js?v=59"></script>
   <script>
     const shareUrl='https://yujin-813.github.io/hopplewood/start.html';
+    let deferredPrompt=null;
+    const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+    function sourceQuery(){
+      const inQ=new URLSearchParams(location.search),out=new URLSearchParams();
+      ['utm_source','utm_medium','utm_campaign','ref'].forEach(k=>{if(inQ.get(k))out.set(k,inQ.get(k));});
+      return out;
+    }
+    document.querySelectorAll('[data-app-link],[data-buy-link]').forEach(link=>{
+      const url=new URL(link.getAttribute('href'),location.href),q=sourceQuery();
+      q.forEach((v,k)=>url.searchParams.set(k,v)); link.href=url.href;
+      link.addEventListener('click',()=>hwFunnel(link.hasAttribute('data-buy-link')?'checkout_guide_click':'trial_click',{channel:'web'}));
+    });
+    function installFallback(){
+      const ua=navigator.userAgent,isIOS=/iPhone|iPad|iPod/.test(ua),inApp=/KAKAOTALK|Instagram|FBAN|FBAV|NAVER/i.test(ua);
+      if(standalone())return '<p class="installed-state">이미 홈 화면 앱으로 열려 있어요.</p>';
+      if(inApp)return '<p class="install-copy">카카오톡·인스타그램 안에서는 바로 설치되지 않을 수 있어요. 오른쪽 위 메뉴에서 <b>Safari로 열기</b> 또는 <b>Chrome으로 열기</b>를 선택한 뒤 아래 순서로 진행해 주세요.</p><div class="browser-steps"><div><b>1</b><p>브라우저 메뉴를 열어요.</p></div><div><b>2</b><p><b>홈 화면에 추가</b> 또는 <b>앱 설치</b>를 선택해요.</p></div><div><b>3</b><p>추가를 누르면 홈 화면에 호플우드가 생겨요.</p></div></div>';
+      if(isIOS)return '<p class="install-copy">아이폰과 아이패드는 Safari에서 아래 순서로 설치해요.</p><div class="browser-steps"><div><b>1</b><p>Safari 아래쪽의 <b>공유</b> 버튼을 눌러요.</p></div><div><b>2</b><p>메뉴에서 <b>홈 화면에 추가</b>를 선택해요.</p></div><div><b>3</b><p>오른쪽 위 <b>추가</b>를 누르면 끝이에요.</p></div></div>';
+      return '<p class="install-copy">브라우저 메뉴에서 <b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택해 주세요.</p><div class="browser-steps"><div><b>1</b><p>브라우저 오른쪽 위 메뉴를 열어요.</p></div><div><b>2</b><p><b>앱 설치</b>를 선택해요.</p></div><div><b>3</b><p>설치를 누르면 홈 화면에서 바로 열 수 있어요.</p></div></div>';
+    }
+    async function openInstall(place){
+      hwFunnel('install_click',{channel:'web',detail:place||'unknown'});
+      if(deferredPrompt){
+        deferredPrompt.prompt(); const choice=await deferredPrompt.userChoice;
+        hwFunnel('install_prompt_result',{channel:'web',result:choice.outcome});
+        if(choice.outcome==='accepted'){deferredPrompt=null;return;}
+      }
+      document.getElementById('installInstructions').innerHTML=installFallback();
+      document.getElementById('installModal').classList.add('on');
+    }
+    function closeInstall(){document.getElementById('installModal').classList.remove('on');}
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;hwFunnel('install_prompt_ready',{channel:'web'});});
+    window.addEventListener('appinstalled',()=>{hwFunnel('install_complete',{channel:'web'});closeInstall();});
+    window.addEventListener('load',()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInstall();});
+    hwFunnel('landing_view',{channel:'web'});
     document.getElementById('shareBtn').addEventListener('click',async()=>{
       const status=document.getElementById('shareStatus');
       try{
+        hwFunnel('share_click',{channel:'web'});
         if(navigator.share){ await navigator.share({title:'호플우드',text:'5–7세를 위한 생각을 쓰는 숲속 놀이예요. 무료 게임 2개부터 해볼 수 있어요.',url:shareUrl}); status.textContent='공유했어요.'; }
         else{ await navigator.clipboard.writeText(shareUrl); status.textContent='소개 페이지 주소를 복사했어요.'; }
+        hwFunnel('share_complete',{channel:'web'});
       }catch(e){ if(e&&e.name!=='AbortError')status.textContent='주소를 복사해 공유해 주세요: '+shareUrl; }
     });
   </script>
