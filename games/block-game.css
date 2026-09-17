@@ -1,0 +1,69 @@
+/* 비버 집짓기 — 조각 맞추기 퍼즐 */
+
+.g5-top{display:flex;align-items:center;gap:10px}
+.g5-progress{flex:1;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:16px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.g5-count{font-family:'Jua',system-ui,sans-serif;font-size:17px;white-space:nowrap}
+.g5-houses{display:flex;gap:6px}
+.g5-houses i{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:#f1eee6;color:#b9b2a2}
+.g5-houses i .ui-icon{width:18px;height:18px}
+.g5-houses i[data-state="done"]{background:#ffe3b3;color:#b0682a}
+.g5-houses i[data-state="now"]{background:#fff;color:#c97a2f;box-shadow:0 0 0 3px #f7c77f}
+.g5-beaver{width:48px;height:48px;border-radius:50%;background:#fff1dc;overflow:hidden;flex:none}
+.g5-guide{font-size:16px;line-height:1.35;padding:9px 12px}
+
+.g5-yard{position:relative;padding:14px;border-radius:26px;background:radial-gradient(circle at 12% 88%,rgba(255,255,255,.35) 0 16px,transparent 17px),linear-gradient(160deg,#9fd8e8,#6fbfd6);box-shadow:0 6px 0 rgba(40,90,110,.14)}
+.g5-board{display:grid;gap:5px;width:min(100%,calc(var(--g5-cols,4) * 76px));margin:0 auto}
+.g5-cell{position:relative;min-height:0;aspect-ratio:1;padding:0;border-radius:12px;background:url(../assets/art/board/tile_ground.png) center/100% 100%;border:0;transition:transform .1s}
+
+.g5-cell:active:not(:disabled){transform:scale(.95)}
+.g5-cell.water{background:url(../assets/art/board/tile_water.png) center/100% 100%;opacity:.85}
+.g5-cell.water:before{display:none;content:"";position:absolute;left:18%;right:18%;top:45%;height:6px;border-radius:6px;border-top:3px solid rgba(255,255,255,.55)}
+.g5-cell.filled{background-position:center;background-size:100% 100%}
+.g5-cell.filled:before{display:none}
+.g5-cell.join-right{border-top-right-radius:0;border-bottom-right-radius:0}
+.g5-cell.join-left{border-top-left-radius:0;border-bottom-left-radius:0}
+.g5-cell.join-down{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.g5-cell.join-up{border-top-left-radius:0;border-top-right-radius:0}
+.g5-cell.join-right:before{top:0;bottom:6px;right:-6px;width:7px}
+.g5-cell.join-down:before{left:3px;right:3px;bottom:-6px;height:7px}
+.g5-cell.drop{animation:g5Drop .32s cubic-bezier(.2,1.5,.45,1)}
+.g5-cell.nope{animation:g5Nope .36s ease}
+.g5-cell.hint{box-shadow:inset 0 0 0 4px #ffcf33,0 0 0 3px rgba(255,255,255,.8);animation:g5Hint 1s ease-in-out infinite}
+.g5-board.done .g5-cell.filled{animation:g5Done .9s ease}
+
+.g5-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g5-tool{min-height:52px;border-radius:16px;background:#fff;border:1px solid rgba(40,51,47,.1);box-shadow:0 4px 0 rgba(37,50,46,.08);font-size:16px;font-weight:800;color:#3d4f49;display:flex;align-items:center;justify-content:center;gap:6px}
+.g5-tool:disabled{opacity:.45;box-shadow:none}
+.g5-tool[hidden]{display:none}
+.g5-tools:has(#g5RotateBtn[hidden]){grid-template-columns:1fr}
+
+.g5-tray{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;min-height:96px;padding:12px;border-radius:22px;background:#fff8ea;border:2px dashed #ecd3a6}
+.g5-tray-empty{margin:auto;color:#9b7a45;font-weight:800}
+.g5-piece{position:relative;min-width:76px;min-height:76px;padding:10px;border-radius:18px;background:#fff;border:3px solid #f0e2c6;box-shadow:0 5px 0 rgba(120,80,40,.12);display:grid;place-items:center;transition:transform .12s,border-color .12s}
+.g5-piece[data-on="1"]{border-color:#3f9ff1;transform:translateY(-4px);box-shadow:0 9px 0 rgba(63,159,241,.2)}
+.g5-piece.spin .g5-shape{animation:g5Spin .28s ease}
+.g5-shape{display:grid;gap:3px;width:calc(var(--cols) * 22px)}
+.g5-shape i{width:22px;height:22px;border-radius:6px}
+.g5-shape i.log{background-position:center;background-size:100% 100%}
+.g5-shape i.log.join-right{border-top-right-radius:0;border-bottom-right-radius:0}
+.g5-shape i.log.join-left{border-top-left-radius:0;border-bottom-left-radius:0}
+.g5-shape i.log.join-down{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.g5-shape i.log.join-up{border-top-left-radius:0;border-top-right-radius:0}
+.g5-rotate-tag{position:absolute;right:-8px;top:-8px;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:#3f9ff1;color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.g5-rotate-tag .ui-icon{width:16px;height:16px}
+.g5-win-art{display:block;width:110px;height:110px;margin:auto}
+
+@keyframes g5Drop{0%{transform:scale(.6)}100%{transform:none}}
+@keyframes g5Nope{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes g5Hint{50%{box-shadow:inset 0 0 0 4px #ffe488,0 0 0 6px rgba(255,255,255,.9)}}
+@keyframes g5Done{40%{transform:translateY(-6px);filter:brightness(1.12)}}
+@keyframes g5Spin{from{transform:rotate(-90deg)}to{transform:none}}
+
+@media (max-width:380px){.g5-shape i{width:18px;height:18px}.g5-shape{width:calc(var(--cols) * 18px)}.g5-piece{min-width:66px;min-height:66px;padding:8px}}
+@media (prefers-reduced-motion:reduce){.g5-cell.hint,.g5-cell.drop,.g5-board.done .g5-cell.filled,.g5-piece.spin .g5-shape{animation:none!important}}
+
+.g5-yard{position:relative}
+.g5-house{position:absolute;left:50%;top:50%;width:min(70%,260px);transform:translate(-50%,-50%);z-index:5;pointer-events:none;animation:g5House .7s cubic-bezier(.2,1.4,.45,1)}
+@keyframes g5House{0%{transform:translate(-50%,-30%) scale(.4);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.g5-house{animation:none}}
+.g5-cell.filled,.g5-shape i.log{border-radius:4px!important}

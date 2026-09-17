@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>호플우드</title>
+<meta name="description" content="교구 놀이를 게임으로. 심심할 때 꺼내 노는 숲속 친구들의 생각 놀이터">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#7dc06a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="호플우드">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<style>
+  :root{
+    --ink:#33322e; --paper:#fff;
+    --blue:#3f7bd6; --blue-soft:#d7e6fb;
+    --red:#eb5d55;  --red-soft:#fcdcd9;
+    --amber:#e8a52e; --amber-soft:#fce9c2;
+    --tile:#f4efe4; --tile-line:#e3d9c3;
+    --glow:#ffd94a; --foe:#ff8a3d;
+    --bg1:#bfe6b8; --bg2:#e9f6d8; --board-bg:#7dc06a;
+    --radius:22px; --shadow:0 8px 0 rgba(0,0,0,.14);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:'Jua',system-ui,sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));background-attachment:fixed;
+    display:flex;justify-content:center;min-height:100dvh;overflow-x:hidden}
+  .app{width:100%;max-width:460px;padding:14px 14px 26px;display:flex;flex-direction:column;gap:12px}
+
+  button{font-family:inherit;cursor:pointer;border:none;color:var(--ink)}
+  .icon-sprite{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+  .ui-icon{width:1.2em;height:1.2em;display:inline-block;flex:none;vertical-align:-.2em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .btn{background:var(--paper);border-radius:18px;padding:14px 18px;font-size:20px;
+    box-shadow:var(--shadow);border:3px solid #fff;transition:transform .08s}
+  .btn:active{transform:translateY(3px);box-shadow:0 4px 0 rgba(0,0,0,.14)}
+  .btn.big{font-size:24px;padding:18px}
+  .btn.blue{background:var(--blue);color:#fff;border-color:#fff}
+  .btn.red{background:var(--red);color:#fff;border-color:#fff}
+  .btn.ghost{background:rgba(255,255,255,.75)}
+
+  .screen{display:none;flex-direction:column;gap:14px}
+  .screen.on{display:flex}
+
+  /* 허브 */
+  .brand{text-align:center;margin-top:6px}
+  .brand .em{font-size:44px;letter-spacing:4px}
+  .brand h1{font-size:44px;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.16);-webkit-text-stroke:2px rgba(0,0,0,.12);margin:6px 0 2px}
+  .brand p{font-size:16px;color:#5c5a52;margin:0}
+  .panel{background:rgba(255,255,255,.72);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .panel h3{margin:0 0 10px;font-size:17px;color:#5c5a52;font-weight:400}
+  .themes{display:flex;gap:10px}
+  .theme{flex:1;border-radius:16px;padding:12px 6px;font-size:14px;background:#fff;border:3px solid #fff;
+    box-shadow:0 5px 0 rgba(0,0,0,.12);line-height:1.5;transition:transform .08s}
+  .theme .em{font-size:24px;display:block}
+  .theme[data-on="1"]{border-color:var(--glow);transform:translateY(2px)}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tile{background:#fff;border-radius:20px;padding:18px 12px 14px;box-shadow:var(--shadow);
+    border:4px solid #fff;text-align:center;position:relative;transition:transform .08s}
+  .tile:active{transform:translateY(3px)}
+  .tile .ic{font-size:44px;line-height:1.1}
+  .tile .tt{font-size:19px;margin-top:8px}
+  .tile .sub{font-size:12.5px;color:#7a776e;margin-top:3px;line-height:1.35}
+  .tile.locked{opacity:.55;box-shadow:0 5px 0 rgba(0,0,0,.1)}
+  .tile .lock{position:absolute;top:9px;right:11px;font-size:18px}
+  .tile.g1{border-color:#9ad089} .tile.g2{border-color:#f2b661}
+
+  /* 준비 화면 */
+  .setup{align-items:center;text-align:center}
+  .setup .big-em{font-size:52px}
+  .setup h2{font-size:30px;margin:2px 0 0}
+  .setup .desc{font-size:16px;color:#5c5a52;max-width:340px;line-height:1.5;margin:0}
+  .seg{display:flex;background:rgba(255,255,255,.7);border-radius:16px;padding:5px;gap:5px;width:100%;box-shadow:var(--shadow)}
+  .seg button{flex:1;border-radius:12px;padding:12px;font-size:16px;background:transparent;color:#6a675f}
+  .seg button[data-on="1"]{background:#fff;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.12)}
+  .setup .row{display:flex;gap:12px;width:100%}
+  .setup .row .btn{flex:1}
+
+  /* 게임 상단 공통 */
+  .scorebar{display:flex;gap:10px}
+  .team{flex:1;background:var(--paper);border-radius:16px;padding:8px 12px;box-shadow:var(--shadow);
+    border:3px solid #fff;display:flex;align-items:center;gap:8px}
+  .team.blue{border-color:var(--blue)} .team.red{border-color:var(--red)}
+  .team .name{font-size:16px}
+  .team .dots{display:flex;gap:5px;margin-left:auto}
+  .dot{width:14px;height:14px;border-radius:50%;background:#e7e2d6;border:2px solid #d8d1bf}
+  .team.blue .dot.f{background:var(--blue);border-color:var(--blue)}
+  .team.red .dot.f{background:var(--red);border-color:var(--red)}
+  .team[data-turn="1"]{transform:translateY(-3px);box-shadow:0 11px 0 rgba(0,0,0,.14)}
+  .turnmsg{text-align:center;font-size:20px;min-height:28px;color:#4a4841;background:rgba(255,255,255,.72);border-radius:14px;padding:7px 10px}
+  .turnmsg b.blue{color:var(--blue)} .turnmsg b.red{color:var(--red)}
+  .foot{display:flex;gap:10px}
+  .foot .btn{flex:1;font-size:17px;padding:12px}
+
+  .board{position:relative;width:100%;aspect-ratio:1/1;background:var(--board-bg);border-radius:var(--radius);
+    padding:10px;box-shadow:var(--shadow);border:4px solid rgba(255,255,255,.55)}
+
+  /* 게임1 */
+  .cells{position:absolute;inset:10px;display:grid}
+  .cell{position:relative}
+  .cell .tile-bg{position:absolute;inset:3px;border-radius:10px;background:var(--tile);box-shadow:inset 0 0 0 2px var(--tile-line)}
+  .cell .homeband{position:absolute;inset:3px;border-radius:10px;pointer-events:none}
+  .cell.homeA .homeband{box-shadow:inset 0 0 0 3px var(--blue)}
+  .cell.homeB .homeband{box-shadow:inset 0 0 0 3px var(--red)}
+  .cell .ring{position:absolute;inset:6px;border-radius:50%;border:4px dashed var(--glow);opacity:0;transform:scale(.5);pointer-events:none}
+  .cell .num{position:absolute;z-index:2;inset:0;display:flex;align-items:center;justify-content:center;gap:2px;font-size:18px;opacity:0;pointer-events:none}
+  .route-num{width:20px;height:20px;display:grid;place-items:center;border-radius:999px;color:#fff;font-size:11px;font-weight:950;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .route-num.A{background:var(--blue)}.route-num.B{background:var(--red)}
+  .cell.hl .ring{opacity:1;transform:scale(1);border-color:var(--glow);border-style:dashed;animation:pulse 1s infinite}
+  .cell.hl .num{opacity:1;color:#8a6b00}
+  .cell.peek .ring{opacity:1;transform:scale(1);border-color:var(--foe);border-style:solid}
+  .cell.peek .num{opacity:1;color:#c25400}
+  .cell.stepO .ring{opacity:.55;transform:scale(.6);border-style:dotted;border-color:var(--glow)}
+  .cell.stepO .num{opacity:.7;color:#9c7a00}
+  .cell.stepF .ring{opacity:.5;transform:scale(.6);border-style:dotted;border-color:var(--foe)}
+  .cell.stepF .num{opacity:.65;color:#b5551f}
+  .cell.route-cross .tile-bg{box-shadow:inset 0 0 0 4px #8b65b5;background:#f3eafb}
+  .cell.route-cross .ring{opacity:1;transform:scale(.9);border-style:dashed;border-color:#8b65b5}
+  .cell.route-cross .num{opacity:1}
+  @keyframes pulse{50%{transform:scale(.85)}}
+  .pieces{position:absolute;inset:10px;pointer-events:none}
+  .pc{position:absolute;transition:left .26s cubic-bezier(.3,1.4,.5,1),top .26s cubic-bezier(.3,1.4,.5,1);display:flex;align-items:center;justify-content:center}
+  .pc .chip{width:80%;height:80%;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;
+    font-size:min(6.4vw,28px);position:relative;box-shadow:0 5px 0 rgba(0,0,0,.18);border:4px solid var(--blue)}
+  .pc.B .chip{border-color:var(--red);background:var(--red-soft)}
+  .pc .arrow{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#fff;border-radius:9px;font-size:14px;line-height:1.25;padding:0 5px;box-shadow:0 2px 0 rgba(0,0,0,.15);border:2px solid #eee;color:#555}
+  .pc .arrow .ui-icon{width:13px;height:13px;vertical-align:middle}
+  .pc.sel .chip{animation:bob .6s ease-in-out infinite;box-shadow:0 10px 0 rgba(0,0,0,.2);outline:4px solid var(--glow)}
+  .pc.compare .chip{outline:4px dashed #8b65b5;outline-offset:2px}
+  @keyframes bob{50%{transform:translateY(-6px)}}
+  .pc.pop .chip{animation:pop .34s ease}
+  @keyframes pop{40%{transform:scale(1.25)}}
+  .pc.gone .chip{animation:gone .4s ease forwards}
+  @keyframes gone{100%{transform:scale(0) rotate(220deg);opacity:0}}
+  .pc.home .chip{animation:homejump .5s ease forwards}
+  @keyframes homejump{40%{transform:translateY(-22px) scale(1.15)}100%{transform:translateY(-8px) scale(.2);opacity:0}}
+
+  /* 게임2 */
+  .patterns{display:flex;flex-direction:column;gap:8px}
+  .patrow{display:flex;align-items:center;gap:10px;background:var(--paper);border-radius:14px;padding:8px 12px;box-shadow:var(--shadow);border:3px solid #fff}
+  .patrow.blue{border-color:var(--blue)} .patrow.red{border-color:var(--red)}
+  .patrow[data-turn="1"]{transform:translateY(-2px);box-shadow:0 10px 0 rgba(0,0,0,.14)}
+  .patrow .pl{font-size:15px;min-width:86px}
+  .pc-line{display:flex;gap:6px}
+  .mini{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;border:3px solid var(--blue);background:var(--blue-soft)}
+  .mini.k1{border-color:var(--amber);background:var(--amber-soft)}
+  .grid2{position:absolute;inset:10px;display:grid}
+  .c2{position:relative}
+  .c2 .slot{position:absolute;inset:15%;border-radius:50%;background:rgba(0,0,0,.13);box-shadow:inset 0 0 0 2px rgba(255,255,255,.22)}
+  .c2 .disc{position:absolute;inset:11%;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:min(5.4vw,23px);box-shadow:0 4px 0 rgba(0,0,0,.2);border:4px solid var(--blue);background:var(--blue-soft);animation:drop .28s cubic-bezier(.3,1.5,.5,1)}
+  .c2 .disc.k1{border-color:var(--amber);background:var(--amber-soft)}
+  .c2.win .disc{animation:winpulse .7s ease infinite;outline:4px solid var(--glow)}
+  @keyframes drop{0%{transform:translateY(-28px) scale(.6);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes winpulse{50%{transform:scale(1.12)}}
+  .picker2{display:flex;align-items:center;gap:12px;justify-content:center;background:rgba(255,255,255,.72);border-radius:16px;padding:8px 12px}
+  .picker2 .plbl{font-size:15px;color:#54524b}
+  .pick{width:54px;height:54px;border-radius:50%;font-size:27px;background:#fff;border:4px solid #ddd;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:transform .08s}
+  .pick.k0[data-on="1"]{border-color:var(--blue);background:var(--blue-soft)}
+  .pick.k1[data-on="1"]{border-color:var(--amber);background:var(--amber-soft)}
+  .pick[data-on="1"]{transform:translateY(2px)}
+
+  .floatmsg{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);font-size:25px;color:#fff;
+    background:rgba(0,0,0,.4);padding:8px 18px;border-radius:20px;opacity:0;pointer-events:none;z-index:5;max-width:90%;text-align:center}
+  .floatmsg.show{animation:floaty 1.2s ease forwards}
+  @keyframes floaty{15%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-150%) scale(1)}}
+
+  .legend{background:rgba(255,255,255,.72);border-radius:16px;padding:10px 12px;display:flex;gap:8px;justify-content:space-between}
+  .route-guide{min-height:34px;display:flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:13px;background:#fff8dc;border:1px solid #eadca8;color:#665627;font-size:11px;font-weight:850;text-align:center}
+  .lg{flex:1;text-align:center;font-size:12.5px;line-height:1.4;color:#54524b}
+  .lg .em{font-size:22px;display:block;margin-bottom:2px}
+  .lg b{color:#3a3934}
+
+  .overlay{position:fixed;inset:0;background:rgba(30,28,24,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+  .overlay.on{display:flex}
+  .overlay>.card{max-height:calc(100dvh - 28px);overflow:auto}
+  .card{background:#fff;border-radius:26px;padding:24px 20px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 0 rgba(0,0,0,.2)}
+  .card h2{margin:2px 0 14px;font-size:30px}
+  .card p{font-size:18px;line-height:1.6;color:#55534c;margin:8px 0}
+  .card .win-em{min-height:92px;margin:4px;display:grid;place-items:center}
+  .card .win-em>.ui-icon{width:74px;height:74px;color:#e6a72e;stroke-width:1.55}
+  .card .btn{margin-top:8px;width:100%}
+  .rules{text-align:left;font-size:16px;line-height:1.6;color:#4c4a44}
+  .rules .r{display:flex;gap:10px;margin:11px 0;align-items:flex-start}
+  .rules .r .n{background:var(--glow);border-radius:50%;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:16px}
+
+  .confetti{position:fixed;top:-24px;width:10px;height:18px;border-radius:3px;z-index:30;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}}
+
+  /* 2차 디자인 시스템: 아이가 스스로 고르고 즐기는 게임 놀이터 */
+  :root{
+    --ink:#213432; --muted:#60706c; --paper:#fffdf8;
+    --blue:#4d74e6; --blue-soft:#e8edff;
+    --red:#f0645b; --red-soft:#ffe9e5;
+    --amber:#f1aa3f; --amber-soft:#fff0cf;
+    --tile:#fffaf0; --tile-line:#e7dcc5;
+    --glow:#ffd764; --foe:#ff8a3d;
+    --bg1:#eaf5e6; --bg2:#f9f4e8; --board-bg:#70ad76;
+    --deep:#173f3b; --mint:#5fc1a6; --line:rgba(28,69,62,.12);
+    --radius:24px; --shadow:0 8px 0 rgba(35,68,62,.12),0 14px 28px rgba(35,68,62,.08);
+  }
+  body{
+    background:
+      radial-gradient(circle at 14% 2%,rgba(255,217,100,.28),transparent 28%),
+      radial-gradient(circle at 92% 18%,rgba(95,193,166,.2),transparent 30%),
+      linear-gradient(160deg,var(--bg1),var(--bg2));
+    color:var(--ink)
+  }
+  .app{max-width:480px;padding:max(14px,env(safe-area-inset-top)) 14px max(28px,env(safe-area-inset-bottom));gap:16px}
+  button{min-height:44px}
+  button:focus-visible{outline:4px solid #244dff;outline-offset:3px}
+  button:disabled{cursor:default}
+  .screen{gap:16px}
+  .hub-top{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 0}
+  .wordmark{display:flex;align-items:center;gap:8px;font-size:20px;color:var(--deep)}
+  .wordmark .mark{width:34px;height:34px;display:grid;place-items:center;border-radius:12px;background:var(--deep);color:#fff;box-shadow:0 4px 0 rgba(23,63,59,.18)}
+  .stage-pill{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .hero{position:relative;overflow:hidden;min-height:232px;border-radius:32px;padding:24px 22px 18px;background:linear-gradient(145deg,#194943,#286c60);color:#fff;box-shadow:0 10px 0 rgba(23,63,59,.15),0 20px 38px rgba(23,63,59,.18)}
+  .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.07)}
+  .hero:before{width:190px;height:190px;right:-76px;top:-75px}
+  .hero:after{width:130px;height:130px;left:-60px;bottom:-68px}
+  .hero .eyebrow{position:relative;z-index:1;display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.13);font-size:12px;letter-spacing:.04em;color:#dff8ef}
+  .hero h1{position:relative;z-index:1;margin:12px 0 5px;font-size:31px;line-height:1.18;letter-spacing:-.02em}
+  .hero p{position:relative;z-index:1;margin:0;color:rgba(255,255,255,.76);font-family:system-ui,sans-serif;font-size:14px;line-height:1.45}
+  .hero .em{position:absolute;right:16px;top:58px;font-size:53px;letter-spacing:-13px;filter:drop-shadow(0 8px 6px rgba(0,0,0,.17));transform:rotate(-3deg)}
+  .hero-meter{position:absolute;z-index:2;left:20px;right:20px;bottom:17px;padding:11px 13px;border-radius:16px;background:rgba(255,255,255,.11);backdrop-filter:blur(8px)}
+  .hero-meter .meter-copy{display:flex;justify-content:space-between;font-size:12px;color:#e8fff7}
+  .hero-meter .track{height:7px;margin-top:7px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden}
+  .hero-meter .track i{display:block;width:40%;height:100%;border-radius:inherit;background:#ffd764}
+  .section-title{display:flex;align-items:end;justify-content:space-between;padding:2px 3px 0}
+  .section-title h2{margin:0;font-size:22px;color:var(--ink)}
+  .section-title span{font-family:system-ui,sans-serif;font-size:12px;color:var(--muted)}
+  .section-title.compact{margin-top:2px}
+  .section-title.compact h2{font-size:17px}
+  .tiles{display:grid;grid-template-columns:1fr;gap:12px}
+  .tile{min-height:118px;padding:15px 16px;display:grid;grid-template-columns:68px 1fr auto;grid-template-rows:auto auto auto;column-gap:14px;text-align:left;border:1px solid rgba(31,61,55,.09);border-radius:24px;box-shadow:var(--shadow)}
+  .tile .ic{grid-row:1/4;width:66px;height:66px;align-self:center;display:grid;place-items:center;border-radius:20px;font-size:38px;background:#eef7e8}
+  .tile.g2 .ic{background:#fff2da;font-size:31px}
+  .tile .game-no{align-self:center;font-family:system-ui,sans-serif;font-weight:800;font-size:11px;letter-spacing:.08em;color:#7a8b85}
+  .tile .tt{grid-column:2;margin:1px 0 0;font-size:21px;line-height:1.1}
+  .tile .sub{grid-column:2;margin:5px 0 0;font-family:system-ui,sans-serif;font-size:12px;line-height:1.35;color:var(--muted)}
+  .tile .go{grid-column:3;grid-row:1/4;align-self:center;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--deep);color:#fff;font-family:system-ui,sans-serif;font-size:18px}
+  .tile.g1,.tile.g2{border-color:rgba(31,61,55,.09)}
+  .roadmap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .mini-tile{min-height:112px;padding:12px 7px;border-radius:19px;border:1px dashed rgba(31,61,55,.19);background:rgba(255,255,255,.52);color:var(--muted);box-shadow:none;text-align:center}
+  .mini-tile .mi{display:block;font-size:26px;filter:grayscale(.15);margin-bottom:7px}
+  .mini-tile b{display:block;font-size:14px;color:#4d625d;font-weight:400}
+  .mini-tile small{display:block;margin-top:4px;font-family:system-ui,sans-serif;font-size:10px}
+  .premium-note{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:center;padding:14px 16px;border-radius:20px;background:#fff3d7;border:1px solid rgba(173,124,29,.15)}
+  .premium-note .lock-orb{width:42px;height:42px;display:grid;place-items:center;border-radius:15px;background:#fff;font-size:20px}
+  .premium-note strong{display:block;font-size:15px;color:#5b4216}
+  .premium-note p{margin:3px 0 0;font-family:system-ui,sans-serif;font-size:11px;line-height:1.4;color:#86672e}
+  .panel.friend-panel{padding:14px;border:1px solid rgba(31,61,55,.08);background:rgba(255,255,255,.62);box-shadow:none}
+  .panel.friend-panel h3{font-size:14px;color:var(--ink)}
+  .theme{box-shadow:0 4px 0 rgba(35,68,62,.1);border:2px solid transparent;background:rgba(255,255,255,.8);color:var(--muted)}
+  .theme[data-on="1"]{border-color:var(--deep);background:#fff;transform:translateY(1px);color:var(--deep)}
+  .pagebar{width:100%;display:flex;align-items:center;justify-content:space-between;min-height:48px}
+  .pagebar button{width:48px;height:48px;padding:0;border-radius:16px;background:rgba(255,255,255,.7);font-size:21px;box-shadow:0 4px 0 rgba(35,68,62,.1)}
+  .pagebar span{padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.62);font-family:system-ui,sans-serif;font-weight:700;font-size:11px;color:var(--muted)}
+  .setup{align-items:stretch;text-align:left}
+  .setup-card{padding:23px 18px 18px;border-radius:30px;background:rgba(255,255,255,.7);border:1px solid rgba(31,61,55,.08);box-shadow:var(--shadow)}
+  .setup .intro{text-align:center}
+  .setup .big-em{width:82px;height:82px;margin:0 auto;display:grid;place-items:center;border-radius:27px;background:#fff;font-size:48px;box-shadow:0 7px 0 rgba(35,68,62,.1)}
+  .setup h2{font-size:30px;margin:18px 0 5px}
+  .setup .desc{max-width:none;font-family:system-ui,sans-serif;font-size:14px;line-height:1.55;color:var(--muted)}
+  .choice-label{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 9px;font-size:15px}
+  .choice-label small{font-family:system-ui,sans-serif;font-size:11px;color:var(--muted)}
+  .seg{box-shadow:none;border:1px solid rgba(31,61,55,.08);background:rgba(240,245,239,.9)}
+  .seg button{min-height:52px;font-size:15px}
+  .seg button[data-on="1"]{background:var(--deep);color:#fff;box-shadow:none}
+  .setup .row{margin-top:14px}
+  .setup .row .btn{font-size:19px;border-width:2px;box-shadow:0 6px 0 rgba(35,68,62,.13)}
+  .setup .foot{justify-content:center;margin-top:12px}
+  .setup .foot .btn{flex:0 1 190px;background:transparent;border:0;box-shadow:none;color:var(--muted);font-size:14px}
+  .scorebar{margin-top:2px}
+  .team{padding:9px 11px;border-width:2px;box-shadow:0 5px 0 rgba(35,68,62,.11)}
+  .turnmsg{font-size:19px;background:rgba(255,255,255,.72);border:1px solid rgba(31,61,55,.07)}
+  .board{border-radius:28px;padding:10px;border:3px solid rgba(255,255,255,.55);box-shadow:0 8px 0 rgba(35,68,62,.16)}
+  .cell,.c2{min-height:0;padding:0;border:0;background:transparent}
+  .cell:focus-visible,.c2:focus-visible{outline:4px solid #244dff;outline-offset:-4px;z-index:4}
+  .legend{border:1px solid rgba(31,61,55,.07);background:rgba(255,255,255,.7)}
+  .lg{font-family:system-ui,sans-serif;font-size:11px;color:var(--muted)}
+  .foot .btn{border-width:2px;box-shadow:0 5px 0 rgba(35,68,62,.1);font-size:15px}
+  .patrow{border-width:2px;box-shadow:0 5px 0 rgba(35,68,62,.1)}
+  .picker2{border:1px solid rgba(31,61,55,.07)}
+  .overlay{backdrop-filter:blur(5px)}
+  .card{border-radius:30px;box-shadow:0 12px 0 rgba(23,63,59,.18)}
+  @media (max-width:360px){
+    .hero h1{font-size:28px}.hero .em{font-size:45px}.tile{grid-template-columns:58px 1fr auto;padding:13px}.tile .ic{width:56px;height:56px;font-size:33px}
+    .setup .row{flex-direction:column}.roadmap-grid{gap:6px}.mini-tile{padding:10px 4px}
+  }
+
+  /* 3차 디자인: 밝은 어린이 게임 플랫폼 */
+  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;background:#eee9e1;color:#1f2523}
+  .app{min-height:100dvh;background:linear-gradient(165deg,var(--bg1),var(--bg2));padding:18px 16px max(28px,env(safe-area-inset-bottom));box-shadow:0 0 50px rgba(66,54,40,.12)}
+  h1,h2,h3,.category-card strong,.wordmark,.setup h2,.card h2{font-family:'Jua',system-ui,sans-serif;font-weight:400}
+  button{font-family:inherit}
+  #hubScreen,#progressScreen{padding-bottom:84px}
+  .home-toolbar{display:flex;align-items:center;justify-content:space-between}
+  .square-btn{width:46px;height:46px;min-height:46px;padding:0;border-radius:14px;background:#fff;border:1px solid rgba(34,44,41,.1);box-shadow:0 3px 8px rgba(36,48,44,.08);font-size:21px}
+  .square-btn .ui-icon{width:22px;height:22px;color:#40514c}
+  .reward-chips{display:flex;gap:8px}
+  .reward-chips span{min-width:58px;padding:10px 12px;border-radius:13px;background:#fff;border:1px solid rgba(34,44,41,.09);box-shadow:0 3px 8px rgba(36,48,44,.06);font-size:14px;text-align:center}
+  .reward-chips .ui-icon{width:17px;height:17px;margin-right:3px}
+  .reward-chips span:first-child{color:#e96022}.reward-chips span:last-child{color:#8d63cf}
+  .welcome{position:relative;display:flex;align-items:center;min-height:148px;padding:24px 8px 18px;background:transparent}
+  .welcome-copy{max-width:69%}
+  .welcome-copy>span{display:block;margin-bottom:4px;font-size:12px;font-weight:800;color:#6d7974}
+  .welcome h1{margin:0;font-size:29px;line-height:1.16;color:#171b1a}
+  .welcome p{margin:9px 0 0;font-size:13px;line-height:1.45;color:#697570}
+  .avatar-orb{position:absolute;right:6px;top:24px;width:102px;height:102px;display:grid;place-items:center;overflow:hidden;border-radius:50%;background:linear-gradient(145deg,#ffe9a9,#ffc971);box-shadow:0 8px 0 rgba(196,128,39,.1)}
+  .avatar-orb:before{content:"";position:absolute;width:84%;height:84%;border-radius:50%;border:2px dashed rgba(255,255,255,.72)}
+  .avatar-orb .em{position:relative;font-size:58px;filter:drop-shadow(0 6px 4px rgba(0,0,0,.12))}
+  .avatar-orb img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;object-position:50% 19%;border-radius:50%;transform:scale(1.55);transform-origin:50% 18%;filter:drop-shadow(0 6px 4px rgba(0,0,0,.1))}
+  .section-title{align-items:center;margin-top:4px}.section-title h2{font-size:20px;color:#171b1a}.section-title span{font-size:11px;font-weight:700}
+  .category-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .category-card{position:relative;min-height:150px;padding:15px;border-radius:20px;border:1px solid rgba(48,74,67,.1);box-shadow:0 4px 0 rgba(37,50,46,.07);text-align:left;color:#1d2522;overflow:hidden}
+  .category-card.mint{background:#dff8e5;border-color:#a9e5b7}.category-card.sky{background:#e1f2ff;border-color:#acd9fa}.category-card.peach{background:#fff0de;border-color:#f5cf9e}.category-card.lilac{background:#eee9ff;border-color:#cfc1f4}.category-card.lemon{background:#fff7ce;border-color:#eadf9c}
+  .category-card.wide{grid-column:1/-1;min-height:105px;display:grid;grid-template-columns:70px 1fr;grid-template-rows:auto auto auto;column-gap:10px;align-items:center}
+  .category-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:17px;background:rgba(255,255,255,.6);font-size:33px}.category-icon.duo{font-size:27px}
+  .category-icon>.ui-icon{width:32px;height:32px;stroke-width:1.7}.category-card.peach .category-icon{color:#d9872f}.category-card.lilac .category-icon{color:#755bc2}.category-card.lemon .category-icon{color:#8a7b23}
+  .category-card.wide .category-icon{grid-row:1/4;width:62px;height:62px}
+  .category-arrow,.category-lock{position:absolute;right:13px;top:14px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#35b977;color:#fff;font-size:20px}.category-card.sky .category-arrow{background:#3c9ff4}.category-lock{background:rgba(89,92,87,.12);color:#686f6c;font-size:12px}
+  .category-arrow .ui-icon{width:16px;height:16px}.category-lock .ui-icon{width:13px;height:13px}
+  .category-card small{display:block;margin-top:16px;font-size:10px;font-weight:800;color:#68756f}.category-card strong{display:block;margin-top:3px;font-size:19px}.category-card em{display:block;margin-top:7px;font-size:9px;font-style:normal;font-weight:900;letter-spacing:.08em;color:#399369}
+  .category-card.sky em{color:#408cca}.category-card:disabled em{color:#8a8f8c}.category-card:disabled{opacity:1}
+  .category-card.wide small,.category-card.wide strong,.category-card.wide em{grid-column:2;margin-top:0}.category-card.wide strong{margin-top:-8px}.category-card.wide em{margin-top:-8px}
+  .panel.friend-panel{margin-top:2px;background:rgba(255,255,255,.74);border-radius:20px}
+  .theme{min-height:67px;border:1px solid rgba(34,44,41,.08);box-shadow:none}.theme .em{font-size:23px}.theme[data-on="1"]{border:2px solid #59b97c;background:#effcf2;color:#277547}
+  .bottom-nav{position:fixed;z-index:12;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(calc(100% - 28px),452px);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px 10px;border-radius:20px;background:rgba(255,255,255,.94);border:1px solid rgba(38,50,46,.1);box-shadow:0 8px 30px rgba(31,43,39,.16);backdrop-filter:blur(14px)}
+  .bottom-nav button{min-height:54px;padding:5px;border-radius:14px;background:transparent;color:#727a77;font-size:10px;font-weight:800}
+  .bottom-nav button span{display:block;height:24px;margin-bottom:2px;font-size:21px}.bottom-nav button span .ui-icon{width:22px;height:22px}.bottom-nav button.active{background:#e7f3ff;color:#308bd9}
+  .progress-hello{display:flex;align-items:center;justify-content:space-between;padding:7px 4px 2px}.progress-hello span{font-size:12px;color:#6b7772}.progress-hello h2{max-width:285px;margin:5px 0 0;font-size:26px;line-height:1.2}.profile-orb{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;background:#ffe3a5;font-size:45px}
+  .profile-orb{overflow:hidden}.profile-orb img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transform:scale(1.55);transform-origin:50% 18%}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat-grid>div{padding:15px 8px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09);text-align:center}.stat-grid span{display:block;height:28px;color:#478b68}.stat-grid span .ui-icon{width:27px;height:27px}.stat-grid small{display:block;margin:6px 0 3px;font-size:10px;color:#76807c}.stat-grid strong{display:block;font-size:21px}
+  .badge-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.badge{padding:14px 5px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09);text-align:center;filter:grayscale(1);opacity:.42}.badge.on{filter:none;opacity:1}.badge span{display:block;height:42px;color:#d19c31}.badge span .ui-icon{width:39px;height:39px}.badge b{display:block;margin-top:5px;font-size:11px}
+  .recent-card{padding:17px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09)}.recent-card span{display:block;font-size:10px;color:#78827e}.recent-card strong{display:block;margin-top:5px;font-size:14px}
+  .game-map{display:grid;grid-template-columns:1fr 1fr;gap:9px}.game-map button{min-width:0;display:flex;align-items:center;gap:8px;padding:10px;border-radius:17px;background:#fff;border:1px solid rgba(40,51,47,.09);text-align:left;box-shadow:0 3px 0 rgba(37,65,53,.07)}.game-map button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(37,65,53,.07)}.game-map-face{width:43px;height:43px;flex:none;overflow:hidden;border-radius:14px;background:#edf6e9}.game-map-face img{width:100%;height:100%;object-fit:contain}.game-map button>span:last-child{min-width:0}.game-map b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}.game-map small{display:block;margin-top:3px;color:#77827e;font-size:9px}
+  .parent-sheet{max-height:90dvh;overflow:auto;text-align:left}.parent-sheet .close-sheet{float:right;width:42px;height:42px;border-radius:14px;background:#f2f3ef;font-size:18px}.parent-sheet h2{margin:5px 0 7px;font-size:27px}.parent-sheet>p{font-size:13px;line-height:1.55}.parent-progress{padding:15px;margin:16px 0;border-radius:18px;background:#eff8f0}.parent-progress div{display:flex;justify-content:space-between;font-size:12px;font-weight:800}.parent-progress i{display:block;height:8px;margin-top:9px;border-radius:999px;background:#dce7dc;overflow:hidden}.parent-progress i:after{content:"";display:block;width:100%;height:100%;background:#55b778;border-radius:inherit}
+  .parent-skills{display:grid;gap:10px;margin:14px 0}.parent-skill{padding:14px;border-radius:17px;background:#faf9f5;border:1px solid #f0eee8}.parent-skill header{display:flex;align-items:center;gap:10px}.parent-skill header>span{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:#fff;color:#478b68}.parent-skill header .ui-icon{width:22px;height:22px}.parent-skill h3{margin:0;font-family:'Jua';font-size:17px}.parent-skill .skill-tags{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}.parent-skill .skill-tags b{padding:5px 7px;border-radius:999px;background:#e6f4e7;color:#347543;font-size:9px}.parent-skill p{margin:0;font-size:11px;line-height:1.5;color:#65706c}.parent-skill small{display:block;margin-top:7px;padding-top:7px;border-top:1px solid #e9e7e1;font-size:10px;line-height:1.45;color:#7c7060}
+  .parent-platform{margin:16px 0}.parent-platform>h3{margin:0 0 9px;font-size:18px}.parent-platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.parent-platform article{padding:12px;border-radius:15px;background:#f6f8f3;border:1px solid #e6ebe2}.parent-platform article span{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#fff;color:#3f7f60}.parent-platform article .ui-icon{width:19px;height:19px}.parent-platform b{display:block;margin:7px 0 3px;font-size:11px}.parent-platform p{margin:0;font-size:9px;line-height:1.5;color:#68736f}.parent-platform-note{margin:9px 0 0;padding:9px 11px;border-radius:12px;background:#fff4d9;color:#725d2b;font-size:9px;line-height:1.45}
+  .game-art{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none}
+  .category-icon .game-art{width:62px;height:62px}.category-icon.duo{gap:0}.category-icon.duo .game-art{width:37px;height:51px;margin:0 -5px}
+  .setup .big-em{overflow:hidden}.setup .big-em .game-art{width:90px;height:90px}
+  .theme .em{height:31px}.theme .em .game-art{width:38px;height:38px;margin:-5px auto 0}
+  .pc .chip .game-art{width:94%;height:94%}.mini .game-art{width:116%;height:116%}.c2 .disc .game-art{width:110%;height:110%}
+  .pick{overflow:hidden}.pick .game-art{width:112%;height:112%;margin:-6%}.win-em .game-art{width:92px;height:92px;margin:auto}
+  .gate-card{text-align:center}.gate-icon{width:74px;height:74px;margin:0 auto 12px;display:grid;place-items:center;border-radius:24px;background:#eef6ef;color:#478b68}.gate-icon .ui-icon{width:40px;height:40px}.gate-card h2{margin:4px 0 7px}.gate-card p{margin:0 0 17px;font-size:13px;line-height:1.5;color:#69736f}.hold-btn{position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}.hold-btn:before{content:"";position:absolute;inset:0 auto 0 0;width:0;background:rgba(255,255,255,.2)}.hold-btn.holding:before{width:100%;transition:width 1.6s linear}.gate-card .cancel-gate{margin-top:9px;background:transparent;border:0;box-shadow:none;color:#747d79;font-size:13px}
+  .setup-card{background:#fff;border-color:rgba(40,51,47,.09);box-shadow:0 4px 0 rgba(37,50,46,.08)}
+  .setup .big-em{background:#eef9e8}.pagebar button{background:#fff;border:1px solid rgba(40,51,47,.09);box-shadow:0 3px 7px rgba(37,50,46,.07)}
+  .difficulty-progress{display:flex;align-items:center;gap:10px;margin:20px 1px 4px}.difficulty-progress i{flex:1;height:9px;border-radius:999px;background:#edf0eb;overflow:hidden}.difficulty-progress i span{display:block;width:50%;height:100%;border-radius:inherit;background:#65c947;transition:width .2s ease}.difficulty-progress b{font-size:11px;color:#727d78}
+  .seg{background:#f3f5f1}.seg button[data-on="1"]{background:#55b940}.setup .row .btn.blue{background:#3f9ff1}.setup .row .btn.red{background:#ff8a55}
+  /* 게임 경험 확장: 전신/얼굴 에셋 규칙, 게임 포인트, 3단계 난이도 */
+  .setup-card{overflow:hidden;padding:16px 16px 18px}
+  .setup .intro{display:grid;grid-template-columns:128px 1fr;gap:15px;align-items:center;padding:12px;border-radius:25px;background:linear-gradient(145deg,#fff8df,#eef8e9);text-align:left}
+  .setup .big-em{width:128px;height:148px;margin:0;display:flex;align-items:center;justify-content:center;border-radius:22px;background:rgba(255,255,255,.72);box-shadow:none;overflow:hidden}
+  .setup .big-em .game-art.full{width:122px;height:142px;object-fit:contain}
+  .setup .big-em.duo-stage .game-art.full{width:88px;height:132px;margin:0 -18px}
+  .intro-copy{min-width:0}.game-title-heading{margin:0}
+  .game-title-button{width:100%;min-height:48px;padding:0;background:transparent;color:#1c2825;text-align:left;border:0;box-shadow:none}
+  .game-title-button>span{display:flex;align-items:center;gap:7px;font-family:'Jua',system-ui,sans-serif;font-size:29px;line-height:1.08}
+  .game-title-button i{width:23px;height:23px;display:grid;place-items:center;flex:none;border-radius:50%;background:#fff;color:#47875b;border:2px solid #73af83;font-family:system-ui,sans-serif;font-size:13px;font-style:normal;font-weight:900}
+  .game-title-button[aria-expanded="true"] i{background:#47875b;color:#fff}
+  .skill-hint{display:block;margin:6px 0 9px;font-size:10px;font-weight:800;color:#538568}
+  .setup .intro .desc{margin:0;font-size:12px;line-height:1.5}
+  .thinking-panel{margin:12px 1px 2px;padding:14px;border-radius:20px;background:#f4f8ee;border:1px solid #dbe8d4;animation:reveal .2s ease-out}
+  @keyframes reveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+  .thinking-panel>strong{display:block;margin-bottom:9px;font-family:'Jua',system-ui,sans-serif;font-size:18px;color:#294d38}
+  .thinking-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .thinking-item{padding:10px;border-radius:14px;background:#fff;border:1px solid #e3eadf}
+  .thinking-item b{display:flex;align-items:center;gap:5px;font-size:11px;color:#294d38}.thinking-item b .ui-icon{width:16px;height:16px;color:#4b9566}.thinking-item small{display:block;margin-top:4px;font-size:9px;line-height:1.45;color:#69766f}
+  .choice-label{margin-top:17px}.seg.three button{display:flex;min-width:0;min-height:66px;padding:8px 5px;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;line-height:1.2}
+  .seg.three button b{font-family:'Jua',system-ui,sans-serif;font-size:17px;font-weight:400}.seg.three button small{font-size:8px;opacity:.76}
+  .level-note{min-height:28px;margin:8px 3px 0;font-size:10px;line-height:1.4;color:#64716b;text-align:center}
+  .difficulty-progress i span{width:33.333%}
+  .game-art.full{object-fit:contain}.game-art.face{width:100%;height:100%;object-fit:contain;transform:scale(1.62);transform-origin:50% 34%}
+  .game-art.face.char-0{transform:scale(1.5);transform-origin:50% 34%}.game-art.face.char-1{transform:scale(1.72);transform-origin:50% 37%}.game-art.face.char-2{transform:scale(1.57);transform-origin:50% 27%}
+  .pc .chip,.mini,.c2 .disc,.pick,.team-avatar,.theme .em{overflow:hidden}
+  .theme .em{width:34px;height:34px;margin:0 auto 2px;border-radius:50%;background:#fff}
+  .team-avatar{width:34px;height:34px;display:grid;place-items:center;flex:none;border-radius:50%;background:#fff}
+  .team-avatar .game-art.face{transform:scale(1.65)}
+  .team .name{font-weight:800}.team .dots{gap:4px}.dot{width:12px;height:12px}
+  .pc .chip .game-art.face,.mini .game-art.face,.c2 .disc .game-art.face,.pick .game-art.face{width:100%;height:100%;margin:0}
+  .board{background-color:var(--board-bg);background-image:repeating-linear-gradient(12deg,rgba(255,255,255,.04) 0 2px,transparent 2px 7px)}
+  .board:before{content:"";position:absolute;inset:5px;border:2px dashed rgba(255,255,255,.22);border-radius:23px;pointer-events:none}
+  .cells,.pieces,.grid2{z-index:1}.cell .tile-bg{border:2px solid rgba(43,70,57,.35);box-shadow:2px 3px 0 rgba(45,70,58,.13);background:#fff9ea}.cell:nth-child(3n) .tile-bg{transform:rotate(.45deg)}.cell:nth-child(4n) .tile-bg{transform:rotate(-.45deg)}
+  .c2 .slot{background:rgba(255,249,232,.3);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+  .patrow{background:#fffdf4}.picker2{background:#fffdf4}
+  /* 플랫폼 허브 */
+  .platform-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:1px 1px 0}
+  .platform-brand{display:flex;align-items:center;gap:9px;min-width:0}.platform-brand img{width:42px;height:42px;border-radius:13px;box-shadow:0 4px 10px rgba(43,89,66,.12)}
+  .platform-brand span{display:block;min-width:0}.platform-brand small{display:block;font-size:8px;font-weight:900;letter-spacing:.13em;color:#57906b}.platform-brand b{display:block;margin-top:1px;font-family:'Jua',system-ui,sans-serif;font-size:21px;line-height:1;color:#193b30}
+  .platform-actions{display:flex;align-items:center;gap:7px}.platform-star{height:43px;min-width:59px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;border-radius:14px;background:#fff;border:1px solid rgba(34,44,41,.09);box-shadow:0 3px 8px rgba(36,48,44,.06);color:#87652c;font-size:13px}.platform-star .ui-icon{width:18px;height:18px}
+  .world-hero{position:relative;min-height:238px;padding:21px 17px;border-radius:29px;overflow:hidden;background:linear-gradient(145deg,#cdeed0 0%,#a9dbbc 54%,#85c6ae 100%);border:1px solid rgba(54,120,85,.16);box-shadow:0 7px 0 rgba(55,108,77,.11),0 18px 34px rgba(55,108,77,.1)}
+  .world-hero:before{content:"";position:absolute;inset:auto -45px -88px 95px;height:190px;border-radius:50%;background:#f6d684;transform:rotate(-7deg);box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+  .world-hero:after{content:"";position:absolute;right:-42px;top:-48px;width:160px;height:160px;border-radius:50%;background:rgba(255,249,214,.46)}
+  .hero-copy{position:relative;z-index:4;width:61%}.hero-kicker{display:inline-block;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.72);font-size:8px;font-weight:900;letter-spacing:.04em;color:#2e7654}.world-hero h1{margin:10px 0 7px;font-family:'Jua',system-ui,sans-serif;font-size:29px;line-height:1.08;color:#173c30}.world-hero p{margin:0;font-size:11px;line-height:1.48;color:#345f50}
+  .hero-meta{display:flex;gap:6px;margin:10px 0}.hero-meta span{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:900;color:#315f4f}.hero-meta .ui-icon{width:13px;height:13px}
+  .hero-play{min-height:42px;display:inline-flex;align-items:center;gap:7px;padding:0 15px;border-radius:14px;background:#176e4c;color:#fff;box-shadow:0 5px 0 #0f5339;font-size:12px;font-weight:900}.hero-play:active{transform:translateY(3px);box-shadow:0 2px 0 #0f5339}.hero-play .ui-icon{width:16px;height:16px;fill:currentColor;stroke-width:1.2}
+  .hero-scene{position:absolute;z-index:3;right:-5px;bottom:4px;width:47%;height:91%;pointer-events:none}.hero-scene img{position:absolute;object-fit:contain;filter:drop-shadow(0 7px 3px rgba(43,83,59,.13))}.hero-rabbit{z-index:3;right:14px;bottom:3px;width:126px;height:172px;animation:heroHop 2.8s ease-in-out infinite}.hero-mouse{z-index:2;left:2px;bottom:4px;width:80px;height:112px;animation:heroPeek 3.4s ease-in-out infinite}.hero-frog{z-index:1;right:-9px;bottom:-2px;width:78px;height:104px;animation:heroNod 3s ease-in-out infinite}
+  .hero-trail{position:absolute;z-index:0;inset:auto -28px 0 3px;height:70px;border:3px dashed rgba(116,83,41,.22);border-width:3px 0 0;border-radius:55% 55% 0 0;transform:rotate(-9deg)}
+  @keyframes heroHop{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-9px) rotate(-2deg)}55%{transform:translateY(-9px) rotate(2deg)}}
+  @keyframes heroPeek{0%,100%{transform:translateX(0) rotate(-2deg)}50%{transform:translateX(6px) rotate(2deg)}}
+  @keyframes heroNod{0%,100%{transform:rotate(0)}50%{transform:rotate(4deg) translateY(2px)}}
+  .install-row{text-align:center}.install-row .btn{min-height:42px;margin:0 auto;font-size:12px;box-shadow:none;border:1px solid rgba(42,65,56,.09)}
+  .catalog-title{display:flex;align-items:flex-end;justify-content:space-between;margin:3px 2px 0}.catalog-title small{display:block;margin-bottom:3px;font-size:9px;font-weight:900;color:#56876a;letter-spacing:.08em}.catalog-title h2{margin:0;font-size:24px;color:#172d27}.catalog-count{padding:6px 9px;border-radius:999px;background:#fff;font-size:9px;font-weight:800;color:#5e6b66;border:1px solid rgba(38,63,53,.08)}
+  .age-filter-label{margin:1px 2px -4px;font-size:10px;font-weight:900;color:#66746f}.age-filters{display:flex;gap:7px;overflow:auto;padding:2px 2px 5px;scrollbar-width:none}.age-filters::-webkit-scrollbar{display:none}.age-filter{flex:none;min-height:37px;padding:0 14px;border-radius:999px;background:#fff;border:1px solid rgba(41,63,55,.1);color:#65716d;font-size:11px;font-weight:900;box-shadow:0 3px 0 rgba(34,63,52,.06)}.age-filter[data-on="1"]{background:#183f35;color:#fff;border-color:#183f35;box-shadow:0 3px 0 rgba(8,41,31,.22)}
+  .experience-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.experience-card{min-width:0;padding:0;overflow:hidden;border-radius:22px;background:#fff;border:1px solid rgba(36,63,52,.09);box-shadow:0 5px 0 rgba(37,65,53,.08),0 11px 24px rgba(42,67,57,.06);text-align:left}.experience-card:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 rgba(37,65,53,.08)}.experience-card[hidden]{display:none}.experience-cover{position:relative;display:block;height:120px;overflow:hidden}.cover-route{background:linear-gradient(150deg,#dff7d7,#9ddbb8)}.cover-pattern{background:linear-gradient(150deg,#dceeff,#b9d6ff)}.cover-puzzle{background:linear-gradient(150deg,#fff0dc,#f5c987)}.cover-number{background:linear-gradient(150deg,#eee9ff,#cbbcf6)}.cover-memory{background:linear-gradient(150deg,#fff8cd,#f1df8f)}
+  .experience-cover:after{content:"";position:absolute;left:-10%;right:-10%;bottom:-43px;height:80px;border-radius:50%;background:rgba(255,255,255,.35)}.experience-cover .cover-main{position:absolute;z-index:2;right:8px;bottom:-2px;width:102px;height:116px;object-fit:contain;filter:drop-shadow(0 6px 3px rgba(40,66,54,.12))}.experience-cover .cover-side{position:absolute;z-index:1;left:7px;bottom:-2px;width:72px;height:91px;object-fit:contain;filter:drop-shadow(0 5px 3px rgba(40,66,54,.1))}.experience-cover>.ui-icon{position:absolute;z-index:2;left:50%;top:50%;width:48px;height:48px;transform:translate(-50%,-50%);color:#8b692e}
+  .experience-card.live .cover-main{animation:cardIdle 2.8s ease-in-out infinite}.experience-card:nth-child(2) .cover-main{animation-delay:-1.1s}@keyframes cardIdle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1.5deg)}}
+  .status-badge{position:absolute;z-index:4;left:9px;top:9px;padding:5px 8px;border-radius:999px;background:#fff;color:#236d4d;font-size:8px;font-weight:950;letter-spacing:.06em}.status-badge.soon{color:#786d55;background:rgba(255,255,255,.83)}
+  .experience-lock{position:absolute;z-index:4;right:9px;top:9px;width:29px;height:29px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.82);color:#6d746f}.experience-lock .ui-icon{width:15px;height:15px}.experience-body{display:block;padding:12px 12px 13px}.game-tags{display:flex;gap:4px;margin-bottom:5px}.game-tags span{padding:4px 6px;border-radius:999px;background:#eef6ee;color:#4d745b;font-size:7px;font-weight:900}.experience-body strong{display:block;font-family:'Jua',system-ui,sans-serif;font-size:18px;color:#1d2925}.experience-body p{min-height:28px;margin:4px 0 7px;font-size:9px;line-height:1.45;color:#6d7773}.experience-meta{display:flex;align-items:center;gap:8px;color:#707a76;font-size:8px;font-weight:800}.experience-meta span{display:flex;align-items:center;gap:3px}.experience-meta .ui-icon{width:12px;height:12px}.experience-card:disabled{opacity:1}.experience-card:disabled .experience-cover,.experience-card:disabled .experience-body{filter:saturate(.72)}
+  .game-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.game-meta span{display:flex;align-items:center;gap:4px;padding:5px 7px;border-radius:999px;background:rgba(255,255,255,.77);font-size:8px;font-weight:900;color:#4f6d5e}.game-meta .ui-icon{width:12px;height:12px}
+  .setup .big-em .game-art{animation:setupIdle 2.8s ease-in-out infinite}.setup .big-em.duo-stage .game-art:nth-child(2){animation-delay:-1.15s}.setup .big-em.react .game-art{animation:setupReact .5s ease}.pc.moving .chip{animation:pieceHop .34s ease}.team.thinking .team-avatar,.patrow.thinking .mini{animation:thinkPulse .8s ease-in-out infinite}.patrow.thinking .mini:nth-child(2n){animation-delay:-.2s}.c2 .disc .game-art{animation:discHello .38s ease-out}
+  @keyframes setupIdle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(1.5deg)}}@keyframes setupReact{45%{transform:translateY(-15px) rotate(-4deg) scale(1.04)}}@keyframes pieceHop{50%{transform:translateY(-18%) scale(1.08)}}@keyframes thinkPulse{50%{transform:scale(.9) rotate(-4deg)}}@keyframes discHello{0%{transform:translateY(-35%) scale(.75)}70%{transform:translateY(3%) scale(1.05)}100%{transform:none}}
+  .evidence-card{margin-top:12px;padding:13px;border-radius:16px;background:#f3f6f2;border:1px solid #e3e9e1}.evidence-card strong{display:block;font-size:11px}.evidence-card p{margin:5px 0 8px;font-size:9px!important;line-height:1.55!important}.evidence-links{display:flex;flex-wrap:wrap;gap:5px}.evidence-links a{padding:5px 7px;border-radius:999px;background:#fff;color:#356d4c;font-size:8px;font-weight:900;text-decoration:none;border:1px solid #dae8dc}
+  @media (prefers-reduced-motion:reduce){.hero-scene img,.experience-card.live .cover-main,.setup .big-em .game-art,.team.thinking .team-avatar,.patrow.thinking .mini{animation:none!important}}
+  @media (max-width:380px){.setup .intro{grid-template-columns:105px 1fr;gap:10px}.setup .big-em{width:105px;height:132px}.setup .big-em .game-art.full{width:102px;height:126px}.setup .big-em.duo-stage .game-art.full{width:72px;height:116px;margin:0 -15px}.game-title-button>span{font-size:25px}.thinking-item{padding:8px}.setup .row{flex-direction:column}}
+  @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
+  @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
+</style>
+<script src="games/characters.js?v=36"></script>
+<script src="games/platform.js?v=36"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=36">
+<link rel="stylesheet" href="games/parent-guide.css?v=36">
+<link rel="stylesheet" href="games/face-game.css?v=36">
+<link rel="stylesheet" href="games/number-game.css?v=36">
+<link rel="stylesheet" href="games/block-game.css?v=36">
+</head>
+<body>
+<svg class="icon-sprite" aria-hidden="true">
+  <defs>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-gamepad" viewBox="0 0 24 24"><path d="M8.5 7h7a5 5 0 0 1 4.7 3.3l1.2 3.5c1.1 3.2-2.8 5.6-5 3l-1.1-1.3H8.7l-1.1 1.3c-2.2 2.6-6.1.2-5-3l1.2-3.5A5 5 0 0 1 8.5 7Z"/><path d="M7 10v4M5 12h4M16.5 11.5h.01M19 13.5h.01"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M2.5 20a5.5 5.5 0 0 1 11 0M13.5 17a4.5 4.5 0 0 1 8 3"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 13v4M8 21h8M10 17h4"/></symbol>
+    <symbol id="i-parent" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M13.5 16.5a4.5 4.5 0 0 1 7 3.5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 19h16"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></symbol>
+    <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 1 0 4 0h6v6a2 2 0 1 1 0 4v6h-6a2 2 0 1 0-4 0H4v-6a2 2 0 1 1 0-4V4Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-memory" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M8 2h8M8 22h8M9 12h.01M12 12h.01M15 12h.01"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="m12 12 7-7M16 5h3v3"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9M12 13c-4.5 0-7-2.3-7-6 4.5 0 7 2.3 7 6ZM12 16c4.5 0 7-2.3 7-6-4.5 0-7 2.3-7 6Z"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h3a3 3 0 0 0 3-3v-6a3 3 0 0 1 3-3h1"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-house" viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v9H4v-9Z"/><path d="M9 20v-6h6v6"/></symbol>
+    <symbol id="i-pawn" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M9 11h6l-1 5 3 3H7l3-3-1-5Z"/></symbol>
+    <symbol id="i-sequence" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="m19 9-3 6h6l-3-6Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6l8-3Z"/><path d="M9 12h6"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 7h13M14 4l3 3-3 3M20 17H7M10 14l-3 3 3 3"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V4M6 10l6-6 6 6"/></symbol>
+    <symbol id="i-tie" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.2 3.8L17 8l-3.8 1.2L12 13l-1.2-3.8L7 8l3.8-1.2L12 3ZM18.5 13l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2ZM5 14l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2Z"/></symbol>
+    <symbol id="i-wall" viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 10h18M3 15h18M8 5v5M16 5v5M6 10v5M14 10v5M9 15v4M17 15v4"/></symbol>
+    <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 3 22 20H2L12 3Z"/><path d="M12 9v5M12 17h.01"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4V9Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+    <symbol id="i-speak" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></symbol>
+    <symbol id="i-shapes" viewBox="0 0 24 24"><circle cx="6" cy="7" r="3"/><rect x="13" y="4" width="6" height="6" rx="1"/><path d="m7 20 4-7 4 7H7Z"/></symbol>
+  </defs>
+</svg>
+<div class="app">
+
+  <!-- 허브 -->
+  <div class="screen on" id="hubScreen">
+    <header class="platform-header">
+      <div class="platform-brand" aria-label="호플우드">
+        <span class="brand-mascot" aria-hidden="true" data-char="hopple" data-view="face"></span>
+        <span><small>HOPPLEWOOD</small><b>호플우드</b></span>
+      </div>
+      <div class="platform-actions">
+        <button class="square-btn setting-btn" data-setting="voice" onclick="hwToggleSetting('voice')" aria-label="읽어주기 켜고 끄기"><svg class="ui-icon" aria-hidden="true"><use href="#i-speak"></use></svg><span class="sr-only" data-setting-label>읽어주기</span></button>
+        <button class="square-btn setting-btn" data-setting="sound" onclick="hwToggleSetting('sound')" aria-label="효과음 켜고 끄기"><svg class="ui-icon" aria-hidden="true"><use href="#i-sound"></use></svg><span class="sr-only" data-setting-label>효과음</span></button>
+        <span class="platform-star" aria-label="모은 별"><svg class="ui-icon" aria-hidden="true"><use href="#i-star"></use></svg><b id="starCount">0</b></span>
+              </div>
+    </header>
+
+    <section class="world-hero" aria-labelledby="hubTitle">
+      <div class="hero-copy">
+        <span class="hero-kicker" id="heroKicker">이번 추천 · 전략 게임</span>
+        <h1 id="hubTitle">내 길과 상대 길,<br>먼저 읽어봐!</h1>
+        <p id="heroDescription">캐릭터마다 정해진 길의 순서를 읽고, 잡거나 피하며 숲을 건너요.</p>
+        <div class="hero-meta">
+          <span id="heroPlayers"><svg class="ui-icon" aria-hidden="true"><use href="#i-users"></use></svg>1–2명</span>
+          <span id="heroTime"><svg class="ui-icon" aria-hidden="true"><use href="#i-clock"></use></svg>약 5분</span>
+          <span id="heroAge">6세+</span>
+        </div>
+        <button class="hero-play" id="heroPlay" onclick="playHero()"><svg class="ui-icon" aria-hidden="true"><use href="#i-play"></use></svg><span>바로 플레이</span></button>
+      </div>
+      <div class="hero-scene" aria-hidden="true">
+        <span class="hero-trail"></span>
+        <span class="hero-art hero-mouse" id="heroArtSide"></span>
+        <span class="hero-art hero-rabbit" id="heroArtMain"></span>
+        <span class="hero-art hero-frog" id="heroArtExtra"></span>
+      </div>
+    </section>
+    <div class="install-row"><button id="installBtn" class="btn ghost" style="display:none" onclick="doInstall()"><svg class="ui-icon" aria-hidden="true"><use href="#i-download"></use></svg> 홈 화면에 앱으로 추가</button></div>
+
+    <div class="catalog-title" id="gameLibrary">
+      <div><small>DISCOVER</small><h2>게임을 골라봐</h2></div><span class="catalog-count">무료 게임 5</span>
+    </div>
+    <div class="age-filter-label">나이로 찾기</div>
+    <div class="age-filters" role="tablist" aria-label="연령별 게임 필터">
+      <button class="age-filter" data-filter="all" data-on="1" aria-selected="true" onclick="filterCatalog('all')">전체</button>
+      <button class="age-filter" data-filter="4-5" data-on="0" aria-selected="false" onclick="filterCatalog('4-5')">4–5세</button>
+      <button class="age-filter" data-filter="6-7" data-on="0" aria-selected="false" onclick="filterCatalog('6-7')">6–7세</button>
+      <button class="age-filter" data-filter="8+" data-on="0" aria-selected="false" onclick="filterCatalog('8+')">8세+</button>
+    </div>
+    <div class="experience-grid" id="catalogGrid"></div>
+    <nav class="bottom-nav" aria-label="주요 메뉴">
+      <button class="active" onclick="backHub()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-home"></use></svg></span>홈</button>
+      <button onclick="goGames()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span>게임</button>
+      <button onclick="showProgress()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-trophy"></use></svg></span>기록</button>
+      <button onclick="showParent()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-parent"></use></svg></span>부모님</button>
+    </nav>
+  </div>
+
+  <!-- 게임 기록 -->
+  <div class="screen" id="progressScreen">
+    <div class="pagebar"><button onclick="backHub()" aria-label="홈으로 돌아가기"><svg class="ui-icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg></button><span>나의 게임 기록</span><button onclick="showParent()" aria-label="부모님 메뉴 열기"><svg class="ui-icon" aria-hidden="true"><use href="#i-parent"></use></svg></button></div>
+    <section class="progress-hello">
+      <div><span>오늘도 신나게 플레이!</span><h2>나의 게임 기록을<br>모아봤어요</h2></div>
+      <div class="profile-orb" aria-hidden="true" data-char="hopple" data-view="full"></div>
+    </section>
+    <div class="stat-grid" aria-label="게임 통계">
+      <div><span><svg class="ui-icon" aria-hidden="true"><use href="#i-star"></use></svg></span><small>모은 별</small><strong id="profileStars">0</strong></div>
+      <div><span><svg class="ui-icon" aria-hidden="true"><use href="#i-gamepad"></use></svg></span><small>완료한 게임</small><strong id="profilePlays">0</strong></div>
+      <div><span><svg class="ui-icon" aria-hidden="true"><use href="#i-target"></use></svg></span><small>혼자 승리</small><strong id="profileWins">0</strong></div>
+    </div>
+    <div class="section-title"><h2>나의 배지</h2><span>놀면서 하나씩 열려요</span></div>
+    <div class="badge-row">
+      <div class="badge" id="badgeFirst"><span><svg class="ui-icon" aria-hidden="true"><use href="#i-sprout"></use></svg></span><b>첫걸음</b></div>
+      <div class="badge" id="badgeBoth"><span><svg class="ui-icon" aria-hidden="true"><use href="#i-compass"></use></svg></span><b>탐험가</b></div>
+      <div class="badge" id="badgeFive"><span><svg class="ui-icon" aria-hidden="true"><use href="#i-star"></use></svg></span><b>별 수집가</b></div>
+    </div>
+    <div class="recent-card"><span>최근 기록</span><strong id="recentActivity">아직 완료한 게임이 없어요.</strong></div>
+    <div class="section-title"><h2>내 게임 지도</h2><span>게임별로 모아봤어요</span></div>
+    <div class="game-map" id="gameMap" aria-label="게임별 완료 기록"></div>
+    <nav class="bottom-nav" aria-label="주요 메뉴">
+      <button onclick="backHub()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-home"></use></svg></span>홈</button>
+      <button onclick="goGames()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span>게임</button>
+      <button class="active" onclick="showProgress()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-trophy"></use></svg></span>기록</button>
+      <button onclick="showParent()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-parent"></use></svg></span>부모님</button>
+    </nav>
+  </div>
+
+  <!-- 게임1 준비 -->
+  <div class="screen setup" id="g1Setup">
+    <div class="pagebar"><button onclick="backHub()" aria-label="놀이터로 돌아가기"><svg class="ui-icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg></button><span>길따라 쪼르르</span><button onclick="showRules('g1')" aria-label="게임 방법 보기">?</button></div>
+    <div class="setup-card">
+      <div class="intro">
+        <div class="big-em duo-stage" id="g1SetupEm" aria-hidden="true"></div>
+        <div class="intro-copy">
+          <h2 class="game-title-heading"><button class="game-title-button" id="g1TitleBtn" aria-expanded="false" aria-controls="g1Thinking" onclick="toggleThinking('g1')"><span>길따라 쪼르르 <i>i</i></span></button></h2>
+          <small class="skill-hint">제목을 눌러 재미 포인트 보기</small>
+          <p class="desc">다람쥐·고슴도치·너구리는 저마다 정해진 길로만 움직여요. 내 길과 상대 길의 순서를 비교해 잡거나 피하고, 반대편 집에 도착해요.</p>
+          <div class="game-meta"><span>6세+</span><span><svg class="ui-icon" aria-hidden="true"><use href="#i-users"></use></svg>1–2명</span><span><svg class="ui-icon" aria-hidden="true"><use href="#i-clock"></use></svg>약 5분</span></div>
+        </div>
+      </div>
+      <div class="thinking-panel" id="g1Thinking" hidden>
+        <strong>이 게임의 재미 포인트</strong>
+        <div class="thinking-grid">
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-route"></use></svg>정해진 길 읽기</b><small>각 캐릭터의 숫자 순서를 따라가요.</small></div>
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-eye"></use></svg>두 길 비교하기</b><small>내 길과 상대 길이 만나는 칸을 찾아요.</small></div>
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-shield"></use></svg>잡힐 자리 피하기</b><small>상대의 다음 칸에 멈추지 않게 생각해요.</small></div>
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-target"></use></svg>잡을 차례 노리기</b><small>상대가 올 자리를 먼저 계산해요.</small></div>
+        </div>
+      </div>
+      <div class="difficulty-progress"><i><span id="g1LevelFill"></span></i><b id="g1LevelCount">1 / 3</b></div>
+      <div class="choice-label"><span>얼마나 어렵게 할까요?</span><small>언제든 다시 고를 수 있어요</small></div>
+      <div class="seg three" id="g1LevelSeg">
+        <button data-lv="1" data-on="1" aria-pressed="true" onclick="setLevel('g1',1)"><b>쉬움</b><small>곧은 길</small></button>
+        <button data-lv="2" data-on="0" aria-pressed="false" onclick="setLevel('g1',2)"><b>보통</b><small>한 번 꺾기</small></button>
+        <button data-lv="3" data-on="0" aria-pressed="false" onclick="setLevel('g1',3)"><b>어려움</b><small>복잡한 길</small></button>
+      </div>
+      <p class="level-note" id="g1LevelNote">곧은 길이 많고 컴퓨터가 여유롭게 둬요.</p>
+      <div class="row">
+        <button class="btn blue big" onclick="g1Start('solo')">혼자 시작</button>
+        <button class="btn red big" onclick="g1Start('duo')">둘이 시작</button>
+      </div>
+      <div class="foot"><button class="btn ghost" onclick="showRules('g1')">게임 방법 듣고 보기</button></div>
+    </div>
+  </div>
+
+  <!-- 게임1 플레이 -->
+  <div class="screen" id="g1Game">
+    <div class="scorebar">
+      <div class="team blue" id="g1teamA"><span class="team-avatar" id="g1faceA" aria-hidden="true"></span><span class="name" id="g1nameA">파랑</span><span class="dots" id="g1dotsA"></span></div>
+      <div class="team red" id="g1teamB"><span class="team-avatar" id="g1faceB" aria-hidden="true"></span><span class="name" id="g1nameB">빨강</span><span class="dots" id="g1dotsB"></span></div>
+    </div>
+    <div class="turnmsg" id="g1turn" aria-live="polite"></div>
+    <div class="route-guide" id="g1guide" aria-live="polite">내 캐릭터를 누른 뒤 상대 캐릭터를 눌러 두 길을 비교해요.</div>
+    <div class="board" id="g1board">
+      <div class="cells" id="g1cells"></div>
+      <div class="pieces" id="g1pieces"></div>
+      <div class="floatmsg" id="g1float" aria-live="polite"></div>
+    </div>
+    <div class="legend">
+      <div class="lg"><span class="em"><svg class="ui-icon" aria-hidden="true"><use href="#i-arrow-up"></use></svg></span><b>화살표</b><br>정해진 다음 칸</div>
+      <div class="lg"><span class="em"><svg class="ui-icon" aria-hidden="true"><use href="#i-eye"></use></svg></span><b>내 말 → 상대 말</b><br>두 길 함께 보기</div>
+      <div class="lg"><span class="em"><svg class="ui-icon" aria-hidden="true"><use href="#i-target"></use></svg></span><b>잡기·집 도착</b><br>1점씩!</div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="showRules('g1')">방법</button>
+      <button class="btn ghost" onclick="backHub()">홈으로</button>
+    </div>
+  </div>
+
+  <!-- 게임2 준비 -->
+  <div class="screen setup" id="g2Setup">
+    <div class="pagebar"><button onclick="backHub()" aria-label="놀이터로 돌아가기"><svg class="ui-icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg></button><span>모양 만들기</span><button onclick="showRules('g2')" aria-label="게임 방법 보기">?</button></div>
+    <div class="setup-card">
+      <div class="intro">
+        <div class="big-em duo-stage" id="g2SetupEm" aria-hidden="true"></div>
+        <div class="intro-copy">
+          <h2 class="game-title-heading"><button class="game-title-button" id="g2TitleBtn" aria-expanded="false" aria-controls="g2Thinking" onclick="toggleThinking('g2')"><span>모양 만들기 <i>i</i></span></button></h2>
+          <small class="skill-hint">제목을 눌러 재미 포인트 보기</small>
+          <p class="desc">부엉이와 파랑새를 한 칸씩 놓아 내 목표 줄을 먼저 만들고, 상대의 줄은 영리하게 막아요.</p>
+          <div class="game-meta"><span>6세+</span><span><svg class="ui-icon" aria-hidden="true"><use href="#i-users"></use></svg>1–2명</span><span><svg class="ui-icon" aria-hidden="true"><use href="#i-clock"></use></svg>5–8분</span></div>
+        </div>
+      </div>
+      <div class="thinking-panel" id="g2Thinking" hidden>
+        <strong>이 게임의 재미 포인트</strong>
+        <div class="thinking-grid">
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-sequence"></use></svg>순서 찾기</b><small>친구들이 놓인 순서를 맞춰요.</small></div>
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-eye"></use></svg>목표 확인</b><small>내가 만들 모양을 보고 자리를 찾아요.</small></div>
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-shield"></use></svg>상대 막기</b><small>상대 모양이 완성될 자리를 먼저 막아요.</small></div>
+          <div class="thinking-item"><b><svg class="ui-icon" aria-hidden="true"><use href="#i-swap"></use></svg>두 모양 비교</b><small>내 모양과 상대 모양을 번갈아 살펴봐요.</small></div>
+        </div>
+      </div>
+      <div class="difficulty-progress"><i><span id="g2LevelFill"></span></i><b id="g2LevelCount">1 / 3</b></div>
+      <div class="choice-label"><span>몇 칸 모양에 도전할까요?</span><small>칸이 늘면 더 어려워져요</small></div>
+      <div class="seg three" id="g2LevelSeg">
+        <button data-lv="1" data-on="1" aria-pressed="true" onclick="setLevel('g2',1)"><b>쉬움</b><small>3칸 모양</small></button>
+        <button data-lv="2" data-on="0" aria-pressed="false" onclick="setLevel('g2',2)"><b>보통</b><small>4칸 모양</small></button>
+        <button data-lv="3" data-on="0" aria-pressed="false" onclick="setLevel('g2',3)"><b>어려움</b><small>큰 판·영리한 AI</small></button>
+      </div>
+      <p class="level-note" id="g2LevelNote">5×5 판에서 3칸 모양을 만들어요.</p>
+      <div class="row">
+        <button class="btn blue big" onclick="g2Start('solo')">혼자 시작</button>
+        <button class="btn red big" onclick="g2Start('duo')">둘이 시작</button>
+      </div>
+      <div class="foot"><button class="btn ghost" onclick="showRules('g2')">게임 방법 듣고 보기</button></div>
+    </div>
+  </div>
+
+  <!-- 게임2 플레이 -->
+  <div class="screen" id="g2Game">
+    <div class="patterns" id="g2pats"></div>
+    <div class="turnmsg" id="g2turn" aria-live="polite"></div>
+    <div class="board" id="g2board">
+      <div class="grid2" id="g2grid"></div>
+      <div class="floatmsg" id="g2float" aria-live="polite"></div>
+    </div>
+    <div class="picker2" id="g2picker"></div>
+    <div class="foot">
+      <button class="btn ghost" onclick="showRules('g2')">방법</button>
+      <button class="btn ghost" onclick="backHub()">홈으로</button>
+    </div>
+  </div>
+<!-- 게임 3·4·5: 각 모듈(games/*.js)이 화면 내용을 그린다 -->
+  <div class="screen setup" id="g3Setup"></div>
+  <div class="screen" id="g3Game"></div>
+  <div class="screen setup" id="g4Setup"></div>
+  <div class="screen" id="g4Game"></div>
+  <div class="screen setup" id="g5Setup"></div>
+  <div class="screen" id="g5Game"></div>
+</div>
+
+<div class="overlay" id="winOverlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="card">
+    <div class="win-em" id="winEm"><svg class="ui-icon" aria-hidden="true"><use href="#i-sparkles"></use></svg></div>
+    <h2 id="winTitle"></h2>
+    <p id="winSub"></p>
+    <button class="btn blue big" onclick="rematch()">한 판 더</button>
+    <button class="btn ghost" onclick="backHub()">홈으로</button>
+  </div>
+</div>
+
+<div class="overlay" id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+  <div class="card">
+    <h2 id="rulesTitle">게임 방법</h2>
+    <button class="say-btn" onclick="readRules()"><svg class="ui-icon" aria-hidden="true"><use href="#i-speak"></use></svg>읽어줘요</button>
+    <div class="rules" id="rulesBody"></div>
+    <button class="btn blue big" onclick="hideRules()">알겠어요!</button>
+  </div>
+</div>
+
+<div class="overlay" id="parentGateOverlay" role="dialog" aria-modal="true" aria-labelledby="parentGateTitle">
+  <div class="card gate-card">
+    <div class="gate-icon" aria-hidden="true"><svg class="ui-icon"><use href="#i-parent"></use></svg></div>
+    <h2 id="parentGateTitle">부모님 메뉴예요</h2>
+    <p>아이의 게임 흐름이 끊기지 않도록<br>보호자 정보는 따로 모아두었어요.</p>
+    <button class="btn blue big hold-btn" id="parentHoldBtn"
+      onpointerdown="startParentHold(event)" onpointerup="cancelParentHold()" onpointercancel="cancelParentHold()" onpointerleave="cancelParentHold()"
+      onkeydown="startParentKey(event)" onkeyup="cancelParentHold()">2초 동안 길게 누르기</button>
+    <button class="cancel-gate" onclick="hideParentGate()">아이 화면으로 돌아가기</button>
+  </div>
+</div>
+
+<div class="overlay" id="parentOverlay" role="dialog" aria-modal="true" aria-labelledby="parentTitle">
+  <div class="card parent-sheet">
+    <button class="close-sheet" onclick="hideParent()" aria-label="부모님 안내 닫기"><svg class="ui-icon" aria-hidden="true"><use href="#i-close"></use></svg></button>
+    <span style="font-size:11px;color:#6f7975;font-weight:800">FOR PARENTS</span>
+    <h2 id="parentTitle">부모님 게임 리포트</h2>
+    <p>호플우드는 교구에서 쓰던 규칙 놀이를 짧은 게임으로 옮겼어요. 아이 화면에는 재미와 도전만 보이고, 게임 속에서 쓰는 생각 과정은 이곳에서만 설명해요.</p>
+    <div class="parent-progress">
+      <div><span>무료 게임</span><b>5 / 5</b></div><i aria-hidden="true"></i>
+    </div>
+    <div id="parentGuide"></div>
+    <section class="parent-platform" aria-labelledby="platformPlanTitle">
+      <h3 id="platformPlanTitle">호플우드 운영 원칙</h3>
+      <div class="parent-platform-grid">
+        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span><b>무료 게임 5개</b><p>다섯 게임은 세 난이도까지 모두 무료로 완결해 제공합니다.</p></article>
+        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-sparkles"></use></svg></span><b>틀려도 괜찮아요</b><p>하트·감점·게임오버가 없고, 힌트는 정답 대신 비교할 곳을 알려 줍니다.</p></article>
+        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-speak"></use></svg></span><b>읽어주기</b><p>글을 아직 못 읽어도 규칙과 안내를 소리로 들을 수 있어요. 홈 위쪽에서 끌 수 있습니다.</p></article>
+        <article><span aria-hidden="true"><svg class="ui-icon"><use href="#i-house"></use></svg></span><b>이 기기에만 저장</b><p>계정·광고·추적 없이 별과 기록을 이 기기에만 저장합니다.</p></article>
+      </div>
+      <p class="parent-platform-note">현재는 결제·계정·광고가 없는 프로토타입입니다. 출시판에서 구매·기록 삭제를 넣을 때는 보호자 확인(PIN 또는 기기 인증)과 만 14세 미만 개인정보 처리 동의 절차를 함께 설계해야 합니다.</p>
+    </section>
+    <div class="evidence-card">
+      <strong>연구를 어떻게 반영했나요?</strong>
+      <p>각 게임이 실제 규칙 안에서 요구하는 생각 과정을 과제 분석으로 연결했습니다. 특정 뇌 부위의 발달이나 학업 향상을 보장한다는 뜻은 아닙니다. 연구에서는 연습한 과제와 비슷한 능력으로의 전이는 비교적 일관되지만, 전혀 다른 생활·학업 영역으로의 전이는 제한적일 수 있습니다.</p>
+      <div class="evidence-links">
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4084861/" target="_blank" rel="noopener">실행기능 개요</a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/22663761/" target="_blank" rel="noopener">공간 능력 연구</a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/33324291/" target="_blank" rel="noopener">아동 인지훈련 메타분석</a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/42532119/" target="_blank" rel="noopener">보드게임 연구</a>
+      </div>
+    </div>
+    <div class="evidence-card">
+      <strong>게임 분류 원칙</strong>
+      <p>아이에게는 캐릭터와 장르로 먼저 보여주고, 연령은 추천 필터로만 사용합니다. 같은 나이라도 경험 차이가 크므로 실제 난이도는 쉬움·보통·어려움으로 다시 고를 수 있게 유지합니다.</p>
+    </div>
+    <button class="btn blue big" onclick="hideParent()">아이 화면으로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+/* ================= 공통 ================= */
+/* 게임마다 다른 숲 친구가 활동한다. 캐릭터 그림은 games/characters.js */
+const GAME_CATALOG={
+  g1:{title:'길따라 쪼르르',age:'6세+',ages:['6-7','8+'],players:'1–2명',time:'약 5분',category:'전략',hero:'내 길과 상대 길,<br>먼저 읽어봐!',description:'다람쥐·고슴도치·너구리의 정해진 길을 읽고, 잡거나 피하며 숲을 건너요.',card:'길을 읽고 잡거나 피하며 먼저 건너요.',cover:'cover-route',cast:['squirrel','hedgehog'],icon:'route'},
+  g2:{title:'모양 만들기',age:'6세+',ages:['6-7','8+'],players:'1–2명',time:'5–8분',category:'패턴',hero:'내 줄은 잇고,<br>상대 줄은 막아봐!',description:'부엉이와 파랑새를 한 칸씩 놓아 내 목표 줄을 먼저 완성해요.',card:'목표 줄을 만들고 상대 줄을 막아요.',cover:'cover-pattern',cast:['owl','bluebird'],icon:'shapes'},
+  g3:{title:'얼굴 짝꿍',age:'4세+',ages:['4-5','6-7','8+'],players:'1–2명',time:'3–6분',category:'관찰',hero:'딱 한 곳 다른 가짜,<br>찾을 수 있어?',description:'곰·여우·판다의 반쪽 얼굴을 보고 머리·귀·눈·코·입이 꼭 같은 짝을 찾아요.',card:'반쪽 얼굴과 꼭 같은 짝을 찾아요.',cover:'cover-face',cast:[],icon:'eye'},
+  g4:{title:'숫자 징검다리',age:'6세+',ages:['6-7','8+'],players:'1–2명',time:'6–10분',category:'수·전략',hero:'합과 차를 구해서<br>징검다리를 이어봐!',description:'주사위 두 수의 합과 차를 직접 구하고, 연못·꽃밭·벌집에서 내 길을 이어요.',card:'합과 차를 구해 칸을 찾아 이어요.',cover:'cover-numbertrail',cast:['frog','bee'],icon:'grid'},
+  g5:{title:'비버 집짓기',age:'4세+',ages:['4-5','6-7','8+'],players:'1명',time:'3–6분',category:'공간 퍼즐',hero:'통나무를 돌려서<br>빈틈 없이 채워봐!',description:'비버가 모은 통나무 조각을 돌리고 맞춰 집터를 꽉 채워요.',card:'조각을 돌려 빈틈 없이 채워요.',cover:'cover-blocks',cast:['beaver'],icon:'puzzle'}
+};
+const GAME_IDS=Object.keys(GAME_CATALOG);
+const DEFAULT_CFG={g1:{mode:'solo',level:1},g2:{mode:'solo',level:1},g3:{mode:'solo',level:1},g4:{mode:'solo',level:1,theme:'pond'},g5:{mode:'solo',level:1}};
+let curGame=null,heroGameId='g1',lastCfg=JSON.parse(JSON.stringify(DEFAULT_CFG));
+(function loadPreferences(){ const saved=hwReadJSON('hw_preferences_v1',null); if(saved)GAME_IDS.forEach(g=>{ if(saved[g]&&typeof saved[g]==='object')lastCfg[g]={...DEFAULT_CFG[g],...saved[g]}; }); GAME_IDS.forEach(g=>{ const lv=Number(lastCfg[g].level); lastCfg[g].level=lv>=1&&lv<=3?lv:1; }); })();
+function savePreferences(){ hwStore('hw_preferences_v1',JSON.stringify(lastCfg)); }
+const DEFAULT_PROGRESS={stars:0,plays:0,wins:0,lastGame:null};
+GAME_IDS.forEach(g=>{DEFAULT_PROGRESS[g+'Plays']=0;});
+let progress={...DEFAULT_PROGRESS,...hwReadJSON('hw_progress_v1',{})};
+const G1_CAST=['squirrel','hedgehog','raccoon'];
+const G2_CAST=['owl','bluebird'];
+function icon(name,extra=''){ return `<svg class="ui-icon ${extra}" aria-hidden="true"><use href="#i-${name}"></use></svg>`; }
+function g1Char(i,view='face'){ return hwChar(G1_CAST[i],view); }
+function chipMarkup(color){ return hwChar(G2_CAST[color],'face'); }
+function chipLabel(color){ return hwCharName(G2_CAST[color]); }
+function fillCharSlots(root=document){ root.querySelectorAll('[data-char]').forEach(n=>{ n.innerHTML=hwChar(n.dataset.char,n.dataset.view||'face'); }); }
+
+function coverMarkup(g){
+  const c=GAME_CATALOG[g];
+  if(g==='g3')return `<span class="cover-face-pair" aria-hidden="true"><span>${typeof g3_faceSVG==='function'?g3_faceSVG({species:'fox',head:'flower',ears:'pink',eyes:'sparkle',nose:'heart',mouth:'open',cheeks:'blush'},'left'):''}</span><span>${typeof g3_faceSVG==='function'?g3_faceSVG({species:'fox',head:'flower',ears:'pink',eyes:'sparkle',nose:'heart',mouth:'open',cheeks:'blush'},'right'):''}</span></span>`;
+  if(g==='g4')return `<span class="cover-pads" aria-hidden="true"><i>3</i><i>7</i><i>1</i><i>5</i></span><span class="cover-side">${hwChar('frog','full')}</span><span class="cover-main">${hwChar('bee','full')}</span>`;
+  if(g==='g5')return `<span class="cover-logs" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="cover-main">${hwChar('beaver','full')}</span>`;
+  return `<span class="cover-side">${hwChar(c.cast[1],'full')}</span><span class="cover-main">${hwChar(c.cast[0],'full')}</span>`;
+}
+function renderCatalog(){
+  const grid=document.getElementById('catalogGrid'); if(!grid)return;
+  grid.innerHTML=GAME_IDS.map(g=>{ const c=GAME_CATALOG[g];
+    return `<button class="experience-card live" data-age="${c.ages.join(' ')}" onclick="openSetup('${g}')">
+      <span class="experience-cover ${c.cover}"><span class="status-badge">무료</span>${coverMarkup(g)}</span>
+      <span class="experience-body"><span class="game-tags"><span>${c.category}</span><span>${c.age}</span></span><strong>${c.title}</strong><p>${c.card}</p><span class="experience-meta"><span>${icon('users')}${c.players}</span><span>${icon('clock')}${c.time}</span></span></span>
+    </button>`; }).join('');
+  const map=document.getElementById('gameMap');
+  if(map)map.innerHTML=GAME_IDS.map(g=>{ const c=GAME_CATALOG[g], art=c.cast[0]?hwChar(c.cast[0],'face'):hwChar('hopple','face');
+    return `<button onclick="openSetup('${g}')"><span class="game-map-face" aria-hidden="true">${art}</span><span><b>${c.title}</b><small id="${g}Record">아직 안 해봄</small></span></button>`; }).join('');
+}
+
+function updateProgressUI(){
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e)e.textContent=v; };
+  set('starCount',progress.stars);
+  set('profileStars',progress.stars); set('profilePlays',progress.plays); set('profileWins',progress.wins);
+  const last=progress.lastGame&&GAME_CATALOG[progress.lastGame];
+  set('recentActivity',last?hwJosa(last.title,'을/를')+' 완료했어요.':'아직 완료한 게임이 없어요.');
+  GAME_IDS.forEach(g=>{const plays=progress[g+'Plays']||0;set(g+'Record',plays?plays+'판 완료':'아직 안 해봄');});
+  const badge=(id,on)=>{ const e=document.getElementById(id); if(e)e.classList.toggle('on',on); };
+  const tried=GAME_IDS.filter(g=>(progress[g+'Plays']||0)>0).length;
+  badge('badgeFirst',progress.plays>=1); badge('badgeBoth',tried>=3); badge('badgeFive',progress.stars>=5);
+  updateHeroRecommendation();
+}
+function updateHeroRecommendation(){
+  const untried=GAME_IDS.find(g=>(progress[g+'Plays']||0)===0);
+  heroGameId=untried||progress.lastGame||'g1';
+  if(!GAME_CATALOG[heroGameId])heroGameId='g1';
+  const game=GAME_CATALOG[heroGameId],newGame=Boolean(untried);
+  const setText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  setText('heroKicker',newGame?(progress.plays?'새로운 놀이 · '+game.category:'이번 추천 · '+game.category):'최근 게임 · 다시 한 판');
+  const title=document.getElementById('hubTitle');if(title)title.innerHTML=game.hero;
+  setText('heroDescription',game.description);
+  const players=document.getElementById('heroPlayers');if(players)players.innerHTML=icon('users')+game.players;
+  const time=document.getElementById('heroTime');if(time)time.innerHTML=icon('clock')+game.time;
+  setText('heroAge',game.age);
+  const button=document.querySelector('#heroPlay span');if(button)button.textContent=newGame?'바로 플레이':'다시 플레이';
+  const cast=game.cast.length?game.cast:['hopple'];
+  const main=document.getElementById('heroArtMain'),side=document.getElementById('heroArtSide'),extra=document.getElementById('heroArtExtra');
+  if(main)main.innerHTML=heroGameId==='g3'&&typeof g3_faceSVG==='function'?g3_faceSVG({species:'panda',head:'sprout',ears:'pink',eyes:'round',nose:'oval',mouth:'w',cheeks:'blush'},'full'):hwChar(cast[0],'full');
+  if(side)side.innerHTML=hwChar('hopple','guide');
+  if(extra)extra.innerHTML=cast[1]?hwChar(cast[1],'full'):'';
+}
+function playHero(){openSetup(heroGameId);}
+function saveProgress(){ hwStore('hw_progress_v1',JSON.stringify(progress)); }
+function recordCompletion(winner,mode){ if(!curGame||!GAME_CATALOG[curGame])return;
+  progress.plays++; progress.stars++; progress[curGame+'Plays']=(progress[curGame+'Plays']||0)+1; if(mode==='solo'&&winner==='A')progress.wins++; progress.lastGame=curGame;
+  saveProgress(); updateProgressUI(); }
+
+function showScreen(id){ const next=document.getElementById(id); if(!next)return; document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  next.classList.add('on'); window.scrollTo(0,0); }
+function cancelAllGames(){ ['g1_cancel','g2_cancel','g3_cancel','g4_cancel','g5_cancel'].forEach(fn=>{ if(typeof window[fn]==='function')window[fn](); }); }
+function backHub(){
+  cancelAllGames();
+  if(typeof hwCoachDone==='function'&&document.querySelector('#hwCoach.on'))hwCoachDone();
+  hwHush();
+  closeOverlay('winOverlay',false); closeOverlay('rulesOverlay',false);
+  curGame=null; updateProgressUI(); showScreen('hubScreen');
+}
+function goGames(){ backHub(); setTimeout(()=>document.getElementById('gameLibrary').scrollIntoView({behavior:'smooth',block:'start'}),0); }
+function filterCatalog(filter){ document.querySelectorAll('.age-filter').forEach(b=>{ const on=b.dataset.filter===filter; b.dataset.on=on?'1':'0'; b.setAttribute('aria-selected',on?'true':'false'); });
+  document.querySelectorAll('.experience-card').forEach(card=>{ card.hidden=filter!=='all'&&!card.dataset.age.split(' ').includes(filter); }); }
+function showProgress(){ updateProgressUI(); showScreen('progressScreen'); }
+let parentHoldTimer=null;
+let overlayReturnFocus=null;
+function overlayFocusable(root){return [...root.querySelectorAll('button:not(:disabled),a[href],[tabindex]:not([tabindex="-1"])')].filter(el=>!el.hidden&&el.offsetParent!==null);}
+function openOverlay(id){
+  const overlay=document.getElementById(id);if(!overlay)return;
+  if(!overlay.classList.contains('on'))overlayReturnFocus=document.activeElement;
+  overlay.classList.add('on');
+  requestAnimationFrame(()=>{const items=overlayFocusable(overlay);(items[0]||overlay).focus();});
+}
+function closeOverlay(id,restore=true){
+  const overlay=document.getElementById(id);if(!overlay||!overlay.classList.contains('on'))return;
+  overlay.classList.remove('on');
+  if(restore&&overlayReturnFocus&&typeof overlayReturnFocus.focus==='function'&&document.contains(overlayReturnFocus))overlayReturnFocus.focus();
+}
+document.addEventListener('keydown',e=>{
+  const overlays=[...document.querySelectorAll('.overlay.on')];if(!overlays.length)return;
+  const overlay=overlays[overlays.length-1];
+  if(e.key==='Escape'){
+    e.preventDefault();
+    if(overlay.id==='rulesOverlay')hideRules();
+    else if(overlay.id==='parentGateOverlay')hideParentGate();
+    else if(overlay.id==='parentOverlay')hideParent();
+    else if(overlay.id==='winOverlay')backHub();
+    return;
+  }
+  if(e.key==='Tab'){
+    const items=overlayFocusable(overlay);if(!items.length){e.preventDefault();return;}
+    const first=items[0],last=items[items.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+function showParent(){ openOverlay('parentGateOverlay'); }
+function hideParentGate(){ cancelParentHold(); closeOverlay('parentGateOverlay'); }
+function startParentHold(e){ if(e)e.preventDefault(); cancelParentHold(); const b=document.getElementById('parentHoldBtn'); b.classList.add('holding');
+  parentHoldTimer=setTimeout(()=>{ const origin=overlayReturnFocus; parentHoldTimer=null; b.classList.remove('holding'); closeOverlay('parentGateOverlay',false); openOverlay('parentOverlay'); overlayReturnFocus=origin; },2000); }
+function startParentKey(e){ if((e.key==='Enter'||e.key===' ')&&!e.repeat)startParentHold(e); }
+function cancelParentHold(){ if(parentHoldTimer){clearTimeout(parentHoldTimer);parentHoldTimer=null;} const b=document.getElementById('parentHoldBtn'); if(b)b.classList.remove('holding'); }
+function hideParent(){ closeOverlay('parentOverlay'); }
+function openSetup(g){ if(!GAME_CATALOG[g])return; cancelAllGames(); hwHush(); curGame=g; showScreen(g+'Setup'); setLevel(g,lastCfg[g].level,true); if(g==='g4'&&typeof g4_setTheme==='function')g4_setTheme(lastCfg.g4.theme||'pond',true); }
+function toggleThinking(g){ const panel=document.getElementById(g+'Thinking'), btn=document.getElementById(g+'TitleBtn'); if(!panel||!btn)return; const open=panel.hidden; panel.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); }
+const LEVEL_INFO={
+  g1:{1:'곧은 길에서 컴퓨터가 다음 한 수를 살펴봐요.',2:'길이 꺾이고 만나며 컴퓨터가 두 수 앞을 비교해요.',3:'교차가 많은 길에서 컴퓨터가 세 수 앞까지 비교해요.'},
+  g2:{1:'5×5 판에서 3칸 줄을 만들어요.',2:'6×6 판에서 4칸 줄을 만들고 컴퓨터가 막아요.',3:'7×7 큰 판에서 4칸 줄을 만들고 컴퓨터가 적극적으로 막아요.'}
+};
+function setLevel(g,lv,silent){ lv=Math.max(1,Math.min(3,Number(lv)||1)); lastCfg[g].level=lv; savePreferences(); const seg=document.getElementById(g+'LevelSeg'); if(!seg)return;
+  seg.querySelectorAll('button').forEach(b=>{ const on=+b.dataset.lv===lv; b.dataset.on=on?'1':'0'; b.setAttribute('aria-pressed',on?'true':'false'); });
+  const fill=document.getElementById(g+'LevelFill'), count=document.getElementById(g+'LevelCount'), note=document.getElementById(g+'LevelNote'); if(fill)fill.style.width=(lv*100/3)+'%'; if(count)count.textContent=lv+' / 3'; if(note)note.textContent=(LEVEL_INFO[g]||{})[lv]||'';
+  if(!silent)hwSfx('tap');
+  const actor=document.getElementById(g+'SetupEm'); if(actor&&!silent){actor.classList.remove('react');void actor.offsetWidth;actor.classList.add('react');setTimeout(()=>actor.classList.remove('react'),520);} }
+
+function showWin(winner, mode, emWin, opts={}){ recordCompletion(winner,mode);
+  const title=document.getElementById('winTitle'), sub=document.getElementById('winSub'), em=document.getElementById('winEm');
+  if(winner===null){ em.innerHTML=emWin||icon('tie'); title.textContent=opts.title||'비겼어요!'; sub.textContent=opts.sub||'다시 한 판 어때요?'; hwSfx('good'); }
+  else{ const isA=winner==='A'; const label=mode==='solo'?(isA?'내가':'컴퓨터가'):(isA?'파랑이':'빨강이');
+    em.innerHTML=emWin||hwChar('hopple','happy');
+    title.textContent=opts.title||label+' 이겼어요!';
+    sub.textContent=opts.sub||((mode==='solo'&&!isA)?'아깝다! 한 판 더 해볼까요?':'멋져요! 별 하나를 모았어요.');
+    if(mode==='solo'&&!isA)hwSfx('good'); else { hwSfx('win'); confetti(); } }
+  hwSay(title.textContent+' '+sub.textContent);
+  openOverlay('winOverlay'); }
+function rematch(){ closeOverlay('winOverlay',false); hwHush();
+  const g=curGame, mode=(lastCfg[g]||{}).mode||'solo';
+  if(g==='g1')g1Start(mode); else if(g==='g2')g2Start(mode); else if(typeof window[g+'_start']==='function')window[g+'_start'](mode); else backHub(); }
+function confetti(){ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return; const colors=['#f2645a','#f2b544','#56b883','#4b86d9','#8e6bc6'];
+  for(let i=0;i<26;i++){ const s=document.createElement('div'); s.className='confetti';
+    s.style.background=colors[(Math.random()*colors.length)|0]; s.style.left=Math.random()*100+'vw';
+    s.style.width=(6+Math.random()*7)+'px'; s.style.height=(10+Math.random()*12)+'px';
+    s.style.animationDuration=(1.6+Math.random()*1.4)+'s'; s.style.animationDelay=(Math.random()*.5)+'s';
+    document.body.appendChild(s); setTimeout(()=>s.remove(),3600); } }
+
+const RULES={
+  g1:{ title:'길따라 쪼르르', body:[
+    ['1','다람쥐·고슴도치·너구리는 저마다 <b>정해진 길</b>로만 다녀요. 난이도가 같으면 길도 같아요.'],
+    ['2','내 친구를 누르면 갈 길이 <b>1→2→3 순서</b>로 보여요. 반짝이는 1번 칸으로 한 칸 움직여요.'],
+    ['i-eye','내 친구를 고른 뒤 <b>상대 친구를 누르면</b> 두 길이 함께 보여요. 숫자가 만나는 칸을 비교해요.'],
+    ['i-shield','상대가 다음에 올 칸은 피하고, 내 1번 칸에 상대가 있으면 <b>잡아요.</b>'],
+    ['i-target','상대를 잡거나 반대편 집에 도착하면 <b>1점!</b>'],
+    ['i-star','쉬움은 <b>2점</b>, 보통과 어려움은 <b>3점</b>을 먼저 모으면 승리!']]},
+  g2:{ title:'모양 만들기', body:[
+    ['1','위에 <b>내 목표 줄</b>과 <b>상대 목표 줄</b>이 있어요.'],
+    ['2','아래에서 <b>부엉이나 파랑새를 골라</b> 빈 칸을 눌러요. 누구든 둘 다 놓을 수 있어요!'],
+    ['3','<b>내 목표</b>와 똑같은 줄을 가로·세로·대각선으로 먼저 만들면 <b>이겨요!</b>'],
+    ['i-wall','상대 줄이 거의 다 되면 <b>중간을 막아요.</b>'],
+    ['i-warning','실수로 <b>상대 줄</b>을 만들면 상대가 이겨요. 조심!']]}
+};
+let currentRules=null;
+function showRules(g){ const R=RULES[g]; if(!R)return; currentRules=R; document.getElementById('rulesTitle').textContent=R.title;
+  document.getElementById('rulesBody').innerHTML=R.body.map(([n,t])=>`<div class="r"><span class="n">${n.startsWith('i-')?icon(n.slice(2)):n}</span><span>${t}</span></div>`).join('');
+  openOverlay('rulesOverlay'); readRules(false); }
+function readRules(force=true){ if(!currentRules)return; hwSay(currentRules.title+'. '+currentRules.body.map(([,t])=>t).join(' '),force); }
+function hideRules(){ hwHush(); closeOverlay('rulesOverlay'); }
+
+/* ===================================================================
+   게임 1 : 길따라 쪼르르
+=================================================================== */
+const g1={ mode:'solo', level:1, board:null, pieces:null, score:null, turn:'A', previewId:null, compareId:null, armed:null, locked:false, pass:0, pid:0, win:2, runId:0 };
+const ARROW_ROT={ "-1,0":0,"1,0":180,"0,-1":-90,"0,1":90 };
+function g1_later(callback,delay){ const runId=g1.runId; return setTimeout(()=>{if(g1.runId===runId&&curGame==='g1')callback();},delay); }
+function g1_cancel(){g1.runId++;g1.locked=true;}
+function g1_shuffle(a){ for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} }
+/* 난이도별 캐릭터 고유 경로. A는 아래→위, B는 같은 길을 위→아래로 움직인다. */
+const G1_ROUTE_SETS={
+  1:[
+    [[4,0],[3,0],[2,0],[1,0],[0,0]],
+    [[4,2],[3,2],[2,2],[1,2],[0,2]],
+    [[4,4],[3,4],[2,4],[1,4],[0,4]]
+  ],
+  2:[
+    [[4,0],[3,0],[3,1],[2,1],[1,1],[0,1]],
+    [[4,2],[3,2],[2,2],[2,1],[1,1],[1,2],[0,2]],
+    [[4,4],[3,4],[3,3],[2,3],[1,3],[0,3]]
+  ],
+  3:[
+    [[4,0],[3,0],[3,1],[2,1],[2,2],[2,3],[1,3],[1,4],[0,4]],
+    [[4,2],[4,1],[3,1],[3,2],[2,2],[2,1],[1,1],[1,2],[0,2]],
+    [[4,4],[3,4],[3,3],[2,3],[2,2],[2,1],[1,1],[1,0],[0,0]]
+  ]
+};
+function g1_teamRoutes(team){ return G1_ROUTE_SETS[g1.level].map(route=>{
+  const cells=team==='A'?route:route.slice().reverse(); return cells.map(([r,c])=>[r,c]);
+}); }
+
+function g1Start(mode){ g1.runId++; g1.mode=mode; g1.level=lastCfg.g1.level; lastCfg.g1.mode=mode; savePreferences(); g1.win=g1.level===1?2:3;
+  g1.board=Array.from({length:5},()=>Array(5).fill(null)); g1.pieces={}; g1.pid=0; g1.score={A:0,B:0};
+  g1.previewId=null; g1.compareId=null; g1.armed=null; g1.locked=false; g1.pass=0;
+  g1_teamRoutes('A').forEach((rt,i)=>g1_add('A',i,rt)); g1_teamRoutes('B').forEach((rt,i)=>g1_add('B',i,rt)); g1.turn='A';
+  document.getElementById('g1nameA').textContent=mode==='solo'?'나':'파랑'; document.getElementById('g1nameB').textContent=mode==='solo'?'컴퓨터':'빨강';
+  document.getElementById('g1faceA').innerHTML=icon('pawn'); document.getElementById('g1faceB').innerHTML=icon('pawn');
+  g1_dots(); g1_buildBoard(); g1_renderPieces(); g1_arrows(); g1_score(); g1_turnMsg(); showScreen('g1Game'); }
+function g1_add(team,char,cells){ const id='a'+(g1.pid++); const [r,c]=cells[0]; g1.pieces[id]={id,team,char,cells,idx:0,r,c}; g1.board[r][c]=id; }
+function g1_dots(){ ['A','B'].forEach(tm=>{ const d=document.getElementById('g1dots'+tm); d.innerHTML=''; for(let i=0;i<g1.win;i++){const s=document.createElement('i');s.className='dot';d.appendChild(s);} }); }
+function g1_buildBoard(){ const cells=document.getElementById('g1cells'); cells.style.gridTemplateColumns='repeat(5,1fr)'; cells.style.gridTemplateRows='repeat(5,1fr)'; cells.innerHTML='';
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){ const cell=document.createElement('button'); cell.type='button'; cell.className='cell'+(r===4?' homeA':'')+(r===0?' homeB':'');
+    cell.innerHTML='<div class="tile-bg"></div><div class="homeband"></div><div class="ring"></div><div class="num"></div>'; cell.onclick=()=>g1_click(r,c); cells.appendChild(cell); } g1_updateCellLabels(); }
+function g1_cell(r,c){ return document.getElementById('g1cells').children[r*5+c]; }
+function g1_updateCellLabels(){ for(let r=0;r<5;r++)for(let c=0;c<5;c++){ const id=g1.board[r][c], pc=id&&g1.pieces[id];
+  g1_cell(r,c).setAttribute('aria-label',`${r+1}행 ${c+1}열, ${pc?((pc.team==='A'?'내':'상대')+' '+hwCharName(G1_CAST[pc.char])):'빈 칸'}`); } }
+function g1_el(id){ return document.getElementById('g1el_'+id); }
+function g1_renderPieces(){ const layer=document.getElementById('g1pieces'); layer.innerHTML='';
+  Object.values(g1.pieces).forEach(pc=>{ const e=document.createElement('div'); e.className='pc '+pc.team; e.id='g1el_'+pc.id;
+    e.style.width='20%'; e.style.height='20%'; e.style.left=(pc.c*20)+'%'; e.style.top=(pc.r*20)+'%';
+    e.innerHTML=`<div class="chip">${g1Char(pc.char,'face')}<span class="arrow"></span></div>`; layer.appendChild(e); }); }
+function g1_move(pc){ const e=g1_el(pc.id); e.classList.add('moving'); e.style.left=(pc.c*20)+'%'; e.style.top=(pc.r*20)+'%'; setTimeout(()=>e&&e.classList.remove('moving'),360); }
+function g1_arrows(){ Object.values(g1.pieces).forEach(pc=>{ const a=g1_el(pc.id).querySelector('.arrow');
+  if(pc.idx>=pc.cells.length-1){a.innerHTML=icon('house');return;} const [nr,nc]=pc.cells[pc.idx+1], key=(nr-pc.r)+','+(nc-pc.c), rot=ARROW_ROT[key]??0;
+  a.innerHTML=icon('arrow-up'); const v=a.querySelector('.ui-icon'); if(v)v.style.transform=`rotate(${rot}deg)`; }); }
+function g1_advanceable(pc){ if(pc.idx>=pc.cells.length-1)return false; const [nr,nc]=pc.cells[pc.idx+1]; const o=g1.board[nr][nc]; return !(o&&g1.pieces[o].team===pc.team); }
+function g1_click(r,c){ if(g1.locked)return; if(g1.armed){ const p=g1.pieces[g1.armed]; const [nr,nc]=p.cells[p.idx+1]; if(nr===r&&nc===c){g1_advance(g1.armed);return;} }
+  const o=g1.board[r][c]; if(o)g1_preview(o); else g1_clear(); }
+function g1_setGuide(text){ const guide=document.getElementById('g1guide'); if(guide)guide.textContent=text; }
+function g1_drawRoute(pc,isOwn){ for(let k=pc.idx+1;k<pc.cells.length;k++){ const [rr,cc]=pc.cells[k], ce=g1_cell(rr,cc), ord=k-pc.idx;
+  ce.classList.add(ord===1?(isOwn?'hl':'peek'):(isOwn?'stepO':'stepF'));
+  const mark=document.createElement('span'); mark.className='route-num '+pc.team; mark.textContent=ord; mark.setAttribute('aria-label',(pc.team===g1.turn?'내':'상대')+' 경로 '+ord+'번째 칸'); ce.querySelector('.num').appendChild(mark); } }
+function g1_preview(id){ const pc=g1.pieces[id], isCurrent=pc.team===g1.turn, canControl=isCurrent&&(g1.mode==='duo'||g1.turn==='A')&&!g1.locked;
+  if(isCurrent){ g1.previewId=id; g1.compareId=null; g1.armed=(canControl&&g1_advanceable(pc))?id:null; }
+  else if(g1.previewId&&g1.pieces[g1.previewId]&&g1.pieces[g1.previewId].team===g1.turn){ g1.compareId=id; }
+  else { g1.previewId=id; g1.compareId=null; g1.armed=null; }
+  document.querySelectorAll('#g1pieces .pc.sel,#g1pieces .pc.compare').forEach(e=>e.classList.remove('sel','compare'));
+  if(g1.previewId&&g1.pieces[g1.previewId].team===g1.turn)g1_el(g1.previewId).classList.add('sel');
+  if(g1.compareId)g1_el(g1.compareId).classList.add('compare');
+  g1_clearCells();
+  if(g1.previewId){ const first=g1.pieces[g1.previewId]; g1_drawRoute(first,first.team===g1.turn); }
+  if(g1.compareId)g1_drawRoute(g1.pieces[g1.compareId],false);
+  document.querySelectorAll('#g1cells .cell').forEach(ce=>{ if(ce.querySelectorAll('.route-num').length>1)ce.classList.add('route-cross'); });
+  if(g1.compareId)g1_setGuide('두 색 숫자가 만나는 칸과 도착 순서를 비교해 잡을지 피할지 계산해요.');
+  else if(isCurrent)g1_setGuide(g1.armed?'이제 상대 캐릭터를 눌러 두 길을 함께 비교해요.':'앞 칸에 우리 말이 있어요. 다른 캐릭터도 살펴보세요.');
+  else g1_setGuide('상대의 정해진 길이에요. 내 캐릭터를 먼저 누르면 두 길을 함께 볼 수 있어요.'); }
+function g1_clear(){ g1.previewId=null; g1.compareId=null; g1.armed=null; document.querySelectorAll('#g1pieces .pc.sel,#g1pieces .pc.compare').forEach(e=>e.classList.remove('sel','compare')); g1_clearCells();
+  g1_setGuide('내 캐릭터를 누른 뒤 상대 캐릭터를 눌러 두 길을 비교해요.'); }
+function g1_clearCells(){ document.querySelectorAll('#g1cells .cell').forEach(ce=>{ ce.classList.remove('hl','peek','stepO','stepF','route-cross'); ce.querySelector('.num').innerHTML=''; }); }
+function g1_pointMessage(team,type,last=false){ if(g1.mode==='solo'){
+  if(team==='A')return type==='capture'?(last?'잡고 집에 도착했어요! +1':'상대 말을 잡았어요! +1'):'집에 도착했어요! +1';
+  return type==='capture'?'내 말이 잡혔어요. 컴퓨터 +1':'컴퓨터가 집에 도착했어요. +1';
+ } const who=team==='A'?'파랑':'빨강'; return who+(type==='capture'?(last?'이 잡고 도착했어요! +1':'이 상대 말을 잡았어요! +1'):'이 집에 도착했어요! +1'); }
+function g1_advance(id){ hwSfx('place'); g1_clear(); g1.locked=true; g1.pass=0; const pc=g1.pieces[id]; const ni=pc.idx+1; const [nr,nc]=pc.cells[ni]; const last=ni===pc.cells.length-1; const occ=g1.board[nr][nc];
+  g1.board[pc.r][pc.c]=null;
+  if(occ){ const ce=g1_el(occ); ce.classList.add('gone'); setTimeout(()=>ce&&ce.remove(),380); delete g1.pieces[occ]; pc.r=nr;pc.c=nc;pc.idx=ni; g1_move(pc);
+    if(last){ g1.board[nr][nc]=null; const me=g1_el(id); setTimeout(()=>me&&me.remove(),320); delete g1.pieces[id]; } else { g1.board[nr][nc]=pc.id; g1_el(id).classList.add('pop'); }
+    g1.score[pc.team]++; g1_float(g1_pointMessage(pc.team,'capture',last)); }
+  else if(last){ pc.r=nr;pc.c=nc;pc.idx=ni; g1_move(pc); const me=g1_el(id); setTimeout(()=>me.classList.add('home'),230); setTimeout(()=>me&&me.remove(),730);
+    g1.board[nr][nc]=null; delete g1.pieces[id]; g1.score[pc.team]++; g1_float(g1_pointMessage(pc.team,'home')); }
+  else { pc.r=nr;pc.c=nc;pc.idx=ni; g1.board[nr][nc]=pc.id; g1_move(pc); }
+  g1_updateCellLabels();
+  g1_later(()=>{ g1_arrows(); g1_score(); document.querySelectorAll('#g1pieces .pc.pop').forEach(e=>e.classList.remove('pop'));
+    if(g1.score[pc.team]>=g1.win){ showWin(pc.team,g1.mode); return; } g1_endTurn(); },470); }
+function g1_movesFor(t){ return Object.values(g1.pieces).filter(p=>p.team===t&&g1_advanceable(p)); }
+function g1_endTurn(){ g1.turn=g1.turn==='A'?'B':'A';
+  if(g1_movesFor(g1.turn).length===0){ g1.pass++; g1_float((g1.mode==='solo'?(g1.turn==='A'?'나':'컴퓨터'):(g1.turn==='A'?'파랑':'빨강'))+' 쉬어요');
+    if(g1.pass>=2){ const w=g1.score.A===g1.score.B?null:(g1.score.A>g1.score.B?'A':'B'); g1_later(()=>showWin(w,g1.mode),600); return; }
+    g1_later(()=>{ g1.turn=g1.turn==='A'?'B':'A'; g1_after(); },700); return; } g1_after(); }
+function g1_after(){ g1_turnMsg(); if(g1.mode==='solo'&&g1.turn==='B') g1_later(g1_ai,700); else g1.locked=false; }
+function g1_routeForecastScore(piece,depth){ let score=0;
+  for(const foe of Object.values(g1.pieces)){ if(foe.team!=='A')continue;
+    for(let a=1;a<=depth&&foe.idx+a<foe.cells.length;a++)for(let b=1;b<=depth&&piece.idx+b<piece.cells.length;b++){
+      const [ar,ac]=foe.cells[foe.idx+a], [br,bc]=piece.cells[piece.idx+b]; if(ar!==br||ac!==bc)continue;
+      if(a===b)score-=42/a; else if(b===a+1)score+=32/b;
+    }
+  } return score; }
+function g1_ai(){ const c=g1_movesFor('B'); if(!c.length){g1.locked=false;g1_endTurn();return;} const pRand=g1.level===1?0.55:(g1.level===2?0.22:0.04); let pick;
+  if(Math.random()<pRand) pick=c[(Math.random()*c.length)|0];
+  else{ let best=-1e9; for(const p of c){ const [nr,nc]=p.cells[p.idx+1]; const last=(p.idx+1===p.cells.length-1); const occ=g1.board[nr][nc];
+    let v=nr*6+g1_routeForecastScore(p,g1.level); if(occ&&g1.pieces[occ].team==='A')v+=120; if(last)v+=95;
+    if(g1_threat(nr,nc,'A',p.id,occ||null))v-=80; if(g1_threat(p.r,p.c,'A',p.id,null))v+=18;
+    v+=Math.random()*(g1.level===3?2:8); if(v>best){best=v;pick=p;} } }
+  g1_advance(pick.id); }
+function g1_threat(r,c,by,movingId,capturedId){ for(const p of Object.values(g1.pieces)){ if(p.team!==by||p.id===capturedId||p.idx>=p.cells.length-1)continue; const [nr,nc]=p.cells[p.idx+1]; const o=g1.board[nr][nc];
+  if(o&&o!==capturedId&&o!==movingId&&g1.pieces[o]&&g1.pieces[o].team===p.team)continue; if(nr===r&&nc===c)return true; } return false; }
+function g1_score(){ ['A','B'].forEach(tm=>{ const d=document.querySelectorAll('#g1dots'+tm+' .dot'); d.forEach((x,i)=>x.classList.toggle('f', i<g1.score[tm])); }); }
+function g1_turnMsg(){ document.getElementById('g1teamA').dataset.turn=g1.turn==='A'?'1':'0'; document.getElementById('g1teamB').dataset.turn=g1.turn==='B'?'1':'0';
+  document.getElementById('g1teamB').classList.toggle('thinking',g1.mode==='solo'&&g1.turn==='B');
+  const who=g1.turn==='A'?'<b class="blue">'+(g1.mode==='solo'?'나':'파랑')+'</b>':'<b class="red">'+(g1.mode==='solo'?'컴퓨터':'빨강')+'</b>';
+  const thinking=g1.mode==='solo'&&g1.turn==='B'; document.getElementById('g1turn').innerHTML=who+(thinking?' 생각 중…':' 차례예요!');
+  g1_setGuide(thinking?'컴퓨터가 고정된 길의 다음 수를 비교하고 있어요.':'내 캐릭터를 누른 뒤 상대 캐릭터를 눌러 두 길을 비교해요.'); }
+function g1_float(t){ const f=document.getElementById('g1float'); f.textContent=t; f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); }
+
+/* ===================================================================
+   게임 2 : 모양 만들기 (여러 모양 중 하나를 골라 그 모양을 완성)
+   - 칩은 두 친구(0/1) 아무거나 빈 칸에 놓음(공용)
+   - 내가 고른 '모양(패턴)'을 한 줄로 먼저 만들면 승리
+=================================================================== */
+const PATS={ 1:[[0,1,0],[1,0,1],[0,0,1],[1,1,0]],
+             2:[[0,1,0,1],[1,0,0,1],[0,0,1,1],[1,1,0,0],[0,1,1,0]],
+             3:[[0,1,1,0],[1,0,1,1],[0,0,1,0],[1,1,0,1],[0,1,0,0],[1,0,0,1]] };
+const g2={ mode:'solo', level:1, size:5, need:3, board:null, turn:'A', locked:false, moves:0, patA:null, patB:null, sel:0, runId:0 };
+function g2_later(callback,delay){ const runId=g2.runId; return setTimeout(()=>{if(g2.runId===runId&&curGame==='g2')callback();},delay); }
+function g2_cancel(){g2.runId++;g2.locked=true;}
+
+function g2Start(mode){ g2.runId++; g2.mode=mode; g2.level=lastCfg.g2.level; lastCfg.g2.mode=mode; savePreferences();
+  g2.size=g2.level===1?5:(g2.level===2?6:7); g2.need=g2.level===1?3:4;
+  g2.board=Array.from({length:g2.size},()=>Array(g2.size).fill(null)); g2.turn='A'; g2.locked=false; g2.moves=0; g2.sel=0;
+  const arr=PATS[g2.level].slice(); g1_shuffle(arr); g2.patA=arr[0]; g2.patB=arr[1];
+  g2_renderPats(); g2_renderPicker(); g2_build(); g2_turnMsg(); showScreen('g2Game'); }
+
+function g2_build(){ const grid=document.getElementById('g2grid'); grid.style.gridTemplateColumns='repeat('+g2.size+',1fr)'; grid.style.gridTemplateRows='repeat('+g2.size+',1fr)'; grid.innerHTML='';
+  for(let r=0;r<g2.size;r++)for(let c=0;c<g2.size;c++){ const cell=document.createElement('button'); cell.type='button'; cell.className='c2'; cell.id='g2c_'+r+'_'+c;
+    cell.setAttribute('aria-label',`${r+1}행 ${c+1}열, 빈 칸`); cell.innerHTML='<div class="slot"></div>'; cell.onclick=()=>g2_click(r,c); grid.appendChild(cell); } }
+function g2_renderPats(){ const nA=g2.mode==='solo'?'내 목표':'파랑 목표', nB=g2.mode==='solo'?'상대 목표':'빨강 목표';
+  document.getElementById('g2pats').innerHTML=g2_patRow(nA,g2.patA,'A')+g2_patRow(nB,g2.patB,'B'); g2_patTurn(); }
+function g2_patRow(label,pat,team){ return `<div class="patrow ${team==='A'?'blue':'red'}" id="g2pat${team}"><span class="pl">${label}</span><span class="pc-line">`+
+  pat.map(v=>`<span class="mini k${v}">${chipMarkup(v)}</span>`).join('')+`</span></div>`; }
+function g2_patTurn(){ const a=document.getElementById('g2patA'), b=document.getElementById('g2patB'); if(a)a.dataset.turn=g2.turn==='A'?'1':'0'; if(b)b.dataset.turn=g2.turn==='B'?'1':'0'; }
+function g2_renderPicker(){ document.getElementById('g2picker').innerHTML=`<span class="plbl">놓을 친구:</span>`+
+  [0,1].map(i=>`<button class="pick k${i}" data-i="${i}" data-on="${g2.sel===i?'1':'0'}" aria-pressed="${g2.sel===i?'true':'false'}" onclick="g2_sel(${i})" aria-label="${chipLabel(i)} 친구 놓기">${chipMarkup(i)}</button>`).join(''); }
+function g2_sel(i){ g2.sel=i; document.querySelectorAll('#g2picker .pick').forEach(b=>{ const on=+b.dataset.i===i; b.dataset.on=on?'1':'0'; b.setAttribute('aria-pressed',on?'true':'false'); }); }
+
+function g2_place(r,c,color){ g2.board[r][c]=color; const disc=document.createElement('div'); disc.className='disc k'+color; disc.innerHTML=chipMarkup(color);
+  const cell=document.getElementById('g2c_'+r+'_'+c); cell.appendChild(disc); cell.setAttribute('aria-label',`${r+1}행 ${c+1}열, ${chipLabel(color)} 놓임`); cell.disabled=true; }
+function g2_click(r,c){ if(g2.locked||g2.board[r][c]!==null)return; if(g2.mode==='solo'&&g2.turn!=='A')return; g2_do(r,c,g2.sel,g2.turn); }
+function g2_do(r,c,color,team){ g2.locked=true; g2_place(r,c,color); g2.moves++; hwSfx('place');
+  const selfPat=team==='A'?g2.patA:g2.patB, otherTeam=team==='A'?'B':'A', otherPat=team==='A'?g2.patB:g2.patA;
+  let line=g2_present(selfPat);
+  if(line){ g2_mark(line); g2_later(()=>showWin(team,g2.mode),520); return; }
+  line=g2_present(otherPat);
+  if(line){ g2_mark(line); g2_float('앗! 상대 줄을 만들었어요'); g2_later(()=>showWin(otherTeam,g2.mode),750); return; }
+  if(g2.moves>=g2.size*g2.size){ g2_later(()=>showWin(null,g2.mode),400); return; }
+  g2.turn=g2.turn==='A'?'B':'A'; g2_turnMsg();
+  if(g2.mode==='solo'&&g2.turn==='B') g2_later(g2_ai,650); else g2.locked=false; }
+
+function g2_empty(){ const o=[]; for(let r=0;r<g2.size;r++)for(let c=0;c<g2.size;c++) if(g2.board[r][c]===null)o.push([r,c]); return o; }
+function eqA(a,b){ if(a.length!==b.length)return false; for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false; return true; }
+function g2_present(pat){ const S=g2.size,L=pat.length,rev=pat.slice().reverse(); const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+  for(let r=0;r<S;r++)for(let c=0;c<S;c++)for(const [dr,dc] of dirs){ const cells=[]; let ok=true;
+    for(let k=0;k<L;k++){ const nr=r+dr*k,nc=c+dc*k; if(nr<0||nc<0||nr>=S||nc>=S){ok=false;break;} const v=g2.board[nr][nc]; if(v===null){ok=false;break;} cells.push([nr,nc,v]); }
+    if(!ok)continue; const seq=cells.map(x=>x[2]); if(eqA(seq,pat)||eqA(seq,rev)) return cells.map(x=>[x[0],x[1]]); }
+  return null; }
+function g2_winScore(cells,pat){ let f=0; for(let i=0;i<pat.length;i++){ const v=cells[i]; if(v===null)continue; if(v===pat[i])f++; else return 0; } return f; }
+function g2_progress(pat){ const S=g2.size,L=pat.length,rev=pat.slice().reverse(); const dirs=[[0,1],[1,0],[1,1],[1,-1]]; let sc=0;
+  for(let r=0;r<S;r++)for(let c=0;c<S;c++)for(const [dr,dc] of dirs){ const cells=[]; let ok=true;
+    for(let k=0;k<L;k++){ const nr=r+dr*k,nc=c+dc*k; if(nr<0||nc<0||nr>=S||nc>=S){ok=false;break;} cells.push(g2.board[nr][nc]); }
+    if(!ok)continue; sc+=Math.max(g2_winScore(cells,pat),g2_winScore(cells,rev)); }
+  return sc; }
+function g2_mark(line){ line.forEach(([r,c])=>document.getElementById('g2c_'+r+'_'+c).classList.add('win')); }
+
+function g2_ai(){ const empties=g2_empty();
+  for(const [r,c] of empties) for(const col of [0,1]){ g2.board[r][c]=col; const w=g2_present(g2.patB); g2.board[r][c]=null; if(w) return g2_do(r,c,col,'B'); }
+  const threats=[]; for(const [r,c] of empties) for(const col of [0,1]){ g2.board[r][c]=col; const w=g2_present(g2.patA); g2.board[r][c]=null; if(w) threats.push([r,c,col]); }
+  const skipRate=g2.level===1?0.35:(g2.level===2?0.12:0), skipBlock=Math.random()<skipRate;
+  if(threats.length && !skipBlock){ for(const [r,c,col] of threats){ const blk=col^1;
+    g2.board[r][c]=blk; const foe=g2_present(g2.patA); const me=g2_present(g2.patB); g2.board[r][c]=null;
+    if(me) return g2_do(r,c,blk,'B'); if(!foe) return g2_do(r,c,blk,'B'); } }
+  let best=null,bv=-1e9; const mid=(g2.size-1)/2;
+  for(const [r,c] of empties) for(const col of [0,1]){ g2.board[r][c]=col; const foe=g2_present(g2.patA); let v=-1e9;
+    if(!foe){ v=g2_progress(g2.patB)*10 - g2_progress(g2.patA)*2 - (Math.abs(r-mid)+Math.abs(c-mid))*0.3 + Math.random()*3; }
+    g2.board[r][c]=null; if(v>bv){bv=v;best=[r,c,col];} }
+  const wanderRate=g2.level===1?0.35:(g2.level===2?0.12:0.02);
+  if(Math.random()<wanderRate){ const safe=[]; for(const [r,c] of empties)for(const col of [0,1]){ g2.board[r][c]=col; const foe=g2_present(g2.patA); g2.board[r][c]=null; if(!foe)safe.push([r,c,col]); } if(safe.length) best=safe[(Math.random()*safe.length)|0]; }
+  if(!best){ const e=empties[(Math.random()*empties.length)|0]; best=[e[0],e[1],0]; }
+  g2_do(best[0],best[1],best[2],'B'); }
+
+function g2_turnMsg(){ g2_patTurn(); const who=g2.turn==='A'?'<b class="blue">'+(g2.mode==='solo'?'나':'파랑')+'</b>':'<b class="red">'+(g2.mode==='solo'?'컴퓨터':'빨강')+'</b>';
+  document.getElementById('g2patB').classList.toggle('thinking',g2.mode==='solo'&&g2.turn==='B');
+  document.getElementById('g2turn').innerHTML=who+((g2.mode==='solo'&&g2.turn==='B')?' 생각 중…':' 놓을 차례!'); }
+function g2_float(t){ const f=document.getElementById('g2float'); f.textContent=t; f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); }
+
+/* ================= 시작 ================= */
+function initHub(){
+  const e1=document.getElementById('g1SetupEm'); if(e1)e1.innerHTML=hwChar('squirrel','full')+hwChar('raccoon','full');
+  const e2=document.getElementById('g2SetupEm'); if(e2)e2.innerHTML=hwChar('owl','full')+hwChar('bluebird','full');
+  fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
+}
+</script>
+<script src="games/face-game.js?v=36"></script>
+<script src="games/number-game.js?v=36"></script>
+<script src="games/block-game.js?v=36"></script>
+<script src="games/parent-guide.js?v=36"></script>
+<script>
+initHub();
+pgInit();
+/* PWA: 서비스워커 등록(오프라인) + 설치 버튼 */
+/* 개발 중 확인은 주소 끝에 ?nosw 를 붙이면 캐시 없이 최신 파일을 본다. */
+if('serviceWorker' in navigator&&!/[?&]nosw/.test(location.search)){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e;
+  const b=document.getElementById('installBtn'); if(b)b.style.display='block'; });
+function doInstall(){ if(deferredPrompt){ deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; const b=document.getElementById('installBtn'); if(b)b.style.display='none'; }); }
+  else { hwSay('아이폰은 사파리에서 공유 버튼을 누른 뒤 홈 화면에 추가를 선택해 주세요.',true); } }
+window.addEventListener('appinstalled',()=>{ const b=document.getElementById('installBtn'); if(b)b.style.display='none'; });
+</script>
+</body>
+</html>

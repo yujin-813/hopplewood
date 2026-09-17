@@ -1,0 +1,75 @@
+/* 호플우드 공통: SVG 캐릭터 배치, 소리 설정, 읽어주기, 첫 판 안내 */
+
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hw-char{display:block;width:100%;height:100%;overflow:visible;pointer-events:none;user-select:none}
+.hw-art{position:relative;overflow:hidden}
+.hw-art img{display:block;width:100%;height:100%;object-fit:contain}
+button,a{touch-action:manipulation}
+body{word-break:keep-all;overflow-wrap:anywhere}
+
+/* 헤더와 설정 */
+.brand-mascot{width:44px;height:44px;display:block;border-radius:14px;background:#e3f6ea;box-shadow:0 4px 10px rgba(43,89,66,.12);overflow:hidden}
+.setting-btn{position:relative;color:#40514c}
+.setting-btn[data-on="0"]{background:#eef0ec;color:#9aa39f}
+.setting-btn[data-on="0"]:after{content:"";position:absolute;left:10px;right:10px;top:50%;height:3px;border-radius:3px;background:#d9534b;transform:rotate(-40deg)}
+.platform-actions{gap:6px}
+
+/* 홈 추천 장면 */
+.hero-scene .hero-art{position:absolute;display:block;filter:drop-shadow(0 7px 3px rgba(43,83,59,.13))}
+.hero-scene .hero-rabbit{width:128px;height:128px;bottom:6px}
+.hero-scene .hero-mouse{width:74px;height:74px;bottom:6px}
+.hero-scene .hero-frog{width:76px;height:76px;bottom:0}
+.hero-scene .hero-art .g3-face-svg{width:100%;height:100%}
+
+/* 카탈로그 표지 */
+.experience-cover .cover-main,.experience-cover .cover-side{position:absolute;display:block}
+.experience-cover .cover-main{z-index:2;right:6px;bottom:0;width:92px;height:92px}
+.experience-cover .cover-side{z-index:1;left:8px;bottom:2px;width:70px;height:70px}
+.cover-blocks{background:linear-gradient(150deg,#fff1d6,#e9c08a)}
+.cover-logs{position:absolute;left:14px;top:22px;display:grid;grid-template-columns:repeat(2,26px);gap:4px;transform:rotate(-6deg)}
+.cover-logs i{height:26px;border-radius:7px;background:#c98a4a;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12),0 3px 0 rgba(90,50,20,.18)}
+.cover-logs i:nth-child(2){background:#e3a55f}.cover-logs i:nth-child(3){background:#a86f3a;grid-column:span 2}
+
+/* 캐릭터가 들어가는 기존 자리 */
+.pc .chip .hw-char,.mini .hw-char,.c2 .disc .hw-char,.pick .hw-char{width:100%;height:100%}
+.pc .chip{background:#fff}.pc.B .chip{background:#fff5f2}
+.team-avatar{color:var(--blue)}.team.red .team-avatar{color:var(--red)}
+.team-avatar .ui-icon{width:22px;height:22px}
+.setup .big-em{gap:0}
+.setup .big-em>.hw-char.full{width:84px;height:84px;margin:0 -12px;animation:setupIdle 2.8s ease-in-out infinite}
+.setup .big-em>.hw-char.full:nth-child(2){animation-delay:-1.2s;align-self:flex-end}
+.setup .big-em.react>.hw-char{animation:setupReact .5s ease}
+.profile-orb .hw-char{width:84%;height:84%;margin:8%}
+.game-map-face .hw-char{width:100%;height:100%}
+.win-em .hw-char{width:110px;height:110px;margin:auto}
+
+/* 읽어주기 */
+.say-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:-6px auto 6px;padding:0 14px;border-radius:999px;background:#eef6ff;color:#2f6fb6;font-size:15px;font-weight:800}
+.say-btn .ui-icon{width:18px;height:18px}
+#rulesOverlay .card{display:flex;flex-direction:column}
+.rules{font-size:17px}
+
+/* 첫 판 안내 */
+.hw-coach{position:fixed;inset:0;z-index:40;display:none;background:rgba(18,32,28,.38)}
+.hw-coach.on{display:block}
+.hw-coach-ring{position:fixed;border-radius:22px;box-shadow:0 0 0 4px #ffd84a,0 0 0 9999px rgba(18,32,28,.28);pointer-events:none;transition:all .25s ease;animation:hwRing 1.2s ease-in-out infinite}
+.hw-coach-bubble{position:fixed;left:50%;width:min(calc(100% - 32px),420px);transform:translateX(-50%);display:grid;grid-template-columns:52px 1fr;gap:6px 12px;align-items:center;padding:14px;border-radius:22px;background:#fff;box-shadow:0 10px 0 rgba(0,0,0,.12)}
+.hw-coach-art{width:52px;height:52px;border-radius:50%;background:#e3f6ea;overflow:hidden}
+.hw-coach-bubble p{margin:0;font-size:17px;line-height:1.45;color:#23312d}
+.hw-coach-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
+.hw-coach-actions button{min-height:46px;padding:0 16px;border-radius:14px;font-size:15px;font-weight:800}
+.hw-coach-skip{background:#f1f2ee;color:#66706c}
+.hw-coach-next{background:#3f9ff1;color:#fff}
+@keyframes hwRing{50%{box-shadow:0 0 0 7px #ffd84a,0 0 0 9999px rgba(18,32,28,.28)}}
+
+/* 아이 화면 글자 크기 보정: 너무 작은 설명 글씨를 키운다 */
+.experience-body p{font-size:12px}
+.experience-meta,.game-tags span{font-size:10px}
+.setup .intro .desc{font-size:14px}
+.seg.three button small{font-size:10px}
+.level-note{font-size:12px}
+.thinking-item b{font-size:13px}.thinking-item small{font-size:11px}
+.world-hero p{font-size:13px}.hero-kicker,.hero-meta span{font-size:10px}
+.bottom-nav button{font-size:12px}
+
+@media (prefers-reduced-motion:reduce){.hw-coach-ring,.setup .big-em>.hw-char.full{animation:none!important}}
