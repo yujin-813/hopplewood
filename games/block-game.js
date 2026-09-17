@@ -6,10 +6,12 @@
  * 의존 전역: showScreen, showWin, lastCfg, curGame, LEVEL_INFO, RULES, hwChar, hwSfx, hwSay, hwSetupMarkup, hwIcon
  */
 
+/* maxSolutions: 조각 배치 방법(정답) 수가 이 값 이하인 퍼즐만 고른다. 정답이 적을수록 조각 하나하나를 정확히 따져야 한다.
+   hintDelay: 힌트 버튼이 열리기까지 기다리는 시간(ms). */
 const G5_LEVELS={
-  1:{rows:3,cols:4,holes:[0,1],sizes:[2,3],count:[3,4],rotate:false,puzzles:3},
-  2:{rows:4,cols:4,holes:[1,2],sizes:[2,4],count:[4,4],rotate:true,puzzles:3},
-  3:{rows:5,cols:5,holes:[2,3],sizes:[3,5],count:[5,6],rotate:true,puzzles:3}
+  1:{rows:3,cols:4,holes:[0,1],sizes:[2,3],count:[3,4],rotate:false,puzzles:3,maxSolutions:Infinity,hintDelay:15000},
+  2:{rows:4,cols:4,holes:[1,2],sizes:[2,4],count:[4,4],rotate:true,puzzles:3,maxSolutions:Infinity,hintDelay:20000},
+  3:{rows:5,cols:5,holes:[2,3],sizes:[3,5],count:[5,6],rotate:true,puzzles:3,maxSolutions:2,hintDelay:40000}
 };
 const G5_COLORS=['orange','green','blue','red','yellow','purple'];
 const G5_TILE=c=>'url(assets/art/board/log_tile_'+c+'.png)';
@@ -69,10 +71,49 @@ function g5_connected(region,inRegion){
   while(queue.length){ const [r,c]=queue.shift(); [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([a,b])=>{ const k=g5_key(a,b); if(inRegion.has(k)&&!seen.has(k)){seen.add(k);queue.push([a,b]);} }); }
   return seen.size===region.length;
 }
+/* 조각 배치 방법 수 세기 (cap개까지만). 같은 모양 조각끼리는 서로 바꿔 놓은 것을 같은 정답으로 본다. */
+function g5_countSolutions(region,pieces,cap){
+  const cells=region.map(([r,c])=>g5_key(r,c)), open=new Set(cells);
+  const orient=pieces.map(cells=>{ const out=[], seen=new Set(); let sh=g5_normalize(cells);
+    for(let t=0;t<4;t++){ const k=JSON.stringify(sh); if(!seen.has(k)){seen.add(k);out.push(sh);} sh=g5_rotate(sh); }
+    return out; });
+  const canon=orient.map(list=>list.map(x=>JSON.stringify(x)).sort()[0]);
+  const used=pieces.map(()=>false); let count=0;
+  const order=region.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(([r,c])=>g5_key(r,c));
+  function firstOpen(){ for(const k of order)if(open.has(k))return k; return null; }
+  function rec(){
+    if(count>=cap)return;
+    const k=firstOpen(); if(k===null){count++;return;}
+    const [r,c]=k.split(',').map(Number);
+    for(let i=0;i<pieces.length;i++){
+      if(used[i])continue;
+      if(pieces.some((_,j)=>j<i&&!used[j]&&canon[j]===canon[i]))continue;
+      for(const sh of orient[i]){
+        const [ar,ac]=sh[0], dr=r-ar, dc=c-ac, keys=sh.map(([y,x])=>g5_key(y+dr,x+dc));
+        if(!keys.every(q=>open.has(q)))continue;
+        keys.forEach(q=>open.delete(q)); used[i]=true;
+        rec();
+        keys.forEach(q=>open.add(q)); used[i]=false;
+        if(count>=cap)return;
+      }
+    }
+  }
+  rec(); return count;
+}
 function g5_buildPuzzle(){
   const cfg=G5_LEVELS[g5.level];
-  let made=null, guard=0;
-  while(!made&&guard++<500)made=g5_tryPartition(cfg);
+  let made=null, bestCount=Infinity;
+  /* 정답 수 조건을 만족하는 퍼즐을 찾을 때까지 여러 번 만들어 본다. 못 찾으면 가장 정답이 적었던 퍼즐을 쓴다. */
+  for(let attempt=0;attempt<80;attempt++){
+    let cand=null, guard=0;
+    while(!cand&&guard++<500)cand=g5_tryPartition(cfg);
+    if(!cand)continue;
+    if(cfg.maxSolutions===Infinity){ made=cand; break; }
+    const n=g5_countSolutions(cand.region,cand.pieces,cfg.maxSolutions+1);
+    if(n<bestCount){ bestCount=n; made=cand; }
+    if(n<=cfg.maxSolutions)break;
+  }
+  g5.solutionCount=bestCount;
   if(!made){ /* 안전장치: 2칸 조각으로 가로 채우기 */
     const region=[],pieces=[];
     for(let r=0;r<2;r++)for(let c=0;c<4;c++)region.push([r,c]);
@@ -123,7 +164,7 @@ function g5_nextPuzzle(first){
 function g5_armHint(){
   clearTimeout(g5.hintTimer);
   const btn=g5_el('g5HintBtn'); if(btn)btn.disabled=true;
-  g5.hintTimer=g5_later(()=>{ const b=g5_el('g5HintBtn'); if(b)b.disabled=false; },15000);
+  g5.hintTimer=g5_later(()=>{ const b=g5_el('g5HintBtn'); if(b)b.disabled=false; },G5_LEVELS[g5.level].hintDelay||15000);
 }
 function g5_guide(text){ const g=g5_el('g5Guide'); if(g)g.textContent=text; }
 function g5_float(text){ const f=g5_el('g5Float'); if(!f)return; f.textContent=text; f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); }
@@ -323,7 +364,7 @@ function g5_sessionSummary(){ const s=g5.stat; if(!s)return null; return {level:
   LEVEL_INFO.g5={
     1:'작은 집터에 2–3칸 조각을 놓아요. 조각은 돌리지 않아도 돼요.',
     2:'4×4 집터에 조각 4개. 돌려야 맞는 조각이 있어요.',
-    3:'5×5 집터에 3–5칸 조각 5–6개. 돌려 보며 빈틈을 채워요.'
+    3:'5×5 집터에 조각 5–6개. 맞는 배치가 한두 가지뿐이라 조각마다 자리를 따져야 해요.'
   };
   RULES.g5={title:'비버 집짓기',body:[
     ['1','아래에서 <b>통나무 조각</b> 하나를 골라요.'],
@@ -340,7 +381,7 @@ function g5_sessionSummary(){ const s=g5.stat; if(!s)return null; return {level:
     age:'4세+',players:'1명',time:'3–6분',
     points:[['rotate','머릿속으로 돌리기','조각을 돌리면 어떤 모양이 될까요?'],['puzzle','빈틈 채우기','좁은 구석부터 채우면 쉬워요.'],['swap','바꿔 보기','틀려도 빼고 다시 놓으면 돼요.'],['house','집 완성','집 세 채를 지어요.']],
     levelQuestion:'얼마나 큰 집을 지을까요?',levelHint:'조각 수와 돌리기가 달라져요',
-    levels:[['쉬움','작은 집 · 안 돌려요'],['보통','4×4 · 돌리기'],['어려움','5×5 · 큰 조각']]
+    levels:[['쉬움','작은 집 · 안 돌려요'],['보통','4×4 · 돌리기'],['어려움','5×5 · 정답 한두 개']]
   });
   const game=g5_el('g5Game');
   if(game)game.innerHTML=`

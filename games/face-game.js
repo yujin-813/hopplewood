@@ -11,19 +11,36 @@ const G3_SPECIES={
   panda:{name:'판다',base:'#fbfbf6',ear:'#3b3b40',muzzle:'#ffffff',tuft:'#55555c'}
 };
 const G3_ZONES={
-  head:{label:'머리',variants:['sprout','tuft','band','flower'],band:[14,84]},
-  ears:{label:'귀',variants:['pink','cream','dots','stripe'],band:[18,104]},
-  eyes:{label:'눈',variants:['round','sparkle','smile','sleepy','lash'],band:[90,128]},
-  nose:{label:'코',variants:['oval','heart','triangle','pink'],band:[116,146]},
-  mouth:{label:'입',variants:['w','open','o','teeth','grin'],band:[138,172]},
-  cheeks:{label:'볼',variants:['blush','freckle','star','none'],band:[122,156]}
+  head:{label:'머리',variants:['sprout','tuft','band','flower'],band:[0,37]},
+  ears:{label:'귀',variants:['pink','cream','dots','stripe'],band:[17,38]},
+  eyes:{label:'눈',variants:['round','sparkle','smile','sleepy','lash'],band:[38,58]},
+  nose:{label:'코',variants:['oval','heart','triangle','pink'],band:[55,72]},
+  mouth:{label:'입',variants:['w','open','o','teeth','grin'],band:[65,83]},
+  cheeks:{label:'볼',variants:['blush','freckle','star','none'],band:[58,75]}
 };
 const G3_DEFAULTS={head:'tuft',ears:'pink',eyes:'round',nose:'oval',mouth:'w',cheeks:'blush'};
+/* similar: 가짜 후보를 정답과 "비슷하게 보이는" 모양으로 고를 확률 (-1이면 가장 다르게 보이는 모양).
+   rareZones: 한 판에 한 번까지만 쓰는 쉬운 부위 (머리 장식은 크게 달라 보여서 어려움에서는 아껴 쓴다) */
 const G3_LEVELS={
-  1:{zones:['head','ears','mouth'],choices:3,rounds:6},
-  2:{zones:['head','ears','eyes','nose','mouth'],choices:4,rounds:8},
-  3:{zones:['head','ears','eyes','nose','mouth','cheeks'],choices:6,rounds:10}
+  1:{zones:['head','ears','mouth'],choices:3,rounds:6,similar:-1,rareZones:[]},
+  2:{zones:['head','ears','eyes','nose','mouth'],choices:4,rounds:8,similar:.2,rareZones:[]},
+  3:{zones:['head','ears','eyes','nose','mouth','cheeks'],choices:6,rounds:10,similar:1,rareZones:['head','cheeks']}
 };
+/* 부위 모양끼리 달라 보이는 정도: 최종 납품 레이어로 곰·여우·판다 반쪽 카드 픽셀 차이를 재서 평균낸 값 (작을수록 비슷함) */
+const G3_LOOK_DIFF={head:{'sprout|tuft':1051,'sprout|band':2081,'sprout|flower':1999,'tuft|band':1866,'tuft|flower':1786,'band|flower':2683},
+  ears:{'pink|cream':606,'pink|dots':514,'pink|stripe':409,'cream|dots':171,'cream|stripe':421,'dots|stripe':412},
+  eyes:{'round|sparkle':163,'round|smile':403,'round|sleepy':379,'round|lash':334,'sparkle|smile':449,'sparkle|sleepy':422,'sparkle|lash':392,'smile|sleepy':233,'smile|lash':478,'sleepy|lash':471},
+  nose:{'oval|heart':198,'oval|triangle':126,'oval|pink':267,'heart|triangle':145,'heart|pink':310,'triangle|pink':266},
+  mouth:{'w|open':191,'w|o':262,'w|teeth':217,'w|grin':263,'open|o':266,'open|teeth':256,'open|grin':149,'o|teeth':212,'o|grin':307,'teeth|grin':297},
+  cheeks:{'blush|freckle':958,'blush|star':978,'blush|none':944,'freckle|star':519,'freckle|none':131,'star|none':499}};
+function g3_lookDiff(zone,a,b){ const t=G3_LOOK_DIFF[zone]||{}; return t[a+'|'+b]??t[b+'|'+a]??500; }
+function g3_pickVariant(zone,target,options,similar){
+  const sorted=options.slice().sort((a,b)=>g3_lookDiff(zone,target,a)-g3_lookDiff(zone,target,b));
+  const half=Math.max(1,Math.ceil(sorted.length/2));
+  if(similar<0)return g3_pick(sorted.slice(-half));
+  if(Math.random()<similar)return g3_pick(sorted.slice(0,half));
+  return g3_pick(sorted);
+}
 
 const g3={mode:'solo',level:1,round:0,turn:'A',score:{A:0,B:0},sparkles:{A:0,B:0},target:null,side:'left',choices:[],answer:0,tries:0,locked:false,runId:0,wrongZone:null};
 
@@ -46,7 +63,7 @@ const G3_FILE={
 function g3_layers(f){
   const sp=f.species, list=['face_'+sp+'_base','face_'+sp+'_ears_'+G3_FILE.ears[f.ears]];
   if(f.cheeks&&f.cheeks!=='none')list.push('face_cheek_'+f.cheeks);
-  list.push(sp==='panda'?'face_panda_eyes_'+f.eyes:'face_eyes_'+f.eyes);
+  list.push('face_eyes_'+f.eyes); /* 최종 납품(v2)은 판다도 공용 눈을 쓴다 (판다 전용 눈은 대비 검사를 통과해 생략) */
   list.push('face_nose_'+G3_FILE.nose[f.nose],'face_mouth_'+G3_FILE.mouth[f.mouth],'face_hair_'+f.head);
   return list;
 }
@@ -57,12 +74,10 @@ function g3_faceSVG(f,side,extra){
 }
 
 /* ---------- 라운드 만들기 ---------- */
-/* 그림에서 실제로 구별되지 않는 조합은 가짜 후보로 만들지 않는다 (픽셀 비교 검사 결과).
-   - 머리띠가 귀 안쪽을 덮는다 → 머리띠 얼굴에서는 귀만 다른 후보 금지
-   - 곰·여우 털 위의 볼터치·주근깨는 거의 안 보인다 → 곰·여우는 '별' 볼이 낀 비교만 허용 */
+/* 그림에서 실제로 구별되지 않는 조합은 가짜 후보로 만들지 않는다 (최종 납품 v2 레이어 픽셀 비교 결과).
+   - 머리띠가 귀 안쪽을 덮는다 → 머리띠 얼굴에서는 귀만 다른 후보 금지 */
 function g3_visibleDiff(target,zone,variant){
   if(zone==='ears'&&target.head==='band')return false;
-  if(zone==='cheeks'&&target.species!=='panda'&&target.cheeks!=='star'&&variant!=='star')return false;
   return true;
 }
 function g3_sameFace(a,b){ return Object.keys(G3_DEFAULTS).every(k=>a[k]===b[k])&&a.species===b.species; }
@@ -73,14 +88,16 @@ function g3_makeTarget(){
 }
 function g3_buildRound(){
   const cfg=G3_LEVELS[g3.level], target=g3_makeTarget(), faces=[{...target,diff:null}];
+  const usedRare=new Set();
   let zoneOrder=g3_shuffle(cfg.zones), guard=0;
   while(faces.length<cfg.choices&&guard++<200){
     if(!zoneOrder.length)zoneOrder=g3_shuffle(cfg.zones);
     const zone=zoneOrder.shift();
+    if(cfg.rareZones.includes(zone)&&usedRare.has(zone)&&guard<150)continue;
     const options=G3_ZONES[zone].variants.filter(v=>v!==target[zone]&&g3_visibleDiff(target,zone,v));
     if(!options.length)continue;
-    const candidate={...target,[zone]:g3_pick(options),diff:zone};
-    if(!faces.some(face=>g3_sameFace(face,candidate)))faces.push(candidate);
+    const candidate={...target,[zone]:g3_pickVariant(zone,target[zone],options,cfg.similar),diff:zone};
+    if(!faces.some(face=>g3_sameFace(face,candidate))){ faces.push(candidate); usedRare.add(zone); }
   }
   const order=g3_shuffle(faces);
   g3.target=target;
@@ -164,8 +181,8 @@ function g3_render(){
 }
 function g3_zoneOverlay(){
   if(!g3.wrongZone)return '';
-  const [y1,y2]=G3_ZONES[g3.wrongZone].band;
-  const top=Math.max(0,(y1-10)/176*100), height=Math.min(100-top,(y2-y1)/176*100);
+  /* band: 부위가 캔버스(1000×880)에서 차지하는 세로 범위 %, 최종 납품 레이어를 측정해 정함 */
+  const [top,bottom]=G3_ZONES[g3.wrongZone].band, height=bottom-top;
   return `<span class="g3-zone-hint" style="top:${top.toFixed(1)}%;height:${height.toFixed(1)}%"></span>`;
 }
 
@@ -232,7 +249,7 @@ function g3_sessionSummary(){ const s=g3.stat; if(!s)return null; return {level:
   LEVEL_INFO.g3={
     1:'곰·여우·판다의 머리, 귀, 입을 비교해요. 후보 3개 중에서 찾아요.',
     2:'눈과 코까지 비교해요. 후보 4개 중에서 찾아요.',
-    3:'볼 무늬까지 살펴봐요. 후보 6개, 모두 딱 한 곳만 달라요.'
+    3:'볼 무늬까지 살펴봐요. 후보 6개가 모두 정답과 아주 닮은 가짜예요.'
   };
   RULES.g3={title:'얼굴 짝꿍',body:[
     ['1','큰 카드에 <b>얼굴 반쪽</b>이 있어요. 나머지 반쪽은 비어 있어요.'],
@@ -249,7 +266,7 @@ function g3_sessionSummary(){ const s=g3.stat; if(!s)return null; return {level:
     age:'5세+',players:'1–2명',time:'3–6분',
     points:[['eye','한 곳씩 비교','머리부터 입까지 차례로 봐요.'],['puzzle','반쪽 맞추기','두 반쪽을 붙여 얼굴을 완성해요.'],['target','다른 곳 찾기','딱 한 곳만 다른 가짜를 골라내요.'],['sparkles','반짝 별','한 번에 찾으면 별을 모아요.']],
     levelQuestion:'얼마나 자세히 볼까요?',levelHint:'단계마다 비교할 곳과 후보가 늘어요',
-    levels:[['쉬움','후보 3 · 머리·귀·입'],['보통','후보 4 · 눈·코 추가'],['어려움','후보 6 · 볼까지']]
+    levels:[['쉬움','후보 3 · 머리·귀·입'],['보통','후보 4 · 눈·코 추가'],['어려움','후보 6 · 아주 닮은 가짜']]
   });
   const game=g3_el('g3Game');
   if(game)game.innerHTML=`

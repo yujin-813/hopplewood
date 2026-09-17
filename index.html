@@ -427,13 +427,14 @@
   @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
   @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
 </style>
-<script src="games/characters.js?v=41"></script>
-<script src="games/platform.js?v=41"></script>
-<link rel="stylesheet" href="games/hopplewood.css?v=41">
-<link rel="stylesheet" href="games/parent-guide.css?v=41">
-<link rel="stylesheet" href="games/face-game.css?v=41">
-<link rel="stylesheet" href="games/number-game.css?v=41">
-<link rel="stylesheet" href="games/block-game.css?v=41">
+<script src="games/characters.js?v=46"></script>
+<script src="games/platform.js?v=46"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=46">
+<link rel="stylesheet" href="games/parent-guide.css?v=46">
+<link rel="stylesheet" href="games/face-game.css?v=46">
+<link rel="stylesheet" href="games/number-game.css?v=46">
+<link rel="stylesheet" href="games/block-game.css?v=46">
+<link rel="stylesheet" href="games/forest.css?v=46">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true">
@@ -479,7 +480,10 @@
 <div class="app">
 
   <!-- 허브 -->
-  <div class="screen on" id="hubScreen">
+  <!-- 숲: 첫 화면 (games/forest.js가 그린다) -->
+  <div class="screen on" id="forestScreen"></div>
+
+  <div class="screen" id="hubScreen">
     <header class="platform-header">
       <div class="platform-brand" aria-label="호플우드">
         <span class="brand-mascot" aria-hidden="true" data-char="hopple" data-view="face"></span>
@@ -525,8 +529,8 @@
     </div>
     <div class="experience-grid" id="catalogGrid"></div>
     <nav class="bottom-nav" aria-label="주요 메뉴">
-      <button class="active" onclick="backHub()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-home"></use></svg></span>홈</button>
-      <button onclick="goGames()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span>게임</button>
+      <button onclick="backHub()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-home"></use></svg></span>숲</button>
+      <button class="active" onclick="goGames()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span>놀이</button>
       <button onclick="showProgress()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-trophy"></use></svg></span>기록</button>
       <button onclick="showParent()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-parent"></use></svg></span>부모님</button>
     </nav>
@@ -554,8 +558,8 @@
     <div class="section-title"><h2>내 게임 지도</h2><span>게임별로 모아봤어요</span></div>
     <div class="game-map" id="gameMap" aria-label="게임별 완료 기록"></div>
     <nav class="bottom-nav" aria-label="주요 메뉴">
-      <button onclick="backHub()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-home"></use></svg></span>홈</button>
-      <button onclick="goGames()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span>게임</button>
+      <button onclick="backHub()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-home"></use></svg></span>숲</button>
+      <button onclick="goGames()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-gamepad"></use></svg></span>놀이</button>
       <button class="active" onclick="showProgress()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-trophy"></use></svg></span>기록</button>
       <button onclick="showParent()"><span aria-hidden="true"><svg class="ui-icon"><use href="#i-parent"></use></svg></span>부모님</button>
     </nav>
@@ -587,8 +591,8 @@
       <div class="choice-label"><span>얼마나 어렵게 할까요?</span><small>언제든 다시 고를 수 있어요</small></div>
       <div class="seg three" id="g1LevelSeg">
         <button data-lv="1" data-on="1" aria-pressed="true" onclick="setLevel('g1',1)"><b>쉬움</b><small>곧은 길</small></button>
-        <button data-lv="2" data-on="0" aria-pressed="false" onclick="setLevel('g1',2)"><b>보통</b><small>한 번 꺾기</small></button>
-        <button data-lv="3" data-on="0" aria-pressed="false" onclick="setLevel('g1',3)"><b>어려움</b><small>복잡한 길</small></button>
+        <button data-lv="2" data-on="0" aria-pressed="false" onclick="setLevel('g1',2)"><b>보통</b><small>길이 겹쳐요</small></button>
+        <button data-lv="3" data-on="0" aria-pressed="false" onclick="setLevel('g1',3)"><b>어려움</b><small>첫 수부터 중요</small></button>
       </div>
       <p class="level-note" id="g1LevelNote">곧은 길이 많고 컴퓨터가 여유롭게 둬요.</p>
       <div class="row">
@@ -650,7 +654,7 @@
       <div class="seg three" id="g2LevelSeg">
         <button data-lv="1" data-on="1" aria-pressed="true" onclick="setLevel('g2',1)"><b>쉬움</b><small>3칸 모양</small></button>
         <button data-lv="2" data-on="0" aria-pressed="false" onclick="setLevel('g2',2)"><b>보통</b><small>4칸 모양</small></button>
-        <button data-lv="3" data-on="0" aria-pressed="false" onclick="setLevel('g2',3)"><b>어려움</b><small>큰 판·영리한 AI</small></button>
+        <button data-lv="3" data-on="0" aria-pressed="false" onclick="setLevel('g2',3)"><b>어려움</b><small>큰 판·함정 조심</small></button>
       </div>
       <p class="level-note" id="g2LevelNote">5×5 판에서 3칸 모양을 만들어요.</p>
       <div class="row">
@@ -843,9 +847,13 @@ function backHub(){
   if(typeof hwCoachDone==='function'&&document.querySelector('#hwCoach.on'))hwCoachDone();
   hwHush();
   closeOverlay('winOverlay',false); closeOverlay('rulesOverlay',false);
-  curGame=null; updateProgressUI(); showScreen('hubScreen');
+  if(window.hwForest&&hwForest.isQuestActive())hwForest.abortQuest();
+  if(typeof closeOverlay==='function')closeOverlay('fwOverlay',false);
+  curGame=null; updateProgressUI();
+  if(window.hwForest){ hwForest.showForest(); } else showScreen('hubScreen');
 }
-function goGames(){ backHub(); setTimeout(()=>document.getElementById('gameLibrary').scrollIntoView({behavior:'smooth',block:'start'}),0); }
+/* 모든 놀이(게임 목록) 화면 */
+function goGames(){ backHub(); showScreen('hubScreen'); }
 function filterCatalog(filter){ document.querySelectorAll('.age-filter').forEach(b=>{ const on=b.dataset.filter===filter; b.dataset.on=on?'1':'0'; b.setAttribute('aria-selected',on?'true':'false'); });
   document.querySelectorAll('.experience-card').forEach(card=>{ card.hidden=filter!=='all'&&!card.dataset.age.split(' ').includes(filter); }); }
 function showProgress(){ updateProgressUI(); showScreen('progressScreen'); }
@@ -891,8 +899,8 @@ function hideParent(){ closeOverlay('parentOverlay'); }
 function openSetup(g){ if(!GAME_CATALOG[g])return; cancelAllGames(); hwHush(); curGame=g; showScreen(g+'Setup'); setLevel(g,lastCfg[g].level,true); if(g==='g4'&&typeof g4_setTheme==='function')g4_setTheme(lastCfg.g4.theme||'pond',true); }
 function toggleThinking(g){ const panel=document.getElementById(g+'Thinking'), btn=document.getElementById(g+'TitleBtn'); if(!panel||!btn)return; const open=panel.hidden; panel.hidden=!open; btn.setAttribute('aria-expanded',open?'true':'false'); }
 const LEVEL_INFO={
-  g1:{1:'곧은 길에서 컴퓨터가 다음 한 수를 살펴봐요.',2:'길이 꺾이고 만나며 컴퓨터가 두 수 앞을 비교해요.',3:'교차가 많은 길에서 컴퓨터가 세 수 앞까지 비교해요.'},
-  g2:{1:'5×5 판에서 3칸 줄을 만들어요.',2:'6×6 판에서 4칸 줄을 만들고 컴퓨터가 막아요.',3:'7×7 큰 판에서 4칸 줄을 만들고 컴퓨터가 적극적으로 막아요.'}
+  g1:{1:'곧은 길, 2점 먼저. 상대 바로 앞 칸에 들어가지 않으면 이길 수 있어요.',2:'길이 네 번 겹쳐요. 컴퓨터가 종종 실수해요.',3:'길이 다섯 번 겹치고 첫 수부터 중요해요. 컴퓨터가 실수하지 않아요.'},
+  g2:{1:'5×5 판에서 3칸 줄을 만들어요. 컴퓨터가 막기를 자주 놓쳐요.',2:'6×6 판에서 4칸 줄. 컴퓨터가 막기를 가끔 놓쳐요.',3:'7×7 큰 판에서 4칸 줄. 컴퓨터가 빠짐없이 막고 함정을 자주 노려요.'}
 };
 function setLevel(g,lv,silent){ lv=Math.max(1,Math.min(3,Number(lv)||1)); lastCfg[g].level=lv; savePreferences(); const seg=document.getElementById(g+'LevelSeg'); if(!seg)return;
   seg.querySelectorAll('button').forEach(b=>{ const on=+b.dataset.lv===lv; b.dataset.on=on?'1':'0'; b.setAttribute('aria-pressed',on?'true':'false'); });
@@ -953,28 +961,31 @@ function g1_later(callback,delay){ const runId=g1.runId; return setTimeout(()=>{
 function g1_cancel(){g1.runId++;g1.locked=true;}
 function g1_shuffle(a){ for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} }
 /* 난이도별 캐릭터 고유 경로. A는 아래→위, B는 같은 길을 위→아래로 움직인다. */
+/* 난이도별 캐릭터 고유 경로. A(아이)는 아래→위, B(컴퓨터)는 같은 길을 위→아래로 움직인다.
+   scripts/g1-route-lab.js로 완전 탐색해 고른 배치: 아이가 먼저 두고 잘 생각하면 이길 수 있고,
+   아이 대리 플레이어 승률이 쉬움 > 보통 > 어려움 순으로 내려가도록 했다. */
 const G1_ROUTE_SETS={
   1:[
     [[4,0],[3,0],[2,0],[1,0],[0,0]],
     [[4,2],[3,2],[2,2],[1,2],[0,2]],
-    [[4,4],[3,4],[2,4],[1,4],[0,4]]
+    [[4,4],[4,3],[3,3],[2,3],[1,3],[0,3]]
   ],
   2:[
-    [[4,0],[3,0],[3,1],[2,1],[1,1],[0,1]],
-    [[4,2],[3,2],[2,2],[2,1],[1,1],[1,2],[0,2]],
-    [[4,4],[3,4],[3,3],[2,3],[1,3],[0,3]]
+    [[4,0],[3,0],[3,1],[3,2],[2,2],[1,2],[0,2]],
+    [[4,2],[3,2],[2,2],[2,3],[2,4],[1,4],[0,4]],
+    [[4,4],[3,4],[2,4],[1,4],[1,3],[0,3]]
   ],
   3:[
-    [[4,0],[3,0],[3,1],[2,1],[2,2],[2,3],[1,3],[1,4],[0,4]],
-    [[4,2],[4,1],[3,1],[3,2],[2,2],[2,1],[1,1],[1,2],[0,2]],
-    [[4,4],[3,4],[3,3],[2,3],[2,2],[2,1],[1,1],[1,0],[0,0]]
+    [[4,0],[3,0],[3,1],[2,1],[1,1],[1,0],[0,0]],
+    [[4,2],[3,2],[2,2],[2,1],[2,0],[1,0],[1,1],[0,1]],
+    [[4,4],[3,4],[3,3],[3,2],[2,2],[1,2],[1,3],[1,4],[0,4]]
   ]
 };
 function g1_teamRoutes(team){ return G1_ROUTE_SETS[g1.level].map(route=>{
   const cells=team==='A'?route:route.slice().reverse(); return cells.map(([r,c])=>[r,c]);
 }); }
 
-function g1Start(mode){ g1.runId++; g1.stat={moves:0,compared:0,captures:0,lost:0,turnCompared:false}; g1.mode=mode; g1.level=lastCfg.g1.level; lastCfg.g1.mode=mode; savePreferences(); g1.win=g1.level===1?2:3;
+function g1Start(mode){ g1.runId++; g1_memo=new Map(); g1.stat={moves:0,compared:0,captures:0,lost:0,turnCompared:false}; g1.mode=mode; g1.level=lastCfg.g1.level; lastCfg.g1.mode=mode; savePreferences(); g1.win=g1.level===1?2:3;
   g1.board=Array.from({length:5},()=>Array(5).fill(null)); g1.pieces={}; g1.pid=0; g1.score={A:0,B:0};
   g1.previewId=null; g1.compareId=null; g1.armed=null; g1.locked=false; g1.pass=0;
   g1_teamRoutes('A').forEach((rt,i)=>g1_add('A',i,rt)); g1_teamRoutes('B').forEach((rt,i)=>g1_add('B',i,rt)); g1.turn='A';
@@ -1051,12 +1062,40 @@ function g1_routeForecastScore(piece,depth){ let score=0;
       if(a===b)score-=42/a; else if(b===a+1)score+=32/b;
     }
   } return score; }
-function g1_ai(){ const c=g1_movesFor('B'); if(!c.length){g1.locked=false;g1_endTurn();return;} const pRand=g1.level===1?0.55:(g1.level===2?0.22:0.04); let pick;
-  if(Math.random()<pRand) pick=c[(Math.random()*c.length)|0];
-  else{ let best=-1e9; for(const p of c){ const [nr,nc]=p.cells[p.idx+1]; const last=(p.idx+1===p.cells.length-1); const occ=g1.board[nr][nc];
-    let v=nr*6+g1_routeForecastScore(p,g1.level); if(occ&&g1.pieces[occ].team==='A')v+=120; if(last)v+=95;
-    if(g1_threat(nr,nc,'A',p.id,occ||null))v-=80; if(g1_threat(p.r,p.c,'A',p.id,null))v+=18;
-    v+=Math.random()*(g1.level===3?2:8); if(v>best){best=v;pick=p;} } }
+/* 컴퓨터: 판 끝까지 정확히 계산해(메모이제이션 완전 탐색) 이기는 수를 고르고, 난이도에 따라 가끔 아무 수나 둔다.
+   rand는 scripts/g1-route-lab.js와 difficulty-sim.js로 잰 승률을 보고 정했다. */
+const G1_AI={1:{rand:.65},2:{rand:.3},3:{rand:0}};
+let g1_memo=new Map();
+function g1_simState(){ const pieces={}; Object.values(g1.pieces).forEach(p=>{pieces[p.id]={id:p.id,team:p.team,cells:p.cells,idx:p.idx,r:p.r,c:p.c};});
+  return {pieces,board:g1.board.map(row=>row.slice()),score:{A:g1.score.A,B:g1.score.B}}; }
+function g1_simMoves(st,team){ return Object.values(st.pieces).filter(p=>{ if(p.team!==team||p.idx>=p.cells.length-1)return false; const [r,c]=p.cells[p.idx+1]; const o=st.board[r][c]; return !(o&&st.pieces[o].team===team); }); }
+function g1_simApply(st,id){ const pieces={}; Object.keys(st.pieces).forEach(k=>{pieces[k]={...st.pieces[k]};}); const n={pieces,board:st.board.map(row=>row.slice()),score:{...st.score}};
+  const pc=n.pieces[id], ni=pc.idx+1, [r,c]=pc.cells[ni], last=ni===pc.cells.length-1, occ=n.board[r][c];
+  n.board[pc.r][pc.c]=null; if(occ)delete n.pieces[occ]; pc.idx=ni; pc.r=r; pc.c=c;
+  if(last){ delete n.pieces[id]; } else n.board[r][c]=id;
+  if(occ||last)n.score[pc.team]++;
+  return n; }
+/* 차례인 쪽 기준 +1 이김 · 0 비김 · -1 짐 */
+function g1_solve(st,turn,passes){
+  if(st.score[turn]>=g1.win)return 1; const other=turn==='A'?'B':'A'; if(st.score[other]>=g1.win)return -1;
+  const key=Object.keys(st.pieces).sort().map(k=>k+st.pieces[k].idx).join('.')+'|'+st.score.A+st.score.B+turn+passes;
+  if(g1_memo.has(key))return g1_memo.get(key);
+  const moves=g1_simMoves(st,turn); let best;
+  if(!moves.length){ if(passes>=1){ const d=st.score[turn]-st.score[other]; best=d>0?1:(d<0?-1:0); } else best=-g1_solve(st,other,passes+1); }
+  else{ best=-2; for(const m of moves){ const v=-g1_solve(g1_simApply(st,m.id),other,0); if(v>best)best=v; if(best===1)break; } }
+  g1_memo.set(key,best); return best; }
+/* 같은 결과인 수끼리는 잡기·도착을 먼저, 바로 잡히는 자리는 나중에 */
+function g1_moveFlavor(st,p){ const [r,c]=p.cells[p.idx+1]; const occ=st.board[r][c]; let v=Math.random();
+  if(occ)v+=5; if(p.idx+1===p.cells.length-1)v+=4;
+  const after=g1_simApply(st,p.id); if(!after.pieces[p.id])return v;
+  if(g1_simMoves(after,'A').some(a=>{const [ar,ac]=a.cells[a.idx+1]; return ar===r&&ac===c;}))v-=3;
+  return v; }
+function g1_ai(){ const c=g1_movesFor('B'); if(!c.length){g1.locked=false;g1_endTurn();return;}
+  const cfg=G1_AI[g1.level]||G1_AI[2]; let pick;
+  if(Math.random()<cfg.rand) pick=c[(Math.random()*c.length)|0];
+  else{ const st=g1_simState(); const scored=c.map(p=>({p,v:-g1_solve(g1_simApply(st,p.id),'A',0),f:g1_moveFlavor(st,p)}));
+    const top=Math.max(...scored.map(x=>x.v)); const best=scored.filter(x=>x.v===top).sort((a,b)=>b.f-a.f);
+    pick=best[0].p; }
   g1_advance(pick.id); }
 function g1_threat(r,c,by,movingId,capturedId){ for(const p of Object.values(g1.pieces)){ if(p.team!==by||p.id===capturedId||p.idx>=p.cells.length-1)continue; const [nr,nc]=p.cells[p.idx+1]; const o=g1.board[nr][nc];
   if(o&&o!==capturedId&&o!==movingId&&g1.pieces[o]&&g1.pieces[o].team===p.team)continue; if(nr===r&&nc===c)return true; } return false; }
@@ -1101,6 +1140,11 @@ function g2_sel(i){ g2.sel=i; document.querySelectorAll('#g2picker .pick').forEa
 function g2_place(r,c,color){ g2.board[r][c]=color; const disc=document.createElement('div'); disc.className='disc k'+color; disc.innerHTML=chipMarkup(color);
   const cell=document.getElementById('g2c_'+r+'_'+c); cell.appendChild(disc); cell.setAttribute('aria-label',`${r+1}행 ${c+1}열, ${chipLabel(color)} 놓임`); cell.disabled=true; }
 function g2_click(r,c){ if(g2.locked||g2.board[r][c]!==null)return; if(g2.mode==='solo'&&g2.turn!=='A')return;
+  /* 쉬움: 상대 모양을 대신 완성하는 칸이면 한 번 알려 주고, 같은 칸을 한 번 더 누르면 놓는다 */
+  if(g2.level===1){ const other=g2.turn==='A'?g2.patB:g2.patA, key=r+','+c+','+g2.sel;
+    g2.board[r][c]=g2.sel; const gift=g2_present(other); g2.board[r][c]=null;
+    if(gift&&g2.warned!==key){ g2.warned=key; g2_float('앗! 여기 놓으면 상대 모양이 돼요'); if(typeof hwSay==='function')hwSay('여기 놓으면 상대 모양이 돼요.'); return; }
+    g2.warned=null; }
   if(g2.mode==='solo'&&g2.stat){ const threat=g2_threatCells(g2.patB); g2.stat.moves++; if(threat.size){ g2.stat.threats++; if(threat.has(r+','+c))g2.stat.blocks++; } }
   g2_do(r,c,g2.sel,g2.turn); }
 /* 상대가 다음 한 수로 목표 줄을 완성할 수 있는 빈 칸들 */
@@ -1130,19 +1174,25 @@ function g2_progress(pat){ const S=g2.size,L=pat.length,rev=pat.slice().reverse(
   return sc; }
 function g2_mark(line){ line.forEach(([r,c])=>document.getElementById('g2c_'+r+'_'+c).classList.add('win')); }
 
-function g2_ai(){ const empties=g2_empty();
+/* 컴퓨터 성향: skip 막기를 놓칠 확률 · wander 아무 안전한 칸에 둘 확률 · fork 한 번에 두 군데 위협(막을 곳이 둘)을 노리는 확률
+   difficulty-sim.js로 잰 승률을 보고 정했다. */
+const G2_AI={1:{skip:.6,wander:.55,fork:0},2:{skip:.25,wander:.2,fork:.05},3:{skip:0,wander:.03,fork:.6}};
+function g2_winningSpots(pat,avoid){ const spots=[]; for(const [r,c] of g2_empty())for(const col of [0,1]){ g2.board[r][c]=col; const w=g2_present(pat), bad=avoid&&g2_present(avoid); g2.board[r][c]=null; if(w&&!bad){ spots.push(r+','+c); break; } } return spots; }
+function g2_ai(){ const empties=g2_empty(); const cfg=G2_AI[g2.level]||G2_AI[2];
   for(const [r,c] of empties) for(const col of [0,1]){ g2.board[r][c]=col; const w=g2_present(g2.patB); g2.board[r][c]=null; if(w) return g2_do(r,c,col,'B'); }
   const threats=[]; for(const [r,c] of empties) for(const col of [0,1]){ g2.board[r][c]=col; const w=g2_present(g2.patA); g2.board[r][c]=null; if(w) threats.push([r,c,col]); }
-  const skipRate=g2.level===1?0.35:(g2.level===2?0.12:0), skipBlock=Math.random()<skipRate;
+  const skipBlock=Math.random()<cfg.skip;
   if(threats.length && !skipBlock){ for(const [r,c,col] of threats){ const blk=col^1;
     g2.board[r][c]=blk; const foe=g2_present(g2.patA); const me=g2_present(g2.patB); g2.board[r][c]=null;
     if(me) return g2_do(r,c,blk,'B'); if(!foe) return g2_do(r,c,blk,'B'); } }
-  let best=null,bv=-1e9; const mid=(g2.size-1)/2;
+  let best=null,bv=-1e9; const mid=(g2.size-1)/2; const useFork=Math.random()<cfg.fork;
   for(const [r,c] of empties) for(const col of [0,1]){ g2.board[r][c]=col; const foe=g2_present(g2.patA); let v=-1e9;
-    if(!foe){ v=g2_progress(g2.patB)*10 - g2_progress(g2.patA)*2 - (Math.abs(r-mid)+Math.abs(c-mid))*0.3 + Math.random()*3; }
+    if(!foe){ v=g2_progress(g2.patB)*10 - g2_progress(g2.patA)*2 - (Math.abs(r-mid)+Math.abs(c-mid))*0.3 + Math.random()*3;
+      if(useFork){ const mine=g2_winningSpots(g2.patB,g2.patA).length, theirs=g2_winningSpots(g2.patA,g2.patB).length;
+        if(mine>=2)v+=400; else if(mine===1)v+=40;
+        if(theirs>=2)v-=500; else if(theirs===1)v-=60; } }
     g2.board[r][c]=null; if(v>bv){bv=v;best=[r,c,col];} }
-  const wanderRate=g2.level===1?0.35:(g2.level===2?0.12:0.02);
-  if(Math.random()<wanderRate){ const safe=[]; for(const [r,c] of empties)for(const col of [0,1]){ g2.board[r][c]=col; const foe=g2_present(g2.patA); g2.board[r][c]=null; if(!foe)safe.push([r,c,col]); } if(safe.length) best=safe[(Math.random()*safe.length)|0]; }
+  if(Math.random()<cfg.wander){ const safe=[]; for(const [r,c] of empties)for(const col of [0,1]){ g2.board[r][c]=col; const foe=g2_present(g2.patA); g2.board[r][c]=null; if(!foe)safe.push([r,c,col]); } if(safe.length) best=safe[(Math.random()*safe.length)|0]; }
   if(!best){ const e=empties[(Math.random()*empties.length)|0]; best=[e[0],e[1],0]; }
   g2_do(best[0],best[1],best[2],'B'); }
 
@@ -1162,13 +1212,15 @@ function initHub(){
   fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
 }
 </script>
-<script src="games/face-game.js?v=41"></script>
-<script src="games/number-game.js?v=41"></script>
-<script src="games/block-game.js?v=41"></script>
-<script src="games/parent-guide.js?v=41"></script>
+<script src="games/face-game.js?v=46"></script>
+<script src="games/number-game.js?v=46"></script>
+<script src="games/block-game.js?v=46"></script>
+<script src="games/parent-guide.js?v=46"></script>
+<script src="games/forest.js?v=46"></script>
 <script>
 initHub();
 pgInit();
+if(window.hwForest)hwForest.mount();
 /* PWA: 서비스워커 등록(오프라인) + 설치 버튼 */
 /* 개발 중 확인은 주소 끝에 ?nosw 를 붙이면 캐시 없이 최신 파일을 본다. */
 if('serviceWorker' in navigator&&!/[?&]nosw/.test(location.search)){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }

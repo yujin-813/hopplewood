@@ -1,0 +1,76 @@
+/* 호플우드 숲 — 메타게임 화면 */
+
+#forestScreen{padding-bottom:110px}
+.fw-stats{display:flex;gap:8px;flex-wrap:wrap}
+.fw-stats span{display:flex;align-items:center;gap:5px;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid rgba(40,51,47,.09);font-size:13px;font-weight:800;color:#4b5a55}
+.fw-stats .ui-icon{width:16px;height:16px;color:#3f8f6c}
+.fw-stats b{font-family:'Jua',system-ui,sans-serif;font-size:16px;font-weight:400;color:#1d2925}
+
+/* 부탁 카드 */
+.fw-request{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;padding:12px 14px;border-radius:22px;background:#fffdf6;border:2px solid #f1e2c2;box-shadow:0 5px 0 rgba(120,90,40,.1)}
+.fw-req-art{width:84px;height:84px;border-radius:50%;background:#fff1d8;overflow:hidden}
+.fw-req-art.full{border-radius:20px;background:radial-gradient(circle at 50% 70%,#eaf6df 0 58%,transparent 60%);overflow:visible}
+.fw-req-art.full .hw-char{transform:scale(1.08);transform-origin:50% 80%}
+.fw-req-art .hw-char{width:100%;height:100%}
+.fw-req-art .hw-art img{width:100%;height:100%;object-fit:contain}
+.fw-req-body small{display:block;font-size:12px;font-weight:800;color:#b0672a}
+.fw-req-body p{margin:3px 0 9px;font-size:16px;line-height:1.45;color:#2b2521}
+.fw-help-btn{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 18px;border-radius:16px;background:#2f8f5f;color:#fff;font-size:17px;font-weight:900;box-shadow:0 5px 0 #1f6a45}
+.fw-help-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1f6a45}
+.fw-help-btn .ui-icon{width:18px;height:18px;fill:currentColor;stroke-width:1.2}
+.fw-request.fw-bump{animation:fwBump .5s ease}
+
+/* 숲 지도 (1080×1920 비율) */
+.fw-map{position:relative;width:100%;aspect-ratio:1080/1920;border-radius:26px;overflow:hidden;border:3px solid #fff;box-shadow:0 8px 0 rgba(60,100,60,.14);touch-action:manipulation;background:#8cc46a}
+.fw-mapimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+.fw-place{position:absolute;pointer-events:none}
+.fw-stage{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 4px rgba(30,60,30,.22))}
+.fw-place[data-open="1"] .fw-stage.before{opacity:0}
+.fw-stage.after.fw-reveal{animation:fwReveal 1.2s cubic-bezier(.2,1.2,.4,1)}
+.fw-friend,.fw-mask{position:absolute;z-index:4;display:block;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(30,50,30,.28))}
+.fw-friend{aspect-ratio:1}
+.fw-friend .hw-char{width:100%;height:100%}
+.fw-mask .g3-face-art{width:100%}
+.fw-mask{transform-origin:50% 0;animation:fwSwing 3s ease-in-out infinite}
+.fw-mask.fw-pop{animation:fwPop .55s cubic-bezier(.2,1.5,.45,1)}
+.fw-deco{position:absolute;z-index:3;display:block;aspect-ratio:1;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(30,50,30,.28))}
+.fw-deco img{width:100%;height:100%;object-fit:contain}
+.fw-festival-line{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:visible}
+.fw-festival-line path{stroke-width:2.5px}
+.fw-hopple{position:absolute;z-index:6;width:15%;aspect-ratio:1;pointer-events:none;filter:drop-shadow(0 4px 3px rgba(30,50,30,.3))}
+.fw-hopple .hw-art,.fw-hopple .hw-art img{width:100%;height:100%;object-fit:contain}
+.fw-placed{position:absolute;z-index:5;width:13%;aspect-ratio:1;display:block;pointer-events:none;filter:drop-shadow(0 4px 2px rgba(30,50,30,.3))}
+.fw-placed img{width:100%;height:100%;object-fit:contain}
+.fw-pop{animation:fwPop .55s cubic-bezier(.2,1.5,.45,1)}
+.fw-place-hint{position:absolute;z-index:8;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgba(43,37,33,.84);color:#fff;font-size:14px;font-weight:800;white-space:nowrap}
+.fw-map[data-placing="1"]{cursor:crosshair;box-shadow:0 0 0 5px #ffd84a,0 8px 0 rgba(60,100,60,.14)}
+
+/* 호플이 놀람 말풍선 */
+.fw-bubble{position:absolute;z-index:9;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 6px;border-radius:18px;background:#fffdf6;border:2px solid #2b2521;box-shadow:0 4px 0 rgba(0,0,0,.15);animation:fwPop .45s cubic-bezier(.2,1.5,.45,1)}
+.fw-bubble-art{width:44px;height:44px;display:block}
+.fw-bubble-art .hw-art,.fw-bubble-art img{width:100%;height:100%;object-fit:contain}
+.fw-bubble b{font-size:14px;color:#2b2521;white-space:nowrap}
+
+/* 선물 고르기 */
+.fw-gift-sheet{scroll-margin-bottom:110px;padding:14px;border-radius:22px;background:#fff8e6;border:2px dashed #edcf92;text-align:center}
+.fw-gift-sheet p{margin:0 0 10px;font-size:16px;font-weight:800;color:#6a4b1c}
+.fw-gifts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fw-gift{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:18px;background:#fff;border:3px solid #f0e2c6;box-shadow:0 4px 0 rgba(120,80,40,.12)}
+.fw-gift span{width:64px;height:64px;display:block}
+.fw-gift span img{width:100%;height:100%;object-fit:contain}
+.fw-gift small{font-size:13px;font-weight:800;color:#5b4a36}
+.fw-gift:active{transform:translateY(3px)}
+.fw-all-games{width:100%;font-size:15px}
+
+/* 결과 카드 */
+.fw-card{text-align:center}
+.fw-card-art{width:160px;height:160px;margin:0 auto 4px}
+.fw-card-art .hw-char,.fw-card-art .hw-art img{width:100%;height:100%;object-fit:contain}
+.fw-card-who{display:block;font-size:13px;font-weight:800;color:#b0672a}
+.fw-card h2{font-size:22px;line-height:1.35;margin:4px 0 12px}
+
+@keyframes fwSwing{0%,100%{transform:rotate(var(--swing,4deg))}50%{transform:rotate(calc(var(--swing,4deg) * -1))}}
+@keyframes fwBump{30%{transform:translateY(-6px)}60%{transform:translateY(2px)}}
+@keyframes fwPop{0%{transform:scale(.2);opacity:0}100%{transform:none;opacity:1}}
+@keyframes fwReveal{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.fw-stage.after.fw-reveal,.fw-pop,.fw-request.fw-bump,.fw-bubble,.fw-mask{animation:none!important}}

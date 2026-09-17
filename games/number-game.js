@@ -318,13 +318,13 @@ function g4_aiTurn(){
   },1100);
 }
 function g4_pickAI(cells){
-  if(g4.level===1&&Math.random()<.8)return cells[(Math.random()*cells.length)|0];
+  if(g4.level===1&&Math.random()<.9)return cells[(Math.random()*cells.length)|0];
   let best=cells[0], bestScore=-Infinity;
   cells.forEach(idx=>{
     const score=g4_candidateScore(idx,'B',g4.level)+Math.random()*(g4.level===3?1.5:6);
     if(score>bestScore){bestScore=score;best=idx;}
   });
-  if(g4.level===2&&Math.random()<.3)return cells[(Math.random()*cells.length)|0];
+  if(g4.level===2&&Math.random()<.65)return cells[(Math.random()*cells.length)|0];
   return best;
 }
 function g4_candidateScore(idx,team,level){

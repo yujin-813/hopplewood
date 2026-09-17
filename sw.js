@@ -1,6 +1,6 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
-const CACHE = 'hopplewood-v41';
-const V = '?v=41';
+const CACHE = 'hopplewood-v46';
+const V = '?v=46';
 const CORE = [
   './',
   './index.html',
@@ -14,6 +14,8 @@ const CORE = [
   './games/number-game.js' + V,
   './games/block-game.css' + V,
   './games/block-game.js' + V,
+  './games/forest.css' + V,
+  './games/forest.js' + V,
   './games/parent-guide.css' + V,
   './games/parent-guide.js' + V,
   './icons/icon-192.png',
