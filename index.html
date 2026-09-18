@@ -299,7 +299,7 @@
 
   /* 3차 디자인: 밝은 어린이 게임 플랫폼 */
   body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;background:#eee9e1;color:#1f2523}
-  .app{min-height:100dvh;background:linear-gradient(165deg,var(--bg1),var(--bg2));padding:18px 16px max(28px,env(safe-area-inset-bottom));box-shadow:0 0 50px rgba(66,54,40,.12)}
+  .app{min-height:100dvh;background:linear-gradient(165deg,var(--bg1),var(--bg2));padding:max(18px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom));box-shadow:0 0 50px rgba(66,54,40,.12)}
   h1,h2,h3,.category-card strong,.wordmark,.setup h2,.card h2{font-family:'Jua',system-ui,sans-serif;font-weight:400}
   button{font-family:inherit}
   #hubScreen,#progressScreen{padding-bottom:84px}
@@ -426,18 +426,18 @@
   @media (max-width:380px){.world-hero{min-height:226px}.world-hero h1{font-size:25px}.hero-scene{right:-14px}.hero-rabbit{width:112px}.experience-cover{height:108px}.experience-cover .cover-main{width:93px;height:105px}.experience-cover .cover-side{width:64px;height:82px}}
   @media (max-width:360px){.experience-grid{gap:9px}.experience-body{padding:10px}.bottom-nav{width:calc(100% - 20px)}}
 </style>
-<script src="games/characters.js?v=61"></script>
-<script src="games/funnel.js?v=61"></script>
-<script src="games/platform.js?v=61"></script>
-<script src="games/pack.js?v=61"></script>
-<script src="games/music.js?v=61"></script>
-<link rel="stylesheet" href="games/hopplewood.css?v=61">
-<link rel="stylesheet" href="games/parent-guide.css?v=61">
-<link rel="stylesheet" href="games/face-game.css?v=61">
-<link rel="stylesheet" href="games/number-game.css?v=61">
-<link rel="stylesheet" href="games/block-game.css?v=61">
-<link rel="stylesheet" href="games/forest.css?v=61">
-<link rel="stylesheet" href="games/mom-voice.css?v=61">
+<script src="games/characters.js?v=62"></script>
+<script src="games/funnel.js?v=62"></script>
+<script src="games/platform.js?v=62"></script>
+<script src="games/pack.js?v=62"></script>
+<script src="games/music.js?v=62"></script>
+<link rel="stylesheet" href="games/hopplewood.css?v=62">
+<link rel="stylesheet" href="games/parent-guide.css?v=62">
+<link rel="stylesheet" href="games/face-game.css?v=62">
+<link rel="stylesheet" href="games/number-game.css?v=62">
+<link rel="stylesheet" href="games/block-game.css?v=62">
+<link rel="stylesheet" href="games/forest.css?v=62">
+<link rel="stylesheet" href="games/mom-voice.css?v=62">
 </head>
 <body>
 <svg class="icon-sprite" aria-hidden="true">
@@ -1239,12 +1239,12 @@ function initHub(){
   fillCharSlots(); renderCatalog(); updateProgressUI(); hwSyncSettings();
 }
 </script>
-<script src="games/face-game.js?v=61"></script>
-<script src="games/number-game.js?v=61"></script>
-<script src="games/block-game.js?v=61"></script>
-<script src="games/parent-guide.js?v=61"></script>
-<script src="games/forest.js?v=61"></script>
-<script src="games/mom-voice.js?v=61"></script>
+<script src="games/face-game.js?v=62"></script>
+<script src="games/number-game.js?v=62"></script>
+<script src="games/block-game.js?v=62"></script>
+<script src="games/parent-guide.js?v=62"></script>
+<script src="games/forest.js?v=62"></script>
+<script src="games/mom-voice.js?v=62"></script>
 <script>
 initHub();
 pgInit();
