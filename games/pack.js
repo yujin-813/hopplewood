@@ -3,7 +3,7 @@
  * - 웹은 preview: 무료 게임 2개를 체험하고 정식 앱 설치를 안내한다.
  * - Capacitor 앱은 freemium: App Store / Google Play 비소모성 상품을 사용한다.
  * - 무료: 얼굴 짝꿍·비버 집짓기(쉬움·보통), 숲 퀘스트 첫 2개, 두 게임 리포트
- * - 기본 놀이팩: 나머지 게임 3개, 모든 난이도, 숲 퀘스트 전체와 반복 퀘스트, 전체 부모 리포트, 가족 목소리
+ * - 기본 놀이팩: 무료가 아닌 나머지 게임 전부(등록부 기준), 모든 난이도, 숲 퀘스트 전체와 반복 퀘스트, 전체 부모 리포트, 가족 목소리
  * - 아이 화면에는 가격·구매 버튼을 보여 주지 않는다. 구매·복원은 부모 메뉴 안에서, 보호자 질문을 통과한 뒤에만.
  * 결제 연결 (hwPurchase.channel)
  *   native : Capacitor/Cordova 앱 + cordova-plugin-purchase(CdvPurchase) — App Store / Google Play 비소모성 상품
@@ -113,9 +113,20 @@
     try{ m=new URLSearchParams(location.search).get('store'); if(m)localStorage.setItem('hw_store_mode',m); else m=localStorage.getItem('hw_store_mode'); }catch(e){}
     return m&&/^mock/.test(m)?m:null;
   }
-  const purchase={channel:'web',ready:false,price:PACK_PRICE,busy:false};
+  const purchase={channel:'web',ready:false,price:PACK_PRICE,busy:false,lastError:''};
 
   function nativeStore(){ return window.CdvPurchase&&CdvPurchase.store; }
+  function nativeOffer(){
+    try{
+      const store=nativeStore(), product=store&&store.get(PRODUCT_ID);
+      return product&&product.getOffer();
+    }catch(e){ return null; }
+  }
+  function nativeFailure(err){
+    purchase.ready=true;
+    purchase.lastError=err&&err.message||'스토어 연결 실패';
+    refreshParent();
+  }
   function initNative(){
     const {store,ProductType,Platform}=CdvPurchase;
     const platforms=[];
@@ -125,25 +136,24 @@
     store.register(platforms.map(platform=>({id:PRODUCT_ID,type:ProductType.NON_CONSUMABLE,platform})));
     const syncOwnership=()=>{ if(store.owned(PRODUCT_ID))setOwned('store'); else clearOwned(); refreshParent(); };
     store.when()
-      .productUpdated(p=>{ if(p.id!==PRODUCT_ID)return; if(p.pricing&&p.pricing.price)purchase.price=p.pricing.price; refreshParent(); })
+      .productUpdated(p=>{ if(p.id!==PRODUCT_ID)return; if(p.pricing&&p.pricing.price)purchase.price=p.pricing.price; if(p.getOffer())purchase.lastError=''; refreshParent(); })
       .receiptUpdated(syncOwnership)
       .receiptsReady(()=>{ purchase.ready=true; syncOwnership(); })
       .approved(tr=>tr.verify())
       .verified(receipt=>receipt.finish())
       .finished(()=>{ syncOwnership(); purchase.busy=false; refreshParent(); });
     store.error(err=>{ purchase.busy=false; purchase.lastError=err&&err.message; refreshParent(); });
-    store.initialize(platforms).then(errors=>{ if(errors&&errors.length)purchase.lastError=errors[0].message; refreshParent(); });
+    store.initialize(platforms).then(errors=>{ if(errors&&errors.length)nativeFailure(errors[0]); else refreshParent(); }).catch(nativeFailure);
   }
   function init(){
     if(BETA_OPEN){ purchase.channel='beta'; purchase.ready=true; return; }
-    if(nativeStore()){ purchase.channel='native'; try{ initNative(); }catch(e){ purchase.channel='web'; } return; }
     /* 앱 안: Cordova 플러그인(CdvPurchase)은 deviceready 뒤에 준비된다 */
-    const native=window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform();
-    if(native){
+    if(IS_NATIVE){
       purchase.channel='native';
-      const start=()=>{ if(purchase.started)return; if(!nativeStore()){ purchase.channel='web'; refreshParent(); return; } purchase.started=true; try{ initNative(); }catch(e){ purchase.channel='web'; refreshParent(); } };
+      purchase.price='가격 확인 중';
+      const start=()=>{ if(purchase.started)return; if(!nativeStore()){ nativeFailure(new Error('결제 플러그인을 불러오지 못함')); return; } purchase.started=true; purchase.lastError=''; try{ initNative(); }catch(e){ nativeFailure(e); } };
       document.addEventListener('deviceready',start,false);
-      if(!window.cordova){ const s=document.createElement('script'); s.src='cordova.js'; document.head.appendChild(s); }
+      if(!window.cordova&&!nativeStore()){ const s=document.createElement('script'); s.src='cordova.js'; document.head.appendChild(s); }
       setTimeout(start,4000);
       return;
     }
@@ -166,9 +176,10 @@
       try{ localStorage.setItem(MOCK_OWNED_KEY,'1'); }catch(e){}
       setOwned('mock'); return 'ok';
     }
-    const store=nativeStore(), product=store&&store.get(PRODUCT_ID), offer=product&&product.getOffer();
-    if(!offer)return 'fail';
-    const err=await offer.order();
+    const offer=nativeOffer();
+    if(!offer)return 'store_unavailable';
+    let err;
+    try{ err=await offer.order(); }catch(e){ nativeFailure(e); return 'store_unavailable'; }
     if(err){ return err.code===CdvPurchase.ErrorCode.PAYMENT_CANCELLED?'cancel':'fail'; }
     /* 승인 → verified → finished 이벤트에서 setOwned. 스토어 창이 닫힐 때까지 잠깐 기다린다 */
     for(let i=0;i<40&&!hwPackOwned();i++)await wait(250);
@@ -183,7 +194,11 @@
       return 'none';
     }
     const store=nativeStore();
-    try{ await store.restorePurchases(); }catch(e){ return 'fail'; }
+    if(!store)return 'store_unavailable';
+    try{
+      const err=await store.restorePurchases();
+      if(err)return 'fail';
+    }catch(e){ nativeFailure(e); return 'fail'; }
     await wait(800);
     if(store.owned(PRODUCT_ID)){ setOwned('store'); return 'ok'; }
     clearOwned();
@@ -191,19 +206,26 @@
   }
 
   /* ---------- 부모 메뉴: 기본 놀이팩 ---------- */
-  const PACK_ITEMS=[
-    ['route','게임 3개 더','길따라 쪼르르 · 모양 만들기 · 숫자 징검다리'],
-    ['star','모든 난이도','다섯 게임 모두 어려움 단계까지'],
-    ['sprout','숲 퀘스트 전체','퀘스트 8개, 부모님과 함께 퀘스트, 반복 퀘스트'],
-    ['parent','전체 부모 리포트','다섯 게임의 놀이 모습과 대화 팁'],
-    ['speak','우리 가족 목소리','엄마·아빠 목소리로 녹음해서 들려주기']
-  ];
+  /* 놀이팩 안내 문구의 게임 이름·개수는 등록부(games/registry.js)에서 센다. 게임을 추가해도 손으로 고치지 않는다. */
+  const NUM_WORD=['','한','두','세','네','다섯','여섯','일곱','여덟','아홉','열'];
+  function countWord(n){ return NUM_WORD[n]||String(n); }
+  function packItems(){
+    const all=window.HW_GAMES?HW_GAMES.list():[], locked=all.filter(g=>!FREE.games.includes(g.id));
+    return [
+      ['route','게임 '+locked.length+'개 더',locked.map(g=>g.title).join(' · ')],
+      ['star','모든 난이도',countWord(all.length)+' 게임 모두 어려움 단계까지'],
+      ['sprout','숲 퀘스트 전체','퀘스트 '+(window.hwForest&&hwForest.QUESTS?hwForest.QUESTS.length:8)+'개, 부모님과 함께 퀘스트, 반복 퀘스트'],
+      ['parent','전체 부모 리포트',countWord(all.length)+' 게임의 놀이 모습과 대화 팁'],
+      ['speak','우리 가족 목소리','엄마·아빠 목소리로 녹음해서 들려주기']
+    ];
+  }
+
   let packMsg='';
   function packMarkup(){
     if(BETA_OPEN){
       return `<section class="pk-card beta" id="pkCard" aria-labelledby="pkTitle">
         <div class="pk-head"><span class="pk-badge beta">${hwIcon('sparkles')} 무료 베타</span><h3 id="pkTitle">지금은 모든 놀이를 열어 두었어요</h3></div>
-        <p class="pg-lead">아이들이 어떤 놀이를 즐기고 다시 찾는지 보는 공개 베타 기간이에요. 게임 5개·난이도 3단계·숲 퀘스트·부모 리포트·가족 목소리를 모두 무료로 쓸 수 있어요.</p>
+        <p class="pg-lead">아이들이 어떤 놀이를 즐기고 다시 찾는지 보는 공개 베타 기간이에요. 게임 ${window.HW_GAMES?HW_GAMES.list().length:''}개·난이도 3단계·숲 퀘스트·부모 리포트·가족 목소리를 모두 무료로 쓸 수 있어요.</p>
         <p class="pk-msg">정식 출시에서는 일부 새 놀이가 유료로 제공될 수 있어요. 구독·광고·계정은 없어요.</p>
       </section>`;
     }
@@ -216,15 +238,20 @@
       </section>`;
     }
     const web=purchase.channel==='web';
+    const nativeUnavailable=purchase.channel==='native'&&!nativeOffer();
+    const nativeNotice=purchase.lastError||purchase.ready
+      ?'지금은 스토어 상품을 불러올 수 없어요. 잠시 후 앱을 다시 열어 주세요.'
+      :'스토어 상품을 확인하는 중이에요…';
     return `<section class="pk-card" id="pkCard" aria-labelledby="pkTitle">
       <div class="pk-head"><span class="pk-badge free">지금은 무료판</span><h3 id="pkTitle">호플우드 기본 놀이팩</h3></div>
       <p class="pg-lead">무료판에서는 얼굴 짝꿍·비버 집짓기(쉬움·보통)와 숲 퀘스트 2개를 할 수 있어요. 정식 앱에서 한 번 구매하면 같은 스토어 계정으로 계속 쓸 수 있어요. 별도 회원가입은 없어요.</p>
-      <ul class="pk-items">${PACK_ITEMS.map(([ic,t,d])=>`<li><span>${hwIcon(ic)}</span><b>${t}</b><small>${d}</small></li>`).join('')}</ul>
+      <ul class="pk-items">${packItems().map(([ic,t,d])=>`<li><span>${hwIcon(ic)}</span><b>${t}</b><small>${d}</small></li>`).join('')}</ul>
       <div class="pk-buy">
         <div><b>${purchase.price}</b><small>1회 구매 · 구독 아님</small></div>
-        <button type="button" class="btn blue big" onclick="hwPackBuy()" ${purchase.busy||web?'disabled':''}>${purchase.busy?'확인 중…':'구매하기'}</button>
+        <button type="button" class="btn blue big" onclick="hwPackBuy()" ${purchase.busy||web||nativeUnavailable?'disabled':''}>${purchase.busy?'확인 중…':'구매하기'}</button>
       </div>
       ${web?`<p class="pk-msg" role="status">웹은 무료 미리보기예요. 정식 앱 출시 후 App Store · Google Play의 부모님 결제로 열 수 있어요.</p>`:''}
+      ${nativeUnavailable?`<p class="pk-msg" role="status">${nativeNotice}</p>`:''}
       ${purchase.channel==='mock'?`<p class="pk-msg mock">개발용 가짜 결제 모드 (${purchase.mode})</p>`:''}
       ${packMsg?`<p class="pk-msg" role="status">${packMsg}</p>`:''}
       ${!web?`<button type="button" class="pk-restore" onclick="hwPackRestore()" ${purchase.busy?'disabled':''}>이미 구매했어요 · 구매 복원</button>`:''}
@@ -234,9 +261,10 @@
     const card=document.getElementById('pkCard'); if(card)card.outerHTML=packMarkup();
     const prog=document.getElementById('parentPlanStatus'); if(prog)prog.textContent=hwPlanLabel();
   }
-  const RESULT_TEXT={ok:'기본 놀이팩이 열렸어요!',beta:'무료 베타 기간에는 모든 놀이가 열려 있어요.',cancel:'구매를 취소했어요.',fail:'구매하지 못했어요. 잠시 뒤 다시 해 주세요.',unavailable:'구매는 App Store · Google Play 앱에서 할 수 있어요.',none:'이 스토어 계정에서 복원할 구매를 찾지 못했어요.',pending:'결제를 확인하고 있어요. 잠시 뒤 구매 복원을 눌러 주세요.'};
+  const RESULT_TEXT={ok:'기본 놀이팩이 열렸어요!',beta:'무료 베타 기간에는 모든 놀이가 열려 있어요.',cancel:'구매를 취소했어요.',fail:'구매하지 못했어요. 잠시 뒤 다시 해 주세요.',unavailable:'구매는 App Store · Google Play 앱에서 할 수 있어요.',store_unavailable:'지금은 스토어 상품을 불러올 수 없어요. 잠시 후 앱을 다시 열어 주세요.',none:'이 스토어 계정에서 복원할 구매를 찾지 못했어요.',pending:'결제를 확인하고 있어요. 잠시 뒤 구매 복원을 눌러 주세요.'};
   function hwPackBuy(){
     if(BETA_OPEN||purchase.busy||hwPackOwned())return;
+    if(purchase.channel==='native'&&!nativeOffer()){ packMsg=RESULT_TEXT.store_unavailable; refreshParent(); return; }
     closeOverlay('parentOverlay',false);
     hwParentGate(async()=>{
       openOverlay('parentOverlay'); refreshParent();
@@ -244,7 +272,7 @@
       const r=await buy();
       track('purchase_result',{channel:purchase.channel,result:r});
       purchase.busy=false; packMsg=RESULT_TEXT[r]||''; refreshParent();
-      if(r==='ok'&&typeof pgOpen==='function'){ pgOpen(undefined); scrollToPack(); }
+      if(r==='ok'&&typeof pgOpen==='function'){ pgOpen('pack'); scrollToPack(); }
     },'구매하려면');
   }
   async function hwPackRestore(){
@@ -253,7 +281,7 @@
     const r=await restore();
     track('restore_result',{channel:purchase.channel,result:r});
     purchase.busy=false; packMsg=RESULT_TEXT[r]||''; refreshParent();
-    if(r==='ok'&&typeof pgOpen==='function'){ pgOpen(undefined); scrollToPack(); }
+    if(r==='ok'&&typeof pgOpen==='function'){ pgOpen('pack'); scrollToPack(); }
   }
   function scrollToPack(){ const c=document.getElementById('pkCard'), sheet=c&&c.closest('.parent-sheet'); if(c&&sheet)sheet.scrollTop=c.offsetTop-12; }
 

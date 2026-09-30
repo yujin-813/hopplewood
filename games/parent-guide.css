@@ -143,3 +143,13 @@
 .pf-actions button{min-height:39px;padding:0 11px;border-radius:11px;background:#fff;border:1px solid #cfdfca;color:#326a4c;font-size:12px;font-weight:900}
 .pf-actions button.danger{color:#875a44}.pf-actions button[data-confirm="1"]{background:#fde3dc;color:#a2402c;border-color:#f4c4b8}
 @media (max-width:380px){.pf-counts{grid-template-columns:1fr}}
+
+/* 부모님 화면 탭: 길게 내려도 위에 붙어 있다 */
+.pg-tabs{position:sticky;top:-2px;z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:14px -4px 10px;padding:6px 4px;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 1px 0 rgba(40,51,47,.08),0 6px 12px -8px rgba(40,51,47,.25);backdrop-filter:blur(6px)}
+.pg-tabs button{min-width:0;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 2px;border-radius:14px;background:transparent;border:0;color:#6f7975;font-size:12px;font-weight:900;line-height:1.15;text-align:center}
+.pg-tabs button span{word-break:keep-all}
+.pg-tabs .ui-icon{width:20px;height:20px}
+.pg-tabs button[data-on="1"]{background:#e8f3ee;color:#1f5b45;box-shadow:inset 0 0 0 2px #7cbfa0}
+.pg-tabs button:focus-visible{outline:3px solid #173fff;outline-offset:1px}
+#parentGuide>section:first-child,#parentGuide>.pk-card:first-child{margin-top:0}
+@media (max-width:360px){.pg-tabs button{font-size:11px}.pg-tabs .ui-icon{width:18px;height:18px}}

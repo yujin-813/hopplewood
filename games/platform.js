@@ -59,6 +59,19 @@
   const VOICE_NICK=[[/유나|yuna/i,'유나'],[/google/i,'구글 한국어'],[/sunhi|선희/i,'선희'],[/heami|혜미/i,'혜미'],[/sora|소라/i,'소라'],[/flo/i,'플로'],[/sandy/i,'샌디'],[/shelley/i,'셸리'],[/grandma/i,'할머니'],[/grandpa/i,'할아버지'],[/eddy/i,'에디'],[/reed/i,'리드'],[/rocko/i,'로코']];
   let koVoice=null;
   function synth(){ return ('speechSynthesis' in window&&'SpeechSynthesisUtterance' in window)?window.speechSynthesis:null; }
+  /* 앱 안 기기 음성: 안드로이드 WebView에는 웹 음성 합성이 없다. 웹에 한국어 음성이 없으면 기기 TTS 플러그인
+     (@capacitor-community/text-to-speech)으로 읽는다. 녹음이 없는 문장(계산·칸 수처럼 매번 달라지는 문장)이 여기로 온다. */
+  let nativeTTSPlugin;
+  function nativeTTS(){
+    if(nativeTTSPlugin!==undefined)return nativeTTSPlugin;
+    const C=window.Capacitor; nativeTTSPlugin=null;
+    try{ if(C&&C.isNativePlatform&&C.isNativePlatform())nativeTTSPlugin=(C.Plugins&&C.Plugins.TextToSpeech)||(C.registerPlugin?C.registerPlugin('TextToSpeech'):null); }catch(e){ nativeTTSPlugin=null; }
+    /* 기기에 한국어 음성이 없으면 영어로 읽지 않도록 끈다 */
+    if(nativeTTSPlugin&&nativeTTSPlugin.isLanguageSupported){ const tts=nativeTTSPlugin; try{ Promise.resolve(tts.isLanguageSupported({lang:'ko-KR'})).then(r=>{ if(r&&r.supported===false&&nativeTTSPlugin===tts)nativeTTSPlugin=null; },()=>{}); }catch(e){} }
+    return nativeTTSPlugin;
+  }
+  function useNativeTTS(){ return Boolean(nativeTTS())&&!koVoices().length; }
+  function canSpeak(){ return Boolean(synth()||nativeTTS()); }
   function koVoices(){ const s=synth(); return s?s.getVoices().filter(v=>/^ko([_-]|$)/i.test(v.lang)):[]; }
   function voiceScore(v){
     let score=/^ko[-_]KR$/i.test(v.lang)?20:12;
@@ -91,9 +104,43 @@
     });
     return out;
   }
+  function narrationPlan(words){
+    const files=window.HW_NARRATION_FILES||{};
+    const parts=speechChunks(words), plan=[];
+    let used=false, i=0;
+    while(i<parts.length){
+      let hit=0, text='';
+      for(let k=parts.length;k>i;k--){ const key=parts.slice(i,k).join(' '); if(files[key]){ hit=k; text=key; break; } }
+      if(hit){ plan.push({url:files[text],text,kind:'narrator'}); used=true; i=hit; }
+      else{ const last=plan[plan.length-1]; if(last&&!last.url)last.text+=' '+parts[i]; else plan.push({text:parts[i]}); i++; }
+    }
+    return used?plan:null;
+  }
+  function addNarrationFallback(plan){
+    if(!plan)return null;
+    const out=[];
+    plan.forEach(item=>{
+      if(item.url){ out.push(item); return; }
+      const narrated=narrationPlan(item.text);
+      if(narrated)out.push(...narrated); else out.push(item);
+    });
+    return out;
+  }
   let speechRun=0, activeUtterance=null;
-  function stopSpeech(){ speechRun++; activeUtterance=null; const s=synth(); if(s)try{s.cancel();}catch(e){} }
+  function stopSpeech(){ speechRun++; activeUtterance=null; const s=synth(); if(s)try{s.cancel();}catch(e){} const n=nativeTTS(); if(n)try{ n.stop().catch(()=>{}); }catch(e){} }
+  function speakNative(words,onend){
+    const tts=nativeTTS(), parts=speechChunks(words); if(!tts||!parts.length){ if(onend)onend(); return false; }
+    const run=++speechRun; let i=0;
+    const next=()=>{
+      if(run!==speechRun)return;
+      if(i>=parts.length){ if(onend)onend(); return; }
+      let p; try{ p=tts.speak({text:parts[i++],lang:'ko-KR',rate:1,pitch:1.03,volume:1}); }catch(e){ p=Promise.reject(e); }
+      Promise.resolve(p).then(next,()=>{ if(run===speechRun)next(); });
+    };
+    next(); return true;
+  }
   function speakWith(voice,words,onend){
+    if(useNativeTTS())return speakNative(words,onend);
     const s=synth(); if(!s){ if(onend)onend(); return false; }
     const chunks=speechChunks(words); if(!chunks.length){ if(onend)onend(); return false; }
     const run=++speechRun; let i=0;
@@ -113,7 +160,7 @@
   let sayRun=0, clipAudio=null;
   function stopClip(){ if(clipAudio){ try{ clipAudio.pause(); }catch(e){} clipAudio.onended=clipAudio.onerror=null; } }
   function speakTTS(words,onend){
-    if(!synth()){ if(onend)onend(); return; }
+    if(!canSpeak()){ if(onend)onend(); return; }
     if(!koVoice)pickVoice();
     speakWith(koVoice,words,onend);
   }
@@ -139,10 +186,11 @@
     if(window.hwMusic)hwMusic.duck(Math.min(9000,1200+words.length*90));
     sayRun++; stopClip();
     try{
-      const plan=typeof window.hwMomVoicePlan==='function'?window.hwMomVoicePlan(words):null;
+      const familyPlan=typeof window.hwMomVoicePlan==='function'?window.hwMomVoicePlan(words):null;
+      const plan=familyPlan?addNarrationFallback(familyPlan):narrationPlan(words);
       if(plan){ stopSpeech(); playPlan(plan); return true; }
     }catch(e){}
-    if(!synth())return false;
+    if(!canSpeak())return false;
     if(!koVoice)pickVoice();
     try{ speakWith(koVoice,words); return true; }catch(e){ return false; }
   }
@@ -160,7 +208,7 @@
   }
   function hwSetVoice(name){ settings.voiceName=name||''; saveSettings(); pickVoice(); }
   function hwHush(){ sayRun++; stopClip(); stopSpeech(); }
-  function hwCanSpeak(){ return Boolean(synth()); }
+  function hwCanSpeak(){ return canSpeak(); }
 
   function hasBatchim(word){
     const s=String(word).trim(); if(!s)return false;

@@ -110,11 +110,27 @@ body.fw-coop-on .screen.on{padding-bottom:84px}
 .fw-festival-line path{stroke-width:2.5px}
 .fw-hopple{position:absolute;z-index:6;width:15%;aspect-ratio:1;pointer-events:none;filter:drop-shadow(0 4px 3px rgba(30,50,30,.3))}
 .fw-hopple .hw-art,.fw-hopple .hw-art img{width:100%;height:100%;object-fit:contain}
-.fw-placed{position:absolute;z-index:5;width:13%;aspect-ratio:1;display:block;pointer-events:none;filter:drop-shadow(0 4px 2px rgba(30,50,30,.3))}
-.fw-placed img{width:100%;height:100%;object-fit:contain}
+/* 놓은 선물: 숲과 같은 그림체라 묻히지 않게 흰 스티커 테두리 + 발밑 크림색 받침을 준다. 자리 좌표는 선물의 발밑 가운데 */
+.fw-placed{position:absolute;z-index:5;width:14%;aspect-ratio:1;display:block;pointer-events:none}
+.fw-placed:before{content:"";position:absolute;left:8%;right:8%;bottom:2%;height:24%;border-radius:50%;background:rgba(255,248,226,.92);box-shadow:0 0 0 2px rgba(255,255,255,.95),0 3px 6px rgba(30,50,30,.35)}
+.fw-placed img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 3px rgba(30,50,30,.4))}
+.fw-placed.fw-new:after{content:"";position:absolute;left:50%;bottom:0;width:130%;aspect-ratio:1;border-radius:50%;border:3px solid #ffd84a;transform:translate(-50%,30%);animation:fwRing 1s ease-out 3}
+.fw-placed.fw-shine{animation:fwShine .9s ease-in-out 2}
+.fw-dim{position:absolute;inset:0;z-index:6;background:rgba(18,32,22,.42);pointer-events:none}
+.fw-map[data-placing="1"] .fw-placed{z-index:7}
+.fw-spot{position:absolute;z-index:8;width:12%;aspect-ratio:1;min-width:0!important;min-height:0!important;padding:0;border-radius:50%;background:rgba(255,250,228,.95);border:3px dashed #e0a100;box-shadow:0 0 0 5px rgba(255,216,74,.45),0 4px 0 rgba(0,0,0,.2);display:grid;place-items:center;font-family:'Jua',system-ui,sans-serif;font-size:26px;color:#b27800;animation:fwSpot 1.4s ease-in-out infinite}
+.fw-spot .ui-icon{width:55%;height:55%}
+.fw-spot.swap{background:rgba(255,255,255,.35);border-style:solid}
+.fw-spot:active{scale:.9}
+.fw-gift-chip{display:flex;align-items:center;gap:5px;min-height:0;padding:8px 12px;border-radius:999px;background:#fff8e1;border:1px solid #f0d58a;font-size:13px;font-weight:800;color:#6a4b1c}
+.fw-gift-chip .ui-icon{width:16px;height:16px;color:#e0a100}
+.fw-gift-chip b{font-family:'Jua',system-ui,sans-serif;font-size:16px;font-weight:400;color:#1d2925}
+@keyframes fwRing{0%{opacity:1;scale:.6}100%{opacity:0;scale:1.25}}
+@keyframes fwShine{0%,100%{translate:0 0;scale:1}40%{translate:0 -18%;scale:1.18}}
+@keyframes fwSpot{50%{box-shadow:0 0 0 9px rgba(255,216,74,.25),0 4px 0 rgba(0,0,0,.2)}}
 .fw-pop{animation:fwPop .55s cubic-bezier(.2,1.5,.45,1)}
-.fw-place-hint{position:absolute;z-index:8;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgba(43,37,33,.84);color:#fff;font-size:14px;font-weight:800;white-space:nowrap}
-.fw-map[data-placing="1"]{cursor:crosshair;box-shadow:0 0 0 5px #ffd84a,0 8px 0 rgba(60,100,60,.14)}
+.fw-place-hint{position:absolute;z-index:9;left:50%;bottom:14px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgba(43,37,33,.84);color:#fff;font-size:14px;font-weight:800;white-space:nowrap}
+.fw-map[data-placing="1"]{cursor:pointer;box-shadow:0 0 0 5px #ffd84a,0 8px 0 rgba(60,100,60,.14)}
 
 /* 호플이 놀람 말풍선 */
 .fw-bubble{position:absolute;z-index:9;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 6px;border-radius:18px;background:#fffdf6;border:2px solid #2b2521;box-shadow:0 4px 0 rgba(0,0,0,.15);animation:fwPop .45s cubic-bezier(.2,1.5,.45,1)}
@@ -139,6 +155,19 @@ body.fw-coop-on .screen.on{padding-bottom:84px}
 .fw-card-art .hw-char,.fw-card-art .hw-art img{width:100%;height:100%;object-fit:contain}
 .fw-card-who{display:block;font-size:13px;font-weight:800;color:#b0672a}
 .fw-card h2{font-size:22px;line-height:1.35;margin:4px 0 12px}
+.fw-story-art{position:relative;height:190px;margin:2px auto 14px;overflow:hidden;border-radius:22px;background:#e6f1dc}
+.fw-story-art.storm>img{width:100%;height:100%;object-fit:cover;object-position:center 32%;filter:brightness(.53) saturate(.74)}
+.fw-story-rain{position:absolute;inset:0;background:repeating-linear-gradient(112deg,transparent 0 18px,rgba(222,239,249,.57) 19px 20px,transparent 21px 35px);opacity:.7}
+.fw-story-art.morning{display:flex;align-items:center;justify-content:center;gap:4px;background:linear-gradient(#eaf3dc,#fff8e6)}
+.fw-story-art.morning img{width:50%;height:100%;object-fit:contain}
+.fw-story-art.hopple .forest{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:brightness(1.08) blur(2px);opacity:.65}
+.fw-story-art.hopple .hw-char{position:absolute;left:50%;bottom:-7px;width:145px;height:174px;transform:translateX(-50%)}
+.fw-story-art.hopple .hw-art img{width:100%;height:100%;object-fit:contain}
+.fw-story-line{min-height:88px;display:flex;align-items:center;justify-content:center}
+.fw-story-steps{display:flex;justify-content:center;gap:7px;margin:0 0 16px}
+.fw-story-steps span{width:9px;height:9px;border-radius:50%;background:#d5dfd0}
+.fw-story-steps span.on{width:24px;border-radius:9px;background:#459067}
+.pg-story-replay{width:100%;margin:0 0 16px}
 
 @keyframes fwSwing{0%,100%{transform:rotate(var(--swing,4deg))}50%{transform:rotate(calc(var(--swing,4deg) * -1))}}
 @keyframes fwFloat{0%,100%{translate:0 0}50%{translate:0 -7px}}
@@ -147,4 +176,56 @@ body.fw-coop-on .screen.on{padding-bottom:84px}
 @keyframes fwBump{30%{transform:translateY(-6px)}60%{transform:translateY(2px)}}
 @keyframes fwPop{0%{transform:scale(.2);opacity:0}100%{transform:none;opacity:1}}
 @keyframes fwReveal{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none}}
-@media (prefers-reduced-motion:reduce){.fw-stage.after.fw-reveal,.fw-pop,.fw-marker,.fw-trail li,.fw-coop,.fw-request.fw-bump,.fw-bubble,.fw-mask{animation:none!important}}
+/* 지역 탭 · 표지판 · 잠긴 지역 (ADR-0004) */
+.fw-regions{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+.fw-regions button{min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 8px;border-radius:16px;background:#fff;border:2px solid #e6ecdf;color:#4b5a55;box-shadow:0 3px 0 rgba(40,70,50,.08)}
+.fw-regions button b{font-size:14px;font-weight:900;white-space:nowrap}
+.fw-regions button small{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#7b8a84}
+.fw-regions button small .ui-icon{width:13px;height:13px}
+.fw-regions button[data-on="1"]{background:#eaf7e2;border-color:#7cc36a;color:#24533a;box-shadow:0 3px 0 #5ea34f}
+.fw-regions button:disabled{opacity:.55}
+@media (max-width:360px){.fw-regions{gap:6px}.fw-regions button{padding:6px 4px}.fw-regions button b{font-size:13px}}
+.fw-sign{position:absolute;z-index:6;display:flex;align-items:center;gap:4px;min-height:0!important;padding:6px 10px 6px 8px;border-radius:12px;background:#8a5a2f;color:#fff8e6;border:2px solid #5b3a1c;box-shadow:0 4px 0 #5b3a1c;transform:translate(-10%,-60%);font-size:13px;font-weight:900;animation:fwSign 2.4s ease-in-out infinite}
+.fw-sign .ui-icon{width:15px;height:15px}
+.fw-sign:not(.up) .ui-icon{transform:rotate(90deg)}
+.fw-sign:active{transform:translate(-10%,-55%)}
+.fw-request[data-kind="locked"]{background:#f7f5ef;border-style:dashed}
+.fw-request[data-kind="locked"] p{margin:4px 0 0;font-size:15px;font-weight:800;color:#5b5a50;line-height:1.4}
+.fw-request[data-kind="locked"] small{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:900;color:#7b7a6e}
+.fw-request[data-kind="locked"] small .ui-icon{width:14px;height:14px}
+.fw-locked-faces{display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:2px;padding:6px;background:#eceae0;filter:grayscale(.35)}
+.fw-locked-faces .hw-char{width:34px!important;height:34px!important}
+.fw-map.fw-enter{animation:fwEnter .45s ease}
+@keyframes fwSign{50%{translate:0 -3px}}
+@keyframes fwEnter{0%{opacity:.3;transform:scale(.98)}100%{opacity:1;transform:none}}
+/* 확장 (ADR-0005): 완성한 지역 · 길이 막힌 지역 · 안개 너머 */
+.fw-regions button[data-complete="1"] small{color:#b0780a}
+.fw-regions button[data-complete="1"] small .ui-icon{fill:#ffc93a;stroke:#b0780a}
+.fw-regions .fw-fog-tab{background:linear-gradient(160deg,#f3f5f8,#dfe5ec);border-style:dashed;border-color:#c7d0da;color:#6b7684}
+.fw-regions .fw-fog-tab small{font-size:14px;color:#8793a1}
+.fw-sign.shut{background:#9b8f80;border-color:#6d6358;box-shadow:0 4px 0 #6d6358;animation:none}
+.fw-mist{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse at 30% 30%,rgba(255,255,255,.55),transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(255,255,255,.5),transparent 55%),rgba(236,240,244,.45);backdrop-filter:saturate(.5)}
+.fw-path-go{margin-top:8px;min-height:40px;padding:6px 14px;font-size:14px}
+.fw-quest-ribbon.fog{background:#e3e8ef;color:#556271}
+.fw-quest-ribbon.done{background:#ffe69a;color:#7a4e00}
+.fw-quest-ribbon .ui-icon{width:15px;height:15px;vertical-align:-2px}
+.fw-stamp{position:relative;width:150px;height:150px;margin:4px auto 6px;border-radius:50%;background:radial-gradient(circle,#fff8dc 58%,#ffd84a 59%,#ffd84a 66%,#fff3c4 67%);box-shadow:0 5px 0 #e0b233;animation:fwStamp .6s cubic-bezier(.2,1.6,.4,1) both}
+.fw-stamp .hw-art{position:absolute;inset:14px 14px 30px}
+.fw-stamp .hw-art img{width:100%;height:100%;object-fit:contain}
+.fw-stamp b{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);padding:2px 10px;border-radius:999px;background:#c9820a;color:#fff;font-size:14px;white-space:nowrap}
+@keyframes fwStamp{from{transform:scale(1.8) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+.fw-done-faces{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin:0 0 8px}
+.fw-done-faces .hw-char{width:38px!important;height:38px!important}
+.fw-fog-clue{display:flex;gap:6px;align-items:flex-start;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:#eef2f6;color:#566373;font-size:14px;font-weight:700;line-height:1.45;text-align:left}
+.fw-fog-clue .ui-icon{flex:none;width:18px;height:18px;margin-top:1px}
+.fw-fog-art{position:relative;width:220px;height:130px;margin:4px auto 8px;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,#cfdbe6,#eef2f5 60%,#dfe8d8)}
+.fw-fog-art span{position:absolute;bottom:14px;display:grid;place-items:center;width:44px;height:52px;border-radius:50% 50% 44% 44%;background:#9aa6b3;color:#eef2f6;font-size:24px;font-weight:900;opacity:.75}
+.fw-fog-art span:nth-of-type(1){left:28px;transform:scale(.85)}
+.fw-fog-art span:nth-of-type(2){left:88px;bottom:22px}
+.fw-fog-art span:nth-of-type(3){left:150px;transform:scale(.8)}
+.fw-fog-art i{position:absolute;z-index:1;height:40px;border-radius:40px;background:rgba(255,255,255,.82);animation:fwFog 7s ease-in-out infinite alternate}
+.fw-fog-art i:nth-of-type(1){left:-30px;top:30px;width:150px}
+.fw-fog-art i:nth-of-type(2){left:90px;top:62px;width:170px;animation-delay:-2.5s}
+.fw-fog-art i:nth-of-type(3){left:10px;top:92px;width:140px;animation-delay:-4.5s}
+@keyframes fwFog{from{transform:translateX(-14px)}to{transform:translateX(18px)}}
+@media (prefers-reduced-motion:reduce){.fw-stage.after.fw-reveal,.fw-pop,.fw-marker,.fw-trail li,.fw-coop,.fw-request.fw-bump,.fw-bubble,.fw-mask,.fw-spot,.fw-placed.fw-shine,.fw-placed.fw-new:after,.fw-sign,.fw-map.fw-enter,.fw-stamp,.fw-fog-art i{animation:none!important}}

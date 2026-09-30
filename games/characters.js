@@ -222,13 +222,92 @@
       ${dot(47,52)}${dot(67,52)}
       <ellipse cx="57" cy="61" rx="5" ry="3.6" fill="${INK}"/>
       <path d="M52 68H62V77H52Z" fill="${C.white}" ${L(2.2)}/><path d="M57 68V77" stroke="${INK}" stroke-width="1.8"/>
-      ${blush(38,64,4.4)}${blush(76,64,4.4)}`}
+      ${blush(38,64,4.4)}${blush(76,64,4.4)}`},
+
+    /* 조개 모으기(g6) — 납품 PNG(assets/art/char)가 기본, 아래 SVG는 standalone 등 예비용 */
+    otter:{name:'수달',face:'22 16 76 76',draw:()=>`
+      <path d="M78 96C98 98 112 90 112 80C112 74 106 74 102 78C96 84 88 86 80 86Z" fill="${C.brownD}" ${S}/>
+      <path d="M32 108C26 86 38 70 58 70C78 70 90 86 84 108Z" fill="${C.brown}" ${S}/>
+      <path d="M44 108C42 90 48 80 58 80C68 80 74 90 72 108Z" fill="${C.cream}"/>
+      ${hatch('M36 90l5 5M76 88l-5 6',C.brownD,2.2)}
+      <path d="M46 96C46 86 70 86 70 96C70 104 64 106 58 106C52 106 46 104 46 96Z" fill="${C.pink}" ${L(2.4)}/>
+      <path d="M58 88V105M51 91l3 13M65 91l-3 13" stroke="${C.pinkD}" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="44" cy="98" rx="6" ry="5" fill="${C.brown}" ${L(2.4)}/><ellipse cx="72" cy="98" rx="6" ry="5" fill="${C.brown}" ${L(2.4)}/>
+      <circle cx="35" cy="36" r="6.5" fill="${C.brown}" ${S}/><circle cx="81" cy="36" r="6.5" fill="${C.brown}" ${S}/>
+      <circle cx="35" cy="36" r="2.6" fill="${C.brownD}"/><circle cx="81" cy="36" r="2.6" fill="${C.brownD}"/>
+      <path d="M58 26C78 26 88 40 88 54C88 69 75 78 58 78C41 78 28 69 28 54C28 40 38 26 58 26Z" fill="${C.brown}" ${S}/>
+      ${hatch('M76 34l5 5M80 43l5 5',C.brownD,2)}
+      <path d="M40 62C40 54 50 52 58 56C66 52 76 54 76 62C76 72 67 76 58 76C49 76 40 72 40 62Z" fill="${C.cream}"/>
+      ${dot(47,49)}${dot(69,49)}
+      <ellipse cx="58" cy="59" rx="5" ry="3.6" fill="${INK}"/>${mouth('M53.5 65q4.5 3.2 9 0',2)}
+      <path d="M44 62l-10-2M44 66l-10 2M72 62l10-2M72 66l10 2" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>
+      ${blush(40,57,4)}${blush(76,57,4)}`},
+
+    crayfish:{name:'가재',face:'26 26 68 68',draw:()=>`
+      <path d="M48 40C42 24 30 16 22 14M72 40C78 24 90 16 98 14" fill="none" ${L(2.4)}/>
+      <path d="M52 96L60 112L68 96ZM46 94L40 108L54 100ZM74 94L80 108L66 100Z" fill="${C.orangeD}" ${L(2.4)}/>
+      <path d="M44 86C44 78 76 78 76 86L72 100C66 104 54 104 48 100Z" fill="${C.red}" ${S}/>
+      <path d="M47 91H73M49 97H71" stroke="${C.redL}" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M34 62C24 60 14 50 16 38C24 40 26 46 30 48C28 40 30 32 36 30C40 40 40 52 38 60Z" fill="${C.red}" ${S}/>
+      <path d="M86 62C96 60 106 50 104 38C96 40 94 46 90 48C92 40 90 32 84 30C80 40 80 52 82 60Z" fill="${C.red}" ${S}/>
+      <path d="M38 66L30 74M36 74L28 82M82 66L90 74M84 74L92 82" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/>
+      <path d="M60 38C78 38 86 50 86 64C86 78 75 86 60 86C45 86 34 78 34 64C34 50 42 38 60 38Z" fill="${C.red}" ${S}/>
+      ${hatch('M74 46l6 6M78 56l5 5',C.orangeD,2.2)}
+      <circle cx="51" cy="56" r="6" fill="${C.white}" ${L(2.2)}/><circle cx="69" cy="56" r="6" fill="${C.white}" ${L(2.2)}/>
+      ${dot(51.5,57,2.6)}${dot(68.5,57,2.6)}
+      ${mouth('M55 68q5 3.6 10 0',2.2)}${blush(44,66,4)}${blush(76,66,4)}`},
+
+    /* 달팽이 정원길(g7) — 납품 PNG가 기본, SVG는 예비용 */
+    snail:{name:'달팽이',face:'10 22 64 64',draw:()=>`
+      <path d="M14 104C12 96 20 92 30 92H96C106 92 112 98 108 106C104 110 96 110 88 110H24C18 110 15 108 14 104Z" fill="${C.leaf}" ${S}/>
+      <path d="M72 94C58 96 48 86 48 72C48 54 62 42 80 42C98 42 110 56 110 72C110 86 100 96 86 96Z" fill="${C.orange}" ${S}/>
+      <path d="M80 86C70 86 62 80 62 70C62 60 70 54 79 54C88 54 94 60 94 68C94 75 89 80 82 80C77 80 73 76 73 71C73 67 76 64 80 64" fill="none" stroke="${C.orangeD}" stroke-width="3.4" stroke-linecap="round"/>
+      ${hatch('M96 52l6 6M100 62l6 5',C.yellowD,2.2)}
+      <path d="M22 94C18 76 22 56 30 44C36 36 50 36 54 46C58 58 54 80 52 94Z" fill="${C.leaf}" ${S}/>
+      <path d="M32 42C30 32 26 26 20 24M46 40C48 30 52 24 58 22" fill="none" ${L(2.4)}/>
+      <circle cx="20" cy="24" r="3.6" fill="${INK}"/><circle cx="58" cy="22" r="3.6" fill="${INK}"/>
+      <path d="M40 38C28 38 20 48 20 60C20 74 30 82 40 82C50 82 58 74 58 60C58 48 52 38 40 38Z" fill="${C.leaf}" ${S}/>
+      ${hatch('M24 70l6 4M26 78l6 3',C.greenD,2)}
+      ${dot(33,58)}${dot(48,58)}${mouth('M36 67q4 3 8 0')}${blush(28,66,4)}${blush(53,66,4)}`},
+
+    turtle:{name:'거북이',face:'32 16 60 60',draw:()=>`
+      <path d="M26 98c-6 6-4 12 4 12h10l2-10ZM94 98c6 6 4 12-4 12H80l-2-10Z" fill="${C.mint}" ${L(2.4)}/>
+      <path d="M18 86C18 62 36 48 60 48C84 48 102 62 102 86C102 94 96 98 88 98H32C24 98 18 94 18 86Z" fill="${C.greenD}" ${S}/>
+      <path d="M44 56L52 70H68L76 56M52 70L46 90M68 70L74 90M30 78L46 80M90 78L74 80" fill="none" stroke="${C.leaf}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18 88H102" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M62 50C64 36 72 26 82 26C94 26 100 34 100 44C100 54 92 60 82 60C74 60 66 56 62 50Z" fill="${C.mint}" ${S}/>
+      <path d="M68 24C72 16 82 14 88 18C84 24 76 26 68 24Z" fill="${C.yellow}" ${L(2.2)}/>
+      ${dot(78,40)}${dot(92,40)}${mouth('M81 49q4 3 8 0')}${blush(72,47,4)}${blush(97,47,3.6)}`},
+
+    /* 애벌레 홀짝 잎길(g8) — 납품 PNG가 기본, SVG는 예비용 */
+    caterpillar:{name:'애벌레',face:'54 20 60 60',draw:()=>{
+      const seg=(x,y,r,fill)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${S}/><path d="M${x-r*.7} ${y-r*.2}h${r*1.4}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+      return `
+      <path d="M18 104v6M34 104v6M50 104v6M66 104v6" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+      ${seg(18,92,12,C.yellow)}${seg(34,88,14,C.white)}${seg(51,84,15,C.yellow)}${seg(66,76,15,C.white)}
+      <path d="M74 38C72 26 66 20 60 20M94 38C96 26 102 20 108 20" fill="none" ${L(2.4)}/>
+      <circle cx="60" cy="20" r="4" fill="${C.orange}" ${L(2)}/><circle cx="108" cy="20" r="4" fill="${C.orange}" ${L(2)}/>
+      <path d="M84 34C100 34 110 45 110 58C110 71 99 78 84 78C69 78 58 71 58 58C58 45 68 34 84 34Z" fill="${C.yellow}" ${S}/>
+      ${hatch('M98 40l6 6M102 50l5 5',C.yellowD,2.2)}
+      ${dot(76,55)}${dot(92,55)}${mouth('M80 63q4 3.2 8 0')}${blush(70,63,4.2)}${blush(98,63,4.2)}`;}},
+
+    grasshopper:{name:'메뚜기',face:'54 16 56 56',draw:()=>`
+      <path d="M30 76L14 58L8 100M44 84L40 108M60 84L62 108" fill="none" stroke="${C.greenD}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22 66C18 58 22 50 30 52L50 70L38 80Z" fill="${C.green}" ${S}/>
+      <path d="M16 82C16 70 30 62 50 62H76C84 62 88 68 86 76C84 84 76 88 66 88H34C24 88 16 88 16 82Z" fill="${C.leaf}" ${S}/>
+      <path d="M24 78h40M30 72v14M42 70v17M54 70v17" stroke="${C.greenD}" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <path d="M28 64C44 52 64 52 76 60L60 70Z" fill="${C.green}" ${L(2.4)} opacity=".95"/>
+      <path d="M76 30C74 18 66 12 58 12M92 30C96 18 104 12 112 14" fill="none" ${L(2.2)}/>
+      <path d="M82 26C98 26 106 38 106 50C106 62 96 70 82 70C68 70 60 62 60 50C60 38 68 26 82 26Z" fill="${C.leaf}" ${S}/>
+      ${hatch('M94 32l6 6M98 42l5 5',C.greenD,2)}
+      <ellipse cx="73" cy="47" rx="5.5" ry="6.5" fill="${C.white}" ${L(2)}/><ellipse cx="91" cy="47" rx="5.5" ry="6.5" fill="${C.white}" ${L(2)}/>
+      ${dot(73.5,48,2.6)}${dot(90.5,48,2.6)}${mouth('M78 58q4 3 8 0')}${blush(67,57,3.8)}${blush(97,57,3.8)}`}
   };
 
   /* 납품받은 그림(assets/art/char)이 있는 캐릭터는 PNG를 쓰고, 없으면 SVG 임시 그림을 쓴다.
      얼굴 보기는 납품된 얼굴 아이콘(테두리 없음)을 쓴다. */
   const ART_BASE='assets/art/char/';
-  const ART_IDS=new Set(['hopple','squirrel','hedgehog','raccoon','owl','bluebird','frog','duck','butterfly','ladybug','bee','ant','beaver']);
+  const ART_IDS=new Set(['hopple','squirrel','hedgehog','raccoon','owl','bluebird','frog','duck','butterfly','ladybug','bee','ant','beaver','otter','crayfish','snail','turtle','caterpillar','grasshopper']);
   /* AI 스타일 테스트(assets/art/style-test-v1)를 앱에서 확인하는 스위치.
      true: 호플이·개구리를 테스트 그림으로 보여준다. 기쁨·안내 포즈가 아직 없어 전신 그림으로 대신한다.
      false: 기존 납품 그림으로 되돌린다. */
@@ -238,7 +317,7 @@
   /* 테스트 그림 중 받은 포즈. 없는 포즈는 전신 그림으로 대신한다. */
   const ART_TEST_POSES={hopple:['full','happy'],frog:['full']};
   /* 같은 파일 이름으로 그림을 바꿔 넣으면 이 숫자를 올린다. 브라우저가 예전 그림을 기억하지 않게 한다. */
-  const ART_VER='40';
+  const ART_VER='41';
   function artMarkup(id,view){
     const test=ART_TEST_ON&&ART_TEST_IDS.has(id);
     const base=test?ART_TEST_BASE:ART_BASE;

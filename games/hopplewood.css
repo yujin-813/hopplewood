@@ -127,6 +127,7 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .pk-buy small{font-size:12px;color:#6b7571}
 .pk-buy>div{flex:1;min-width:0;white-space:nowrap}
 .pk-buy .btn{flex:none;width:auto;min-width:140px;margin:0;padding:0 22px}
+.pk-buy .btn:disabled{opacity:.5;filter:grayscale(.35);cursor:default}
 .pk-price{display:flex;align-items:baseline;gap:8px;padding-top:8px;border-top:1px dashed #e6d7b5}
 .pk-price b{font-size:24px;color:#1d2925}.pk-price small{font-size:12px;color:#6b7571}
 .pk-code-box{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:16px;background:#fff}
@@ -142,3 +143,67 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .parent-privacy-link{display:inline-flex;align-items:center;min-height:40px;margin-top:8px;color:#356d4c;font-size:13px;font-weight:900;text-underline-offset:3px}
 .pr-card.locked{opacity:.7}
 @media(max-width:420px){.pk-code-box>div{flex-direction:column}.pk-code-box .btn{width:100%}}
+
+/* ---------- 아이 기록: 숲 친구 도감 · 게임별 배지 · 나의 최고 기록 · 선물 모음 ---------- */
+#progressScreen .stat-grid span .ui-icon{width:18px;height:18px}
+.rec-book{display:grid;gap:10px}
+.rec-region{padding:12px;border-radius:20px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-region>b{display:block;margin:0 2px 8px;font-size:14px;color:#2f4a3f}
+.rec-friends{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.rec-friend{min-width:0!important;min-height:0!important;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:16px;background:#f3faf1;border:0}
+.rec-friend .rec-art{width:52px;height:52px;border-radius:50%;background:#fff;overflow:hidden;display:grid;place-items:center}
+.rec-friend .rec-art>*{width:100%;height:100%}
+.rec-friend small{font-size:12px;font-weight:800;color:#3b5249;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.rec-friend.unmet{background:#f1f1ec}
+.rec-friend.unmet .rec-art>*{filter:brightness(0);opacity:.18}
+.rec-friend.unmet small{color:#a3a39a}
+.rec-badges,.rec-list{display:grid;gap:8px}
+.rec-badge-row{display:grid;grid-template-columns:40px 1fr;grid-template-rows:auto auto;column-gap:10px;row-gap:6px;align-items:center;padding:10px 12px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-badge-row>b{font-size:14px;color:#24332e}
+.rec-face{width:40px;height:40px;border-radius:50%;background:#f3faf1;overflow:hidden;display:grid;place-items:center;grid-row:span 2}
+.rec-face>*{width:100%;height:100%}
+.rec-badge-set{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rec-badge{min-width:0!important;min-height:0!important;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:14px;background:#f1f1ec;border:0;color:#a3a39a}
+.rec-badge span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e4e4dc}
+.rec-badge .ui-icon{width:17px;height:17px}
+.rec-badge small{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.rec-badge.on{background:#fff7dc;color:#7a5a12}
+.rec-badge.on span{background:#ffd95a;color:#7a5a12;box-shadow:0 2px 0 #e0a100}
+.rec-row{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-row .rec-face{grid-row:auto}
+.rec-name{min-width:0;display:flex;flex-direction:column}
+.rec-name b{font-size:14px;color:#24332e}
+.rec-name small{font-size:12px;color:#6f7975}
+.rec-best{display:flex;flex-direction:column;align-items:flex-end;font-size:12px;color:#6f7975}
+.rec-best b{font-family:'Jua',system-ui,sans-serif;font-size:24px;font-weight:400;color:#1f5b45;line-height:1}
+.rec-best em{font-style:normal;font-size:12px;color:#a3a39a}
+.rec-gifts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:12px;border-radius:20px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-gift{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.rec-gift img{width:100%;aspect-ratio:1;object-fit:contain}
+.rec-gift small{font-size:10px;font-weight:800;color:#5b4a36;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.rec-gift.unmet img{filter:brightness(0);opacity:.15}
+.rec-gift.unmet small{color:#a3a39a}
+.win-news{list-style:none;margin:6px 0 10px;padding:0;display:grid;gap:6px}
+.win-news[hidden]{display:none}
+.win-news li{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;border-radius:14px;background:#fff7dc;color:#6a4b1c;font-size:14px;font-weight:800}
+.win-news li b{color:#b26b00}
+.win-news .ui-icon{width:18px;height:18px;color:#e0a100}
+@media (max-width:360px){.rec-gifts{grid-template-columns:repeat(4,1fr)}}
+
+/* 확장 암시 (ADR-0005): 놀이 목록의 안개 카드 · 도감의 지역 완성 도장과 안개 너머 */
+.experience-card.soon{background:linear-gradient(180deg,#fbfcfd,#f1f4f7);border-style:dashed;box-shadow:none}
+.cover-soon{background:linear-gradient(180deg,#cfdbe6,#eef2f5 65%,#dfe8d8)}
+.cover-soon .soon-q{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:grid;place-items:center;width:58px;height:68px;border-radius:50% 50% 44% 44%;background:#9aa6b3;color:#eef2f6;font-size:32px;font-weight:900;opacity:.75}
+.cover-soon i{position:absolute;z-index:1;height:34px;border-radius:34px;background:rgba(255,255,255,.8);animation:soonFog 7s ease-in-out infinite alternate}
+.cover-soon i:nth-of-type(1){left:-20px;top:30px;width:120px}
+.cover-soon i:nth-of-type(2){right:-24px;top:66px;width:130px;animation-delay:-3s}
+@keyframes soonFog{from{transform:translateX(-10px)}to{transform:translateX(12px)}}
+.experience-card.soon strong,.experience-card.soon p{color:#6f7a86}
+.experience-card.soon .game-tags span{background:#e8edf2;color:#5d6875}
+.rec-done{display:inline-flex;align-items:center;gap:2px;margin-left:6px;padding:2px 8px;border-radius:999px;background:#fff1c2;color:#8a5a00;font-size:12px;vertical-align:1px}
+.rec-done .ui-icon{width:12px;height:12px;fill:#ffc93a}
+.rec-fog{background:linear-gradient(160deg,#f5f7f9,#e7ecf1);border-style:dashed}
+.rec-fog>b{display:flex!important;align-items:center;gap:5px;color:#5d6875!important}
+.rec-fog>b .ui-icon{width:16px;height:16px}
+.rec-fog p{margin:0 2px;font-size:14px;font-weight:700;color:#6b7684;line-height:1.45}
+@media (prefers-reduced-motion:reduce){.cover-soon i{animation:none}}

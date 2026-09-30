@@ -1,6 +1,8 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
-const CACHE = 'hopplewood-v62';
-const V = '?v=62';
+importScripts('./games/narration-manifest.js');
+/* 캐시 이름과 아래 파일 버전(?v=내용 해시)은 scripts/sync-games.cjs가 만든다. 손으로 고치지 않는다. */
+const CACHE = 'hopplewood-2b2a933f'; // cache:name
+const NARRATION = Object.values(self.HW_NARRATION_FILES || {}).map(path => './' + path.replace(/^\.\//, ''));
 const CORE = [
   './',
   './index.html',
@@ -10,29 +12,42 @@ const CORE = [
   './privacy.html',
   './manifest.webmanifest',
   './assets/fonts/Jua-Regular.ttf',
-  './games/characters.js' + V,
-  './games/funnel.js' + V,
-  './games/platform.js' + V,
-  './games/pack.js' + V,
-  './games/music.js' + V,
-  './games/hopplewood.css' + V,
-  './games/face-game.css' + V,
-  './games/face-game.js' + V,
-  './games/number-game.css' + V,
-  './games/number-game.js' + V,
-  './games/block-game.css' + V,
-  './games/block-game.js' + V,
-  './games/forest.css' + V,
-  './games/forest.js' + V,
-  './games/parent-guide.css' + V,
-  './games/parent-guide.js' + V,
-  './games/mom-voice.css' + V,
-  './games/mom-voice.js' + V,
+  // assets:start
+  './games/characters.js?v=3ac7585e',
+  './games/funnel.js?v=f9addf59',
+  './games/narration-manifest.js?v=0a1916a0',
+  './games/platform.js?v=060dbd63',
+  './games/pack.js?v=60e586ec',
+  './games/music.js?v=b4e0267c',
+  './games/registry.js?v=48965a25',
+  './games/g1-route/game.js?v=9b85c809',
+  './games/g2-pattern/game.js?v=5d2f7ed0',
+  './games/g3-face/game.js?v=42eb994a',
+  './games/g4-number/game.js?v=0c649601',
+  './games/g5-beaver/game.js?v=29055a32',
+  './games/g6-shell/game.js?v=bc51fd0c',
+  './games/g7-garden/game.js?v=5fc4400e',
+  './games/g8-leaf/game.js?v=068a0ce6',
+  './games/hopplewood.css?v=a54fd31b',
+  './games/parent-guide.css?v=120296e0',
+  './games/g3-face/game.css?v=8bc602b4',
+  './games/g4-number/game.css?v=9235f796',
+  './games/g5-beaver/game.css?v=ed58f177',
+  './games/g6-shell/game.css?v=b73b4fe3',
+  './games/g7-garden/game.css?v=6c5dfef4',
+  './games/g8-leaf/game.css?v=c61b1d80',
+  './games/forest.css?v=1f75bdb9',
+  './games/mom-voice.css?v=e60e8825',
+  './games/parent-guide.js?v=ca71c66a',
+  './games/forest.js?v=4f83d801',
+  './games/mom-voice.js?v=764fc6fb',
+  // assets:end
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-512-maskable.png',
   './icons/apple-touch-icon-180.png',
-  './icons/favicon-32.png'
+  './icons/favicon-32.png',
+  ...NARRATION
 ];
 
 self.addEventListener('install', (e) => {
