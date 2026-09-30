@@ -158,6 +158,13 @@
   }
   /* 가족 목소리: mom-voice.js가 hwMomVoicePlan(문장)을 주면, 녹음된 문장은 녹음으로, 나머지는 기계 목소리로 이어 읽는다 */
   let sayRun=0, clipAudio=null;
+  /* 앱이 스스로 다음 문장을 이어 말할 때 앞 말이 잘리지 않게, 지금 말이 끝나면 할 일을 모아 둔다 */
+  let speaking=false, afterSpeech=[], speakTimer=null;
+  function speechDone(run){
+    if(run!==sayRun)return;
+    speaking=false; clearTimeout(speakTimer);
+    const todo=afterSpeech; afterSpeech=[]; todo.forEach(f=>{ try{ f(); }catch(e){} });
+  }
   function stopClip(){ if(clipAudio){ try{ clipAudio.pause(); }catch(e){} clipAudio.onended=clipAudio.onerror=null; } }
   function speakTTS(words,onend){
     if(!canSpeak()){ if(onend)onend(); return; }
@@ -167,7 +174,8 @@
   function playPlan(plan){
     const run=++sayRun; let i=0;
     const next=()=>{
-      if(run!==sayRun||i>=plan.length)return;
+      if(run!==sayRun)return;
+      if(i>=plan.length){ speechDone(run); return; }
       const item=plan[i++];
       if(item.url){
         if(!clipAudio)clipAudio=new Audio();
@@ -184,15 +192,23 @@
     if(!settings.voice&&!force)return false;
     const words=plain(text); if(!words)return false;
     if(window.hwMusic)hwMusic.duck(Math.min(9000,1200+words.length*90));
-    sayRun++; stopClip();
+    const run=++sayRun; stopClip();
+    /* 새 문장이 시작되면 이어 말하려던 것은 버린다(아이가 다른 곳으로 넘어간 것). 끝 신호가 안 오면 길이만큼 기다렸다가 끝난 것으로 본다 */
+    afterSpeech=[]; speaking=true; clearTimeout(speakTimer);
+    speakTimer=setTimeout(()=>speechDone(run),Math.min(12000,1500+words.length*250));
     try{
       const familyPlan=typeof window.hwMomVoicePlan==='function'?window.hwMomVoicePlan(words):null;
       const plan=familyPlan?addNarrationFallback(familyPlan):narrationPlan(words);
       if(plan){ stopSpeech(); playPlan(plan); return true; }
     }catch(e){}
-    if(!canSpeak())return false;
+    if(!canSpeak()){ speechDone(run); return false; }
     if(!koVoice)pickVoice();
-    try{ speakWith(koVoice,words); return true; }catch(e){ return false; }
+    try{ speakWith(koVoice,words,()=>speechDone(run)); return true; }catch(e){ speechDone(run); return false; }
+  }
+  /* 앞 문장이 끝난 뒤에 말하기. 말하는 중이 아니면 바로 말한다 */
+  function hwSayThen(text,force){
+    if(speaking){ afterSpeech.push(()=>hwSay(text,force)); return true; }
+    return hwSay(text,force);
   }
   /* 녹음 화면의 "예시 듣기": 녹음 대신 늘 기계 목소리로 */
   function hwSayTTS(text){ sayRun++; stopClip(); const words=plain(text); if(!words)return; try{ speakTTS(words); }catch(e){} }
@@ -207,7 +223,7 @@
     try{ speakWith(v,'안녕! 나는 호플이야. 오늘도 같이 재미있게 놀자!'); }catch(e){}
   }
   function hwSetVoice(name){ settings.voiceName=name||''; saveSettings(); pickVoice(); }
-  function hwHush(){ sayRun++; stopClip(); stopSpeech(); }
+  function hwHush(){ sayRun++; stopClip(); stopSpeech(); speaking=false; afterSpeech=[]; clearTimeout(speakTimer); }
   function hwCanSpeak(){ return canSpeak(); }
 
   function hasBatchim(word){
@@ -358,6 +374,6 @@
   function hwLogClear(){ try{ localStorage.removeItem(LOG_KEY); }catch(e){} }
 
   window.HW_SETTINGS=settings;
-  Object.assign(window,{hwSfx,hwSay,hwSayTTS,hwPlainText:plain,hwSaveSettings:saveSettings,hwHush,hwCanSpeak,hwJosa,hwToggleSetting,hwReadJSON:readJSON,hwStore:storageSet,hwSyncSettings:syncSettingButtons,hwIcon,hwSetupMarkup,hwCoach,hwCoachNext,hwCoachDone,hwLogSession,hwLogSessions,hwLogClear,hwVoiceOptions,hwPreviewVoice,hwSetVoice});
+  Object.assign(window,{hwSfx,hwSay,hwSayThen,hwSayTTS,hwPlainText:plain,hwSaveSettings:saveSettings,hwHush,hwCanSpeak,hwJosa,hwToggleSetting,hwReadJSON:readJSON,hwStore:storageSet,hwSyncSettings:syncSettingButtons,hwIcon,hwSetupMarkup,hwCoach,hwCoachNext,hwCoachDone,hwLogSession,hwLogSessions,hwLogClear,hwVoiceOptions,hwPreviewVoice,hwSetVoice});
   document.addEventListener('DOMContentLoaded',syncSettingButtons);
 })();

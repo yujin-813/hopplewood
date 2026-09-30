@@ -1,7 +1,7 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
 importScripts('./games/narration-manifest.js');
 /* 캐시 이름과 아래 파일 버전(?v=내용 해시)은 scripts/sync-games.cjs가 만든다. 손으로 고치지 않는다. */
-const CACHE = 'hopplewood-2b2a933f'; // cache:name
+const CACHE = 'hopplewood-b37b4402'; // cache:name
 const NARRATION = Object.values(self.HW_NARRATION_FILES || {}).map(path => './' + path.replace(/^\.\//, ''));
 const CORE = [
   './',
@@ -15,8 +15,8 @@ const CORE = [
   // assets:start
   './games/characters.js?v=3ac7585e',
   './games/funnel.js?v=f9addf59',
-  './games/narration-manifest.js?v=0a1916a0',
-  './games/platform.js?v=060dbd63',
+  './games/narration-manifest.js?v=190375a1',
+  './games/platform.js?v=039dd1e7',
   './games/pack.js?v=60e586ec',
   './games/music.js?v=b4e0267c',
   './games/registry.js?v=48965a25',
@@ -39,7 +39,7 @@ const CORE = [
   './games/forest.css?v=1f75bdb9',
   './games/mom-voice.css?v=e60e8825',
   './games/parent-guide.js?v=ca71c66a',
-  './games/forest.js?v=4f83d801',
+  './games/forest.js?v=ef069f00',
   './games/mom-voice.js?v=764fc6fb',
   // assets:end
   './icons/icon-192.png',

@@ -168,5 +168,11 @@ globalThis.HW_NARRATION_FILES = {
   "도토리를 옮길 수 있게 길을 잘 보고 건너가 볼래?": "assets/audio/narration/line-064bcd3a.m4a",
   "비바람에 사과나무 잎이 다 떨어졌어.": "assets/audio/narration/line-e98b1eb9.m4a",
   "홀수와 짝수를 맞히며 사과까지 가 줄래?": "assets/audio/narration/line-6b14cd5b.m4a",
-  "비바람이 남긴 안개가 자욱해요.": "assets/audio/narration/line-2f0600f4.m4a"
+  "비바람이 남긴 안개가 자욱해요.": "assets/audio/narration/line-2f0600f4.m4a",
+  "반짝이는 자리 중 하나를 눌러요.": "assets/audio/narration/line-2c2564a5.m4a",
+  "선물 자리가 꽉 찼어요.": "assets/audio/narration/line-395b4c40.m4a",
+  "바꿔 놓을 선물을 눌러요.": "assets/audio/narration/line-adf8e13e.m4a",
+  "아직 놓은 선물이 없어요.": "assets/audio/narration/line-c632699b.m4a",
+  "퀘스트를 해결하면 선물을 받아요!": "assets/audio/narration/line-da31f121.m4a",
+  "읽어주기를 켰어요.": "assets/audio/narration/line-9ff56a3e.m4a"
 };

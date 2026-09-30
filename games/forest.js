@@ -518,7 +518,7 @@
     sheet.innerHTML=`<p>고마워! 선물을 하나 골라 숲에 놓아 줘.</p><div class="fw-gifts">${gifts.map(id=>`<button class="fw-gift" onclick="hwForest.pickGift('${id}')"><span>${giftImg(id)}</span><small>${GIFTS[id].name}</small></button>`).join('')}</div>`;
     sheet.hidden=false;
     sheet.scrollIntoView({block:'center',behavior:'smooth'});
-    hwSay('선물을 하나 골라 숲에 놓아 줘.');
+    hwSayThen('선물을 하나 골라 숲에 놓아 줘.');
   }
   function pickGift(id){
     if(!state.pendingGifts||!state.pendingGifts.includes(id))return;
@@ -580,7 +580,7 @@
       <div class="fw-done-faces" aria-hidden="true">${faces.map(f=>hwChar(f,'face')).join('')}</div>
       <p class="fw-fog-clue">${hwIcon('cloud')} ${fogClue()}</p>
       <button class="btn blue big" onclick="hwForest.afterMilestone()">좋아!</button>`);
-    hwSay(line+' '+fogClue());
+    hwSayThen(line+' '+fogClue());
   }
   function showRegionOpened(id){
     const R=REGIONS[id], line=R.unlock.opened;
@@ -591,7 +591,7 @@
       <p class="fw-quest-ask">${R.name}에 새 친구들이 기다리고 있어요.</p>
       <button class="btn blue big" onclick="hwForest.closeQuest();hwForest.goRegion('${id}')">${R.short}에 가 볼래!</button>
       <button class="btn ghost" onclick="hwForest.afterMilestone()">나중에</button>`);
-    hwSay(line);
+    hwSayThen(line);
   }
   function afterMilestone(){ closeFw(); if(!milestone())nextEvent(true); }
   /* 안개 너머: 지도 대신 이야기 카드. 진행에 따라 단서가 바뀐다 */
@@ -612,7 +612,7 @@
     const q=currentRequest(), box=el('fwRequest');
     if(q.locked)return;
     if(box){ box.classList.remove('fw-bump'); void box.offsetWidth; box.classList.add('fw-bump'); box.scrollIntoView({block:'nearest',behavior:'smooth'}); }
-    hwSay((q.coop?'부모님과 함께하는 퀘스트가 생겼어!':'새 퀘스트가 생겼어!')+' 숲에서 느낌표를 눌러 봐!');
+    hwSayThen((q.coop?'부모님과 함께하는 퀘스트가 생겼어!':'새 퀘스트가 생겼어!')+' 숲에서 느낌표를 눌러 봐!');
     const m=document.querySelector('.fw-marker'); if(m)m.classList.add('fw-pop');
   }
 
