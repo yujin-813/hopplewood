@@ -57,6 +57,15 @@
     Object.assign(row,safeData(data));
     list.push(row);
     write(EVENT_KEY,list.slice(-KEEP));
+    forward(event,safeData(data));
+  }
+  /* 웹에서만: 이용 단계를 익명 통계(ga.js)로도 넘긴다. 스토어 앱에서는 ga.js가 동작하지 않아 아무 데도 가지 않는다.
+     넘기는 것은 아래 단계 이름과 게임 번호·난이도·결과·버튼 종류뿐이다 */
+  const SHARED=new Set(['landing_view','parent_guide_view','store_purchase_info_view','share_click','app_open','game_open','game_complete','paywall_view','getapp_card_view','getapp_open','store_click','checkout_guide_click','install_click','install_complete']);
+  function forward(event,data){
+    if(!SHARED.has(event))return;
+    if(typeof window.hwGA==='function'){ window.hwGA(event,data); return; }
+    const q=window.hwGAQueue=window.hwGAQueue||[]; if(q.length<40)q.push([event,data]);
   }
   function hwFunnelEvents(){ const list=read(EVENT_KEY,[]); return Array.isArray(list)?list:[]; }
   function hwFunnelSummary(){
