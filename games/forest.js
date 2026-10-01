@@ -328,7 +328,23 @@
       return `<li data-state="${done?'done':(now?'now':'lock')}"${q.coop?' data-coop="1"':''} aria-label="${i+1}번 퀘스트 ${done?q.title+' 완료':(now?q.title+' 진행 중':'아직 잠김')}">${done?hwChar(q.who==='hopple'?'hopple':q.who,'face'):(now?'!':hwIcon('lock'))}</li>`;
     }).join('');
   }
-  function render(){ renderMap(); renderRequest(); }
+  /* 웹 무료판에서 첫 게임을 끝내면 "부모님께 보여 주세요" 카드를 한 번 보여 준다. 받기 안내는 보호자 확인 뒤에 나온다(pack.js) */
+  const GETAPP_KEY='hw_getapp_v1';
+  function getAppState(){ try{ return JSON.parse(localStorage.getItem(GETAPP_KEY)||'{}')||{}; }catch(e){ return {}; } }
+  function playsSoFar(){ try{ return (JSON.parse(localStorage.getItem('hw_progress_v1')||'{}')||{}).plays||0; }catch(e){ return 0; } }
+  function renderParentCard(){
+    const box=el('fwParentCard'); if(!box)return;
+    const show=typeof hwGetAppShown==='function'&&hwGetAppShown()&&playsSoFar()>=1&&!getAppState().closed&&!placing&&!state.pendingGifts;
+    if(!show){ box.hidden=true; box.innerHTML=''; return; }
+    if(box.hidden&&typeof hwFunnel==='function')hwFunnel('getapp_card_view',{channel:'web_app'});
+    box.hidden=false;
+    box.innerHTML=`<span class="fw-parent-art" aria-hidden="true">${hoppleArt('celebrate')}</span>
+      <div><b>재미있었나요?</b><small>부모님께 이 화면을 보여 주세요.</small></div>
+      <button type="button" class="btn blue" onclick="hwGetAppOpen()">${hwIcon('parent')} 부모님 확인</button>
+      <button type="button" class="fw-parent-close" onclick="hwForest.closeParentCard()" aria-label="닫기">×</button>`;
+  }
+  function closeParentCard(){ try{ localStorage.setItem(GETAPP_KEY,JSON.stringify({closed:true,t:Date.now()})); }catch(e){} renderParentCard(); }
+  function render(){ renderMap(); renderRequest(); renderParentCard(); }
 
   /* ---------- 부탁 시작과 끝 ---------- */
   /* 숲 퀘스트는 짧게: 게임 약속의 shortRun(on)이 있으면 판 수를 줄였다가 끝나면 되돌린다 */
@@ -641,6 +657,7 @@
       </header>
       <div class="fw-stats"><span>${hwIcon('users')} 숲 친구 <b id="fwFriendCount">0</b></span><span>${hwIcon('house')} 퀘스트 <b id="fwAreaCount">0</b></span><button type="button" class="fw-gift-chip" id="fwGiftChip" onclick="hwForest.showGifts()" aria-label="내 선물 찾기">${hwIcon('sparkles')} 내 선물 <b id="fwGiftCount">0</b></button></div>
       <section class="fw-request" id="fwRequest" aria-live="polite"></section>
+      <section class="fw-parent-card" id="fwParentCard" hidden></section>
       <div class="fw-regions" id="fwRegions" role="tablist" aria-label="지역"></div>
       <ol class="fw-trail" id="fwTrail" aria-label="숲 퀘스트 길"></ol>
       <div class="fw-map" id="fwMap" role="img" aria-label="호플우드 숲 지도"></div>
@@ -657,7 +674,7 @@
     render();
   }
 
-  window.hwForest={mount,showForest,refresh:()=>render(),openQuest,closeQuest:closeStoryOrQuest,startQuest,retry,home,afterResult,pickGift,placeAt,showGifts,
+  window.hwForest={closeParentCard,mount,showForest,refresh:()=>render(),openQuest,closeQuest:closeStoryOrQuest,startQuest,retry,home,afterResult,pickGift,placeAt,showGifts,
     isQuestActive:()=>Boolean(active), abortQuest:endQuest,
     goRegion,showFog,afterMilestone,showIntro,nextIntro,skipIntro,INTRO,
     /* 아이 기록 화면의 숲 친구 도감·선물 모음 */

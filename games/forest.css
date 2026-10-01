@@ -229,3 +229,12 @@ body.fw-coop-on .screen.on{padding-bottom:84px}
 .fw-fog-art i:nth-of-type(3){left:10px;top:92px;width:140px;animation-delay:-4.5s}
 @keyframes fwFog{from{transform:translateX(-14px)}to{transform:translateX(18px)}}
 @media (prefers-reduced-motion:reduce){.fw-stage.after.fw-reveal,.fw-pop,.fw-marker,.fw-trail li,.fw-coop,.fw-request.fw-bump,.fw-bubble,.fw-mask,.fw-spot,.fw-placed.fw-shine,.fw-placed.fw-new:after,.fw-sign,.fw-map.fw-enter,.fw-stamp,.fw-fog-art i{animation:none!important}}
+
+/* 웹 무료판: 첫 게임 뒤 "부모님께 보여 주세요" 카드 */
+.fw-parent-card{position:relative;display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;margin-top:10px;padding:10px 34px 10px 12px;border-radius:18px;background:#f3f8ff;border:2px solid #cfe0f5}
+.fw-parent-card[hidden]{display:none}
+.fw-parent-card .fw-parent-art img,.fw-parent-card .fw-parent-art svg{width:48px;height:48px;object-fit:contain}
+.fw-parent-card b{display:block;font-size:15px}
+.fw-parent-card small{display:block;font-size:12px;color:#51627a}
+.fw-parent-card .btn{padding:9px 12px;font-size:13px;white-space:nowrap}
+.fw-parent-close{position:absolute;top:4px;right:6px;width:26px;height:26px;border:0;background:none;font-size:20px;line-height:1;color:#7b8aa0;cursor:pointer}

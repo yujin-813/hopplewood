@@ -250,13 +250,54 @@
         <div><b>${purchase.price}</b><small>1회 구매 · 구독 아님</small></div>
         <button type="button" class="btn blue big" onclick="hwPackBuy()" ${purchase.busy||web||nativeUnavailable?'disabled':''}>${purchase.busy?'확인 중…':'구매하기'}</button>
       </div>
-      ${web?`<p class="pk-msg" role="status">웹은 무료 미리보기예요. 정식 앱 출시 후 App Store · Google Play의 부모님 결제로 열 수 있어요.</p>`:''}
+      ${web?`<p class="pk-msg" role="status">웹은 무료 미리보기예요. 놀이팩은 앱의 부모님 메뉴에서 스토어 결제로 열 수 있어요.</p>`:''}
       ${nativeUnavailable?`<p class="pk-msg" role="status">${nativeNotice}</p>`:''}
       ${purchase.channel==='mock'?`<p class="pk-msg mock">개발용 가짜 결제 모드 (${purchase.mode})</p>`:''}
       ${packMsg?`<p class="pk-msg" role="status">${packMsg}</p>`:''}
       ${!web?`<button type="button" class="pk-restore" onclick="hwPackRestore()" ${purchase.busy?'disabled':''}>이미 구매했어요 · 구매 복원</button>`:''}
+    </section>`+(web?hwGetAppMarkup():'');
+  }
+  /* ---------- 웹 무료판: 앱 받기 안내 (보호자 확인 뒤에만 보인다) ----------
+     iPhone·iPad는 App Store, Android는 Google Play 공개 전까지 인스타그램에서 출시 소식을 받는다.
+     Google Play가 공개되면 ANDROID_STORE에 주소를 넣는다. */
+  const IOS_STORE='https://apps.apple.com/kr/app/id6813280139';
+  const ANDROID_STORE='';
+  const INSTAGRAM='https://www.instagram.com/hopplewood_play/';
+  function hwDevice(){
+    const ua=navigator.userAgent||'';
+    if(/Android/i.test(ua))return 'android';
+    if(/iPhone|iPad|iPod/i.test(ua)||(/Macintosh/i.test(ua)&&navigator.maxTouchPoints>1))return 'ios';
+    return 'desktop';
+  }
+  function hwGetAppShown(){ return !IS_NATIVE&&!BETA_OPEN; }
+  function hwGetAppMarkup(){
+    if(!hwGetAppShown())return '';
+    const dev=hwDevice();
+    const link=(href,kind,label,cls)=>`<a class="btn ${cls} big ga-btn" href="${href}" target="_blank" rel="noopener" onclick="hwGetAppClick('${kind}')">${label}</a>`;
+    const ios=`<div class="ga-row"><b>iPhone · iPad</b><p>App Store에서 무료로 받아요. 게임 2개는 계속 무료예요.</p>${link(IOS_STORE,'ios','App Store에서 받기','blue')}</div>`;
+    const android=ANDROID_STORE
+      ?`<div class="ga-row"><b>Android</b><p>Google Play에서 무료로 받아요.</p>${link(ANDROID_STORE,'android','Google Play에서 받기','blue')}</div>`
+      :`<div class="ga-row"><b>Android</b><p>Google Play는 심사 중이에요. 열리면 인스타그램에서 가장 먼저 알려 드려요. 그동안 웹에서 계속 무료로 놀 수 있어요.</p>${link(INSTAGRAM,'instagram','인스타그램에서 출시 소식 받기','blue')}</div>`;
+    const follow=`<p class="ga-follow">새 놀이 소식은 인스타그램 <a href="${INSTAGRAM}" target="_blank" rel="noopener" onclick="hwGetAppClick('instagram')">@hopplewood_play</a>에서 전해요.</p>`;
+    const rows=dev==='ios'?ios+follow:(dev==='android'?android:ios+android);
+    return `<section class="ga-card" aria-labelledby="gaTitle">
+      <h3 id="gaTitle">${hwIcon('gamepad')} 앱으로 계속 놀기</h3>
+      <p class="pg-lead">앱에서는 인터넷이 없어도 놀 수 있고, 놀이 기록이 더 안전하게 남아요. 광고와 회원가입은 없어요.</p>
+      ${rows}
     </section>`;
   }
+  function hwGetAppClick(kind){ track('store_click',{channel:'web_app',detail:kind}); }
+  /* 숲 화면의 "부모님께 보여 주세요" 카드에서 연다 */
+  function hwGetAppOpen(){
+    hwParentGate(()=>{
+      track('getapp_open',{channel:'web_app',detail:hwDevice()});
+      let o=document.getElementById('getAppOverlay');
+      if(!o){ o=document.createElement('div'); o.id='getAppOverlay'; o.className='overlay'; o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); document.body.appendChild(o); }
+      o.innerHTML=`<div class="card ga-sheet">${hwGetAppMarkup()}<button type="button" class="btn ghost" onclick="closeOverlay('getAppOverlay',false)">닫기</button></div>`;
+      openOverlay('getAppOverlay');
+    },'앱 받는 방법을 보려면');
+  }
+
   function refreshParent(){
     const card=document.getElementById('pkCard'); if(card)card.outerHTML=packMarkup();
     const prog=document.getElementById('parentPlanStatus'); if(prog)prog.textContent=hwPlanLabel();
@@ -287,5 +328,5 @@
 
   init();
   window.HW_PACK={RELEASE_MODE,BETA_OPEN,PRODUCT_ID,FREE,purchase,buy,restore};
-  Object.assign(window,{hwPackOwned,hwFullAccess,hwPlanLabel,hwGameOpen,hwLevelOpen,hwQuestOpen,hwFeatureOpen,hwLockedNotice,hwParentGate,hwGateKey,hwPackMarkup:packMarkup,hwPackBuy,hwPackRestore,hwOnPackChange:onPackChange,hwPackScroll:scrollToPack});
+  Object.assign(window,{hwPackOwned,hwFullAccess,hwPlanLabel,hwGameOpen,hwLevelOpen,hwQuestOpen,hwFeatureOpen,hwLockedNotice,hwParentGate,hwGetAppShown,hwGetAppMarkup,hwGetAppOpen,hwGetAppClick,hwGateKey,hwPackMarkup:packMarkup,hwPackBuy,hwPackRestore,hwOnPackChange:onPackChange,hwPackScroll:scrollToPack});
 })();

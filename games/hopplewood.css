@@ -207,3 +207,14 @@ body{word-break:keep-all;overflow-wrap:anywhere}
 .rec-fog>b .ui-icon{width:16px;height:16px}
 .rec-fog p{margin:0 2px;font-size:14px;font-weight:700;color:#6b7684;line-height:1.45}
 @media (prefers-reduced-motion:reduce){.cover-soon i{animation:none}}
+
+/* 웹 무료판: 앱 받기 안내 (보호자 확인 뒤) */
+.ga-card{display:flex;flex-direction:column;gap:10px;margin:18px 0;padding:16px;border-radius:22px;background:#f3f8ff;border:2px solid #cfe0f5}
+.ga-card h3{margin:0;display:flex;align-items:center;gap:8px;font-size:19px}
+.ga-row{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:16px;background:#fff}
+.ga-row p{margin:0;font-size:13px;color:#4c5b6e}
+.ga-btn{display:block;text-align:center;text-decoration:none;font-size:16px;padding:12px 14px}
+.ga-card,.ga-row{text-align:left}
+.ga-follow{margin:0;font-size:13px;color:#4c5b6e}
+.ga-sheet{max-width:440px;display:flex;flex-direction:column;gap:10px}
+.ga-sheet .ga-card{margin:0}
