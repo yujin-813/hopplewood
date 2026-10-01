@@ -1,7 +1,7 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
 importScripts('./games/narration-manifest.js');
 /* 캐시 이름과 아래 파일 버전(?v=내용 해시)은 scripts/sync-games.cjs가 만든다. 손으로 고치지 않는다. */
-const CACHE = 'hopplewood-b38006ee'; // cache:name
+const CACHE = 'hopplewood-97c26e89'; // cache:name
 /* 숫자가 든 문장(900여 개)은 처음에 한꺼번에 받지 않고, 들을 때 받아서 캐시에 둔다 */
 const NARRATION = Object.entries(self.HW_NARRATION_FILES || {}).filter(([text]) => !/\d/.test(text)).map(([, path]) => './' + path.replace(/^\.\//, ''));
 const CORE = [
