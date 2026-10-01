@@ -1,8 +1,9 @@
 /* 호플우드 서비스워커 — 오프라인 캐시 */
 importScripts('./games/narration-manifest.js');
 /* 캐시 이름과 아래 파일 버전(?v=내용 해시)은 scripts/sync-games.cjs가 만든다. 손으로 고치지 않는다. */
-const CACHE = 'hopplewood-b37b4402'; // cache:name
-const NARRATION = Object.values(self.HW_NARRATION_FILES || {}).map(path => './' + path.replace(/^\.\//, ''));
+const CACHE = 'hopplewood-fc6083b6'; // cache:name
+/* 숫자가 든 문장(900여 개)은 처음에 한꺼번에 받지 않고, 들을 때 받아서 캐시에 둔다 */
+const NARRATION = Object.entries(self.HW_NARRATION_FILES || {}).filter(([text]) => !/\d/.test(text)).map(([, path]) => './' + path.replace(/^\.\//, ''));
 const CORE = [
   './',
   './index.html',
@@ -15,7 +16,7 @@ const CORE = [
   // assets:start
   './games/characters.js?v=3ac7585e',
   './games/funnel.js?v=f9addf59',
-  './games/narration-manifest.js?v=190375a1',
+  './games/narration-manifest.js?v=3b15cfb0',
   './games/platform.js?v=039dd1e7',
   './games/pack.js?v=60e586ec',
   './games/music.js?v=b4e0267c',
@@ -26,7 +27,7 @@ const CORE = [
   './games/g4-number/game.js?v=0c649601',
   './games/g5-beaver/game.js?v=29055a32',
   './games/g6-shell/game.js?v=bc51fd0c',
-  './games/g7-garden/game.js?v=5fc4400e',
+  './games/g7-garden/game.js?v=bed41e2e',
   './games/g8-leaf/game.js?v=068a0ce6',
   './games/hopplewood.css?v=a54fd31b',
   './games/parent-guide.css?v=120296e0',
@@ -38,9 +39,9 @@ const CORE = [
   './games/g8-leaf/game.css?v=c61b1d80',
   './games/forest.css?v=1f75bdb9',
   './games/mom-voice.css?v=e60e8825',
-  './games/parent-guide.js?v=ca71c66a',
+  './games/parent-guide.js?v=39f60b2d',
   './games/forest.js?v=ef069f00',
-  './games/mom-voice.js?v=764fc6fb',
+  './games/mom-voice.js?v=c2be0f44',
   // assets:end
   './icons/icon-192.png',
   './icons/icon-512.png',

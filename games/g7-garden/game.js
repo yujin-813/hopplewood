@@ -312,7 +312,7 @@ function g7_move(team,to){
   const v=g7.stones[to], line2=hwJosa(String(v),'은/는')+' '+g7.num+G7_REL[g7.rel].word+' 수, 가장 가까운 돌이에요.';
   const stone=g7_el('g7Stone'+to); if(stone)stone.classList.add('landed');
   if(human){ g7_float((to-from)+'칸 쏙!'); g7_setHint(line2+' 맞아요!'); hwSay(v+'! 맞아요. '+(to-from)+'칸 갔어요.'); }
-  else g7_setHint('컴퓨터는 '+g7_ruleText()+' '+v+' 돌까지 '+(to-from)+'칸 갔어요.');
+  else g7_setHint('컴퓨터는 '+g7_ruleText()+' '+v+' 돌로 갔어요. '+(to-from)+'칸 갔어요.');
   g7_later(g7_endTurn,human?1400:1600);
 }
 

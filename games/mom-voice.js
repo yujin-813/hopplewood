@@ -142,7 +142,8 @@
     /* 목록에 없는데 아이가 들은 문장 */
     const known=new Set(); groups.forEach(g=>g.lines.forEach(l=>{ l.text=norm(l.text); known.add(l.text); sentences(l.text).forEach(s=>known.add(s)); }));
     /* 기본 목소리 파일이 있는 나머지 문장 (새 게임·숲 문장). 목록을 게임마다 손으로 적지 않는다 */
-    const more=Object.keys(window.HW_NARRATION_FILES||{}).map(norm).filter(k=>!known.has(k)).map(k=>({text:k,note:'기본 목소리 문장'}));
+    /* 숫자가 든 문장(계산·칸 수 조합 900여 개)은 녹음 목록에 넣지 않는다 */
+    const more=Object.keys(window.HW_NARRATION_FILES||{}).map(norm).filter(k=>!known.has(k)&&!/\d/.test(k)).map(k=>({text:k,note:'기본 목소리 문장'}));
     if(more.length)groups.push({id:'more',title:'새 놀이와 숲 이야기',desc:'기본 목소리로 읽어 주는 다른 문장이에요.',lines:more});
     more.forEach(l=>known.add(l.text));
     const h=heardAll();

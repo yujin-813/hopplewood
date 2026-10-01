@@ -100,7 +100,7 @@
     const row=o=>`<li class="${o.current?'on':''}"><button type="button" class="pv-pick" aria-pressed="${o.current?'true':'false'}" onclick="pgPickVoice(${JSON.stringify(o.name).replace(/"/g,'&quot;')})"><span class="pv-radio" aria-hidden="true"></span><span>${o.nick}${o.recommended?'<small class="pv-rec">자동 추천</small>':''}</span></button><button type="button" class="pv-listen" onclick="hwPreviewVoice(${JSON.stringify(o.name).replace(/"/g,'&quot;')})" aria-label="${o.nick} 들어보기">${hwIcon('sound')} 들어보기</button></li>`;
     return `<section class="pv-voice" aria-labelledby="pvTitle">
       <h3 id="pvTitle">읽어주기 목소리</h3>
-      <p class="pg-lead">또렷하고 자연스러운 한국어 음성을 자동으로 골랐어요. 재생 파일을 앱에 넣지 않고, 이 기기에 있는 목소리만 사용해요.</p>
+      <p class="pg-lead">호플이의 기본 목소리는 <b>AI 음성 합성으로 만든 목소리</b>예요(사람이 녹음한 목소리가 아니에요). 음성 파일은 앱 안에 들어 있어 인터넷 없이 재생돼요. 파일을 재생할 수 없을 때만 아래에서 고른 이 기기의 목소리로 읽어요.</p>
       <ul class="pv-list">${rec.map(row).join('')}</ul>
       ${rest.length?`<details class="pv-more"><summary>다른 목소리 ${rest.length}개</summary><ul class="pv-list">${rest.map(row).join('')}</ul></details>`:''}
     </section>`;
