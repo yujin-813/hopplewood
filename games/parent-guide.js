@@ -196,11 +196,24 @@
     if(info&&root&&root.contains(info)){ root.parentNode.insertBefore(info,root.nextSibling); }
     if(info)info.hidden=true;
   }
+  /* 스토어 평가 부탁: 보호자 확인을 지난 부모님 화면에만, 스토어 앱에서 한 판 이상 한 뒤에만 보인다. 아이 화면에는 두지 않는다 */
+  const STORE_REVIEW={ios:'https://apps.apple.com/kr/app/id6813280139?action=write-review'};
+  function reviewMarkup(){
+    const cap=window.Capacitor, native=Boolean(cap&&cap.isNativePlatform&&cap.isNativePlatform());
+    const url=native&&cap.getPlatform?STORE_REVIEW[cap.getPlatform()]:'';
+    let plays=0; try{ plays=(JSON.parse(localStorage.getItem('hw_progress_v1')||'{}')||{}).plays||0; }catch(e){}
+    if(!url||plays<1)return '';
+    return `<section class="pk-card review" aria-labelledby="rvTitle">
+      <div class="pk-head"><h3 id="rvTitle">호플우드가 도움이 됐나요?</h3></div>
+      <p class="pg-lead">혼자 만드는 작은 앱이에요. 스토어에 별점이나 한 줄 평을 남겨 주시면 다른 부모님이 찾는 데 큰 힘이 돼요.</p>
+      <a class="btn ghost" href="${url}" target="_blank" rel="noopener" onclick="if(typeof hwFunnel==='function')hwFunnel('review_click')">스토어에 평가 남기기</a>
+    </section>`;
+  }
   function tabMarkup(){
     const mv=window.hwMomVoice;
     if(tab==='guide')return overviewMarkup();
     if(tab==='voice')return (mv?mv.entryMarkup():'')+voiceMarkup();
-    if(tab==='pack')return (typeof hwPackMarkup==='function'?hwPackMarkup():'')+'<div id="pgInfoSlot"></div>'+funnelMarkup();
+    if(tab==='pack')return (typeof hwPackMarkup==='function'?hwPackMarkup():'')+reviewMarkup()+'<div id="pgInfoSlot"></div>'+funnelMarkup();
     return reportMarkup();
   }
   /* pgOpen(undefined): 새로 열기(기본 탭) · pgOpen(null): 지금 탭으로 돌아가기 · pgOpen('report'|'guide'|'voice'|'pack'): 탭
