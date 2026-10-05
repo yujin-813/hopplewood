@@ -1,0 +1,220 @@
+/* 호플우드 공통: SVG 캐릭터 배치, 소리 설정, 읽어주기, 첫 판 안내 */
+
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hw-char{display:block;width:100%;height:100%;overflow:visible;pointer-events:none;user-select:none}
+.hw-art{position:relative;overflow:hidden}
+.hw-art img{display:block;width:100%;height:100%;object-fit:contain}
+button,a{touch-action:manipulation}
+body{word-break:keep-all;overflow-wrap:anywhere}
+
+/* 헤더와 설정 */
+.brand-mascot{width:44px;height:44px;display:block;border-radius:14px;background:#e3f6ea;box-shadow:0 4px 10px rgba(43,89,66,.12);overflow:hidden}
+.setting-btn{position:relative;color:#40514c}
+.setting-btn[data-on="0"]{background:#eef0ec;color:#9aa39f}
+.setting-btn[data-on="0"]:after{content:"";position:absolute;left:10px;right:10px;top:50%;height:3px;border-radius:3px;background:#d9534b;transform:rotate(-40deg)}
+.platform-actions{gap:6px}
+
+/* 홈 추천 장면 */
+.hero-scene .hero-art{position:absolute;display:block;filter:drop-shadow(0 7px 3px rgba(43,83,59,.13))}
+.hero-scene .hero-rabbit{width:128px;height:128px;bottom:6px}
+.hero-scene .hero-mouse{width:74px;height:74px;bottom:6px}
+.hero-scene .hero-frog{width:76px;height:76px;bottom:0}
+.hero-scene .hero-art .g3-face-svg{width:100%;height:100%}
+
+/* 카탈로그 표지 */
+.experience-cover .cover-main,.experience-cover .cover-side{position:absolute;display:block}
+.experience-cover .cover-main{z-index:2;right:6px;bottom:0;width:92px;height:92px}
+.experience-cover .cover-side{z-index:1;left:8px;bottom:2px;width:70px;height:70px}
+.cover-blocks{background:linear-gradient(150deg,#fff1d6,#e9c08a)}
+.cover-logs{position:absolute;left:14px;top:22px;display:grid;grid-template-columns:repeat(2,26px);gap:4px;transform:rotate(-6deg)}
+.cover-logs i{height:26px;border-radius:7px;background:#c98a4a;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12),0 3px 0 rgba(90,50,20,.18)}
+.cover-logs i:nth-child(2){background:#e3a55f}.cover-logs i:nth-child(3){background:#a86f3a;grid-column:span 2}
+
+/* 캐릭터가 들어가는 기존 자리 */
+.pc .chip .hw-char,.mini .hw-char,.c2 .disc .hw-char,.pick .hw-char{width:100%;height:100%}
+.pc .chip{background:#fff}.pc.B .chip{background:#fff5f2}
+.team-avatar{color:var(--blue)}.team.red .team-avatar{color:var(--red)}
+.team-avatar .ui-icon{width:22px;height:22px}
+.setup .big-em{gap:0}
+.setup .big-em>.hw-char.full{width:84px;height:84px;margin:0 -12px;animation:setupIdle 2.8s ease-in-out infinite}
+.setup .big-em>.hw-char.full:nth-child(2){animation-delay:-1.2s;align-self:flex-end}
+.setup .big-em.react>.hw-char{animation:setupReact .5s ease}
+.profile-orb .hw-char{width:84%;height:84%;margin:8%}
+.game-map-face .hw-char{width:100%;height:100%}
+.win-em .hw-char{width:110px;height:110px;margin:auto}
+
+/* 읽어주기 */
+.say-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:-6px auto 6px;padding:0 14px;border-radius:999px;background:#eef6ff;color:#2f6fb6;font-size:15px;font-weight:800}
+.say-btn .ui-icon{width:18px;height:18px}
+#rulesOverlay .card{display:flex;flex-direction:column}
+.rules{font-size:17px}
+
+/* 첫 판 안내 */
+.hw-coach{position:fixed;inset:0;z-index:40;display:none;background:rgba(18,32,28,.38)}
+.hw-coach.on{display:block}
+.hw-coach-ring{position:fixed;border-radius:22px;box-shadow:0 0 0 4px #ffd84a,0 0 0 9999px rgba(18,32,28,.28);pointer-events:none;transition:all .25s ease;animation:hwRing 1.2s ease-in-out infinite}
+.hw-coach-bubble{position:fixed;left:50%;width:min(calc(100% - 32px),420px);transform:translateX(-50%);display:grid;grid-template-columns:52px 1fr;gap:6px 12px;align-items:center;padding:14px;border-radius:22px;background:#fff;box-shadow:0 10px 0 rgba(0,0,0,.12)}
+.hw-coach-art{width:52px;height:52px;border-radius:50%;background:#e3f6ea;overflow:hidden}
+.hw-coach-bubble p{margin:0;font-size:17px;line-height:1.45;color:#23312d}
+.hw-coach-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
+.hw-coach-actions button{min-height:46px;padding:0 16px;border-radius:14px;font-size:15px;font-weight:800}
+.hw-coach-skip{background:#f1f2ee;color:#66706c}
+.hw-coach-next{background:#3f9ff1;color:#fff}
+.hw-coach[data-tap="1"]{background:transparent;pointer-events:none}
+.hw-coach[data-tap="1"] .hw-coach-bubble{pointer-events:auto}
+.hw-coach-finger{position:fixed;z-index:2;width:58px;height:58px;pointer-events:none;filter:drop-shadow(0 4px 3px rgba(0,0,0,.3));animation:hwFingerTap 1.1s ease-in-out infinite;transition:left .3s ease,top .3s ease}
+.hw-coach-finger svg{width:100%;height:100%;display:block}
+.hw-coach-finger::before{content:'';position:absolute;left:12px;top:-4px;width:26px;height:26px;border-radius:50%;border:3px solid #ffd84a;opacity:0;animation:hwFingerRipple 1.1s ease-out infinite}
+@keyframes hwFingerTap{0%,100%{transform:translate(8px,14px)}45%{transform:translate(0,0) scale(.94)}60%{transform:translate(0,0) scale(.94)}}
+@keyframes hwFingerRipple{0%,40%{opacity:0;transform:scale(.4)}55%{opacity:1}100%{opacity:0;transform:scale(1.6)}}
+@keyframes hwRing{50%{box-shadow:0 0 0 7px #ffd84a,0 0 0 9999px rgba(18,32,28,.28)}}
+
+/* 아이 화면 글자 크기 보정: 너무 작은 설명 글씨를 키운다 */
+.experience-body p{font-size:12px}
+.experience-meta,.game-tags span{font-size:10px}
+.setup .intro .desc{font-size:14px}
+.seg.three button small{font-size:10px}
+.level-note{font-size:12px}
+.thinking-item b{font-size:13px}.thinking-item small{font-size:11px}
+.world-hero p{font-size:13px}.hero-kicker,.hero-meta span{font-size:10px}
+.bottom-nav button{font-size:12px}
+
+@media (prefers-reduced-motion:reduce){.hw-coach-ring,.hw-coach-finger,.hw-coach-finger::before,.setup .big-em>.hw-char.full{animation:none!important}}
+
+/* 무료판 잠금 (아이 화면: 가격 없이 자물쇠만) */
+.experience-card.locked .experience-cover>*:not(.status-badge){filter:grayscale(.55) opacity(.7)}
+.experience-card.locked strong,.experience-card.locked p{color:#8b938f}
+.status-badge.lock{display:grid;place-items:center;width:30px;height:30px;padding:0;background:rgba(255,255,255,.92);color:#7a817d}
+.status-badge.lock .ui-icon{width:16px;height:16px}
+#gameMap button.locked{opacity:.55}
+.seg button[data-locked="1"]{position:relative;opacity:.55}
+.seg button[data-locked="1"]::after{content:'';position:absolute;right:6px;top:6px;width:14px;height:14px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat}
+.hw-lock-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);padding:12px 16px;border-radius:18px;background:rgba(35,44,40,.92);color:#fff;font-size:15px;font-weight:800;line-height:1.4;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.hw-lock-toast.on{opacity:1;transform:translate(-50%,0)}
+.hw-lock-toast .ui-icon{flex:none;width:18px;height:18px}
+
+/* 보호자 질문 */
+.gate-q{margin:4px 0 10px;font-family:'Jua',system-ui,sans-serif;font-size:26px;color:#1d2925}
+.gate-answer{display:flex;justify-content:center;gap:8px;margin-bottom:6px}
+.gate-answer i{display:grid;place-items:center;width:52px;height:58px;border-radius:14px;background:#f4f5f1;border:2px solid #dfe3dd;font-style:normal;font-size:28px;font-weight:900;color:#23302c}
+.gate-card .gate-msg{min-height:20px;margin:0 0 6px;color:#b0450f;font-weight:700}
+.gate-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 auto 4px;max-width:280px}
+.gate-pad button{min-height:52px;border-radius:14px;background:#fff;border:2px solid #e5e8e2;font-size:22px;font-weight:800;color:#23302c}
+.gate-pad button:active{background:#eef6ef}
+.gate-pad .gate-del{color:#747d79}
+.gate-pad .gate-ok{background:#3f9ff1;border-color:#3f9ff1;color:#fff;font-size:17px}
+
+/* 부모 메뉴: 기본 놀이팩 */
+.pk-card{display:flex;flex-direction:column;gap:10px;margin:18px 0;padding:16px;border-radius:22px;background:linear-gradient(160deg,#fffaf0,#f3fbef);border:2px solid #efe0bd}
+.pk-card.owned{background:#f1faf3;border-color:#bfe2c9}
+.pk-card.beta{background:linear-gradient(160deg,#eef9ff,#f4fbef);border-color:#b9decc}
+.pk-head{display:flex;flex-direction:column;gap:4px}
+.pk-head h3{margin:0;font-family:'Jua',system-ui,sans-serif;font-weight:400;font-size:22px;color:#1d2925}
+.pk-badge{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:#2f8f5f;color:#fff;font-size:12px;font-weight:900}
+.pk-badge.free{background:#f1e2c2;color:#7a5a1c}
+.pk-badge.beta{background:#377e68;color:#fff}
+.pk-badge .ui-icon{width:13px;height:13px;fill:currentColor}
+.pk-card .pg-lead{margin:0}
+.pk-card>a.btn{text-decoration:none;text-align:center}
+.pk-items{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.pk-items li{display:grid;grid-template-columns:34px 1fr;column-gap:10px;align-items:center}
+.pk-items li span{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fff;color:#3f8f6c}
+.pk-items li span .ui-icon{width:18px;height:18px}
+.pk-items b{font-size:14px;color:#23302c}
+.pk-items small{font-size:12px;color:#6b7571}
+.pk-buy{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:6px;border-top:1px dashed #e6d7b5}
+.pk-buy b{display:block;font-size:24px;color:#1d2925}
+.pk-buy small{font-size:12px;color:#6b7571}
+.pk-buy>div{flex:1;min-width:0;white-space:nowrap}
+.pk-buy .btn{flex:none;width:auto;min-width:140px;margin:0;padding:0 22px}
+.pk-buy .btn:disabled{opacity:.5;filter:grayscale(.35);cursor:default}
+.pk-price{display:flex;align-items:baseline;gap:8px;padding-top:8px;border-top:1px dashed #e6d7b5}
+.pk-price b{font-size:24px;color:#1d2925}.pk-price small{font-size:12px;color:#6b7571}
+.pk-code-box{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:16px;background:#fff}
+.pk-code-box label{font-size:13px;font-weight:900;color:#394842}
+.pk-code-box>div{display:flex;gap:8px}
+.pk-code-box input{min-width:0;flex:1;height:48px;padding:0 12px;border:2px solid #d9e1dc;border-radius:13px;background:#fbfdfb;color:#26332e;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+.pk-code-box input:focus{outline:3px solid rgba(63,159,241,.2);border-color:#3f9ff1}
+.pk-code-box .btn{flex:none;width:auto;min-width:96px;height:48px;margin:0;padding:0 14px}
+.pk-code-help{margin:0;color:#66736e;font-size:12px;line-height:1.5}
+.pk-msg{margin:0;padding:8px 10px;border-radius:12px;background:#fff;font-size:13px;font-weight:700;color:#5b4a36}
+.pk-msg.mock{background:#eef2ff;color:#3b4aa0}
+.pk-restore{align-self:center;min-height:40px;padding:0 12px;background:transparent;border:0;box-shadow:none;color:#5f6b67;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.parent-privacy-link{display:inline-flex;align-items:center;min-height:40px;margin-top:8px;color:#356d4c;font-size:13px;font-weight:900;text-underline-offset:3px}
+.pr-card.locked{opacity:.7}
+@media(max-width:420px){.pk-code-box>div{flex-direction:column}.pk-code-box .btn{width:100%}}
+
+/* ---------- 아이 기록: 숲 친구 도감 · 게임별 배지 · 나의 최고 기록 · 선물 모음 ---------- */
+#progressScreen .stat-grid span .ui-icon{width:18px;height:18px}
+.rec-book{display:grid;gap:10px}
+.rec-region{padding:12px;border-radius:20px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-region>b{display:block;margin:0 2px 8px;font-size:14px;color:#2f4a3f}
+.rec-friends{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.rec-friend{min-width:0!important;min-height:0!important;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:16px;background:#f3faf1;border:0}
+.rec-friend .rec-art{width:52px;height:52px;border-radius:50%;background:#fff;overflow:hidden;display:grid;place-items:center}
+.rec-friend .rec-art>*{width:100%;height:100%}
+.rec-friend small{font-size:12px;font-weight:800;color:#3b5249;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.rec-friend.unmet{background:#f1f1ec}
+.rec-friend.unmet .rec-art>*{filter:brightness(0);opacity:.18}
+.rec-friend.unmet small{color:#a3a39a}
+.rec-badges,.rec-list{display:grid;gap:8px}
+.rec-badge-row{display:grid;grid-template-columns:40px 1fr;grid-template-rows:auto auto;column-gap:10px;row-gap:6px;align-items:center;padding:10px 12px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-badge-row>b{font-size:14px;color:#24332e}
+.rec-face{width:40px;height:40px;border-radius:50%;background:#f3faf1;overflow:hidden;display:grid;place-items:center;grid-row:span 2}
+.rec-face>*{width:100%;height:100%}
+.rec-badge-set{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rec-badge{min-width:0!important;min-height:0!important;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:14px;background:#f1f1ec;border:0;color:#a3a39a}
+.rec-badge span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e4e4dc}
+.rec-badge .ui-icon{width:17px;height:17px}
+.rec-badge small{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.rec-badge.on{background:#fff7dc;color:#7a5a12}
+.rec-badge.on span{background:#ffd95a;color:#7a5a12;box-shadow:0 2px 0 #e0a100}
+.rec-row{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:18px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-row .rec-face{grid-row:auto}
+.rec-name{min-width:0;display:flex;flex-direction:column}
+.rec-name b{font-size:14px;color:#24332e}
+.rec-name small{font-size:12px;color:#6f7975}
+.rec-best{display:flex;flex-direction:column;align-items:flex-end;font-size:12px;color:#6f7975}
+.rec-best b{font-family:'Jua',system-ui,sans-serif;font-size:24px;font-weight:400;color:#1f5b45;line-height:1}
+.rec-best em{font-style:normal;font-size:12px;color:#a3a39a}
+.rec-gifts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:12px;border-radius:20px;background:#fff;border:1px solid rgba(40,51,47,.09)}
+.rec-gift{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.rec-gift img{width:100%;aspect-ratio:1;object-fit:contain}
+.rec-gift small{font-size:10px;font-weight:800;color:#5b4a36;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.rec-gift.unmet img{filter:brightness(0);opacity:.15}
+.rec-gift.unmet small{color:#a3a39a}
+.win-news{list-style:none;margin:6px 0 10px;padding:0;display:grid;gap:6px}
+.win-news[hidden]{display:none}
+.win-news li{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;border-radius:14px;background:#fff7dc;color:#6a4b1c;font-size:14px;font-weight:800}
+.win-news li b{color:#b26b00}
+.win-news .ui-icon{width:18px;height:18px;color:#e0a100}
+@media (max-width:360px){.rec-gifts{grid-template-columns:repeat(4,1fr)}}
+
+/* 확장 암시 (ADR-0005): 놀이 목록의 안개 카드 · 도감의 지역 완성 도장과 안개 너머 */
+.experience-card.soon{background:linear-gradient(180deg,#fbfcfd,#f1f4f7);border-style:dashed;box-shadow:none}
+.cover-soon{background:linear-gradient(180deg,#cfdbe6,#eef2f5 65%,#dfe8d8)}
+.cover-soon .soon-q{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:grid;place-items:center;width:58px;height:68px;border-radius:50% 50% 44% 44%;background:#9aa6b3;color:#eef2f6;font-size:32px;font-weight:900;opacity:.75}
+.cover-soon i{position:absolute;z-index:1;height:34px;border-radius:34px;background:rgba(255,255,255,.8);animation:soonFog 7s ease-in-out infinite alternate}
+.cover-soon i:nth-of-type(1){left:-20px;top:30px;width:120px}
+.cover-soon i:nth-of-type(2){right:-24px;top:66px;width:130px;animation-delay:-3s}
+@keyframes soonFog{from{transform:translateX(-10px)}to{transform:translateX(12px)}}
+.experience-card.soon strong,.experience-card.soon p{color:#6f7a86}
+.experience-card.soon .game-tags span{background:#e8edf2;color:#5d6875}
+.rec-done{display:inline-flex;align-items:center;gap:2px;margin-left:6px;padding:2px 8px;border-radius:999px;background:#fff1c2;color:#8a5a00;font-size:12px;vertical-align:1px}
+.rec-done .ui-icon{width:12px;height:12px;fill:#ffc93a}
+.rec-fog{background:linear-gradient(160deg,#f5f7f9,#e7ecf1);border-style:dashed}
+.rec-fog>b{display:flex!important;align-items:center;gap:5px;color:#5d6875!important}
+.rec-fog>b .ui-icon{width:16px;height:16px}
+.rec-fog p{margin:0 2px;font-size:14px;font-weight:700;color:#6b7684;line-height:1.45}
+@media (prefers-reduced-motion:reduce){.cover-soon i{animation:none}}
+
+/* 웹 무료판: 앱 받기 안내 (보호자 확인 뒤) */
+.ga-card{display:flex;flex-direction:column;gap:10px;margin:18px 0;padding:16px;border-radius:22px;background:#f3f8ff;border:2px solid #cfe0f5}
+.ga-card h3{margin:0;display:flex;align-items:center;gap:8px;font-size:19px}
+.ga-row{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:16px;background:#fff}
+.ga-row p{margin:0;font-size:13px;color:#4c5b6e}
+.ga-btn{display:block;text-align:center;text-decoration:none;font-size:16px;padding:12px 14px}
+.ga-card,.ga-row{text-align:left}
+.ga-follow{margin:0;font-size:13px;color:#4c5b6e}
+.ga-sheet{max-width:440px;display:flex;flex-direction:column;gap:10px}
+.ga-sheet .ga-card{margin:0}

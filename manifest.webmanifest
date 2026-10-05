@@ -1,0 +1,51 @@
+{
+  "name": "호플우드",
+  "short_name": "호플우드",
+  "description": "5–7세가 관찰·수·공간·전략을 쓰는 광고 없는 숲속 사고력 게임",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "./index.html?utm_source=home_screen&utm_medium=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e9f6d8",
+  "theme_color": "#7dc06a",
+  "categories": [
+    "games",
+    "kids"
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "무료 게임 열기",
+      "short_name": "무료 게임",
+      "url": "./index.html?utm_source=home_shortcut&utm_medium=pwa",
+      "icons": [{"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"}]
+    },
+    {
+      "name": "부모님 이용 안내",
+      "short_name": "이용 안내",
+      "url": "./buy.html?utm_source=home_shortcut&utm_medium=pwa",
+      "icons": [{"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"}]
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "./"
+}
