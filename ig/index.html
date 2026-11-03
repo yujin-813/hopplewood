@@ -5,9 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,follow">
   <title>호플우드</title>
-  <!-- 인스타그램 프로필 방문자를 현재 소개 페이지로 연결한다. -->
-  <meta http-equiv="refresh" content="0;url=../start.html?utm_source=instagram&utm_medium=profile&utm_campaign=profile_visit">
-  <script>location.replace('../start.html?utm_source=instagram&utm_medium=profile&utm_campaign=profile_visit');</script>
+  <!-- 프로필의 한 링크에서 기기에 맞는 스토어로 이동한다. 데스크톱은 소개 페이지로 간다. -->
+  <script>
+    const landing='../start.html?utm_source=instagram&utm_medium=social&utm_campaign=hopplewood_112_launch';
+    const ios='https://apps.apple.com/app/apple-store/id6813280139?pt=125211719&ct=hopplewood_112_launch_instagram&mt=8';
+    const android='https://play.google.com/store/apps/details?id=com.hopplewood.app&referrer=utm_source%3Dinstagram%26utm_medium%3Dsocial%26utm_campaign%3Dhopplewood_112_launch';
+    const ua=navigator.userAgent||'';
+    const ipadLike=navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1;
+    location.replace(/Android/i.test(ua)?android:(/iPhone|iPad|iPod/i.test(ua)||ipadLike)?ios:landing);
+  </script>
 </head>
-<body><p><a href="../start.html?utm_source=instagram&utm_medium=profile&utm_campaign=profile_visit">호플우드 소개 페이지로 이동</a></p></body>
+<body><p>호플우드 앱 설치 페이지로 이동 중입니다. <a href="../start.html?utm_source=instagram&amp;utm_medium=social&amp;utm_campaign=hopplewood_112_launch">직접 열기</a></p></body>
 </html>
